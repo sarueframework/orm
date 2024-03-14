@@ -1,3 +1,4 @@
 /db-data/
 
 /vendor/
+.php-cs-fixer.cache

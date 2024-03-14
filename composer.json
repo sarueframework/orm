@@ -20,5 +20,14 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^11.0"
+    },
+    "scripts": {
+        "test-cs": "vendor/bin/php-cs-fixer check --rules=@Symfony,@PER-CS2.0 .",
+        "test-cs-fix": "vendor/bin/php-cs-fixer fix --rules=@Symfony,@PER-CS2.0 .",
+        "test-phpunit": "vendor/bin/phpunit --display-notices --display-warnings --fail-on-notice --fail-on-warning tests/unit/",
+        "test-phpunit-coverage": "vendor/bin/phpunit --display-notices --display-warnings --fail-on-notice --fail-on-warning --coverage-html tests/unit/coverage --coverage-filter src/ tests/unit/",
+        "test-integration": "vendor/bin/phpunit --display-notices --display-warnings --fail-on-notice --fail-on-warning tests/integration/",
+        "test-integration-coverage": "vendor/bin/phpunit --display-notices --display-warnings --fail-on-notice --fail-on-warning --coverage-html tests/integration/coverage --coverage-filter src/ tests/integration/",
+        "test-phpstan": "vendor/bin/phpstan analyse src -l 9"
     }
 }

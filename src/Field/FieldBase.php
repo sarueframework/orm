@@ -58,7 +58,12 @@ abstract class FieldBase implements FieldInterface
         return $this->required;
     }
 
-    protected static function parseDefinition($rawDefinition): array
+    /**
+     * @param mixed[] $rawDefinition the definition of the field provided by the developer
+     *
+     * @return array{0: mixed[], 1: mixed[], 2: bool}
+     */
+    protected static function parseDefinition(array $rawDefinition): array
     {
         $required = static::parseRequiredFromDefinition($rawDefinition);
         ksort($rawDefinition);
@@ -80,6 +85,11 @@ abstract class FieldBase implements FieldInterface
         return [$schemaDefinition, $additionalDefinition, $required];
     }
 
+    /**
+     * @param mixed[] $rawDefinition the definition of the field provided by the developer
+     *
+     * @return bool whether the field is required
+     */
     protected static function parseRequiredFromDefinition(array &$rawDefinition): bool
     {
         $required = $rawDefinition['required'] ?? false;
@@ -91,6 +101,10 @@ abstract class FieldBase implements FieldInterface
         return $required;
     }
 
+    /**
+     * @param mixed[] $schemaDefinition the pre-parsed schema definition
+     * @param mixed[] $rawDefinition    the definition of the field provided by the developer
+     */
     protected static function validateSchemaDefinition(array &$schemaDefinition, array $rawDefinition): void
     {
         $missingRequiredOptions = array_diff(array_keys($schemaDefinition), static::REQUIRED_SCHEMA_DEFINITION_OPTIONS);
@@ -99,6 +113,10 @@ abstract class FieldBase implements FieldInterface
         }
     }
 
+    /**
+     * @param mixed[] $additionalDefinition the pre-parsed schema definition
+     * @param mixed[] $rawDefinition        the definition of the field provided by the developer
+     */
     protected static function validateAdditionalDefinition(array &$additionalDefinition, array $rawDefinition): void
     {
         $missingRequiredOptions = array_diff(array_keys($additionalDefinition), static::REQUIRED_ADDITIONAL_DEFINITION_OPTIONS);

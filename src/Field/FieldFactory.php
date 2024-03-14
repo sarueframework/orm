@@ -7,6 +7,14 @@ use Sarue\Orm\Field\FieldType\Text;
 
 class FieldFactory
 {
+    /**
+     * Creates a field instance from a developer-provided raw definition.
+     *
+     * The definition WILL be validated.
+     *
+     * @param string  $fieldName  the name of the field
+     * @param mixed[] $definition the definition of the field provided by the developer
+     */
     public function createFromDefinition(string $fieldName, array $definition): FieldInterface
     {
         if (empty($definition['type']) || !is_string($definition['type'])) {

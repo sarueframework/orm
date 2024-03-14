@@ -1,0 +1,19 @@
+{
+    "name": "sarueframework/orm",
+    "description": "ORM for Sarue Framework",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Sarueframework\\Orm\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "José San Martin",
+            "email": "jose@josesanmartin.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}

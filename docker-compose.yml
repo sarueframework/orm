@@ -8,19 +8,5 @@ services:
       POSTGRES_PASSWORD: sarue
     volumes:
       - ./db-data:/var/lib/postgresql/data
-    networks:
-      sarueframework-orm-dev:
-  sarueframework_orm_dev:
-    container_name: sarueframework_orm_dev
-    image: wodby/drupal-php:8.3
-    external_links:
-      - sarueframework_orm_dev_postgres
-    volumes:
-        - ./:/var/www/html:delegated
-    networks:
-      sarueframework-orm-dev:
-
-networks:
-  sarueframework-orm-dev:
-    external:
-      name: sarueframework_orm_dev
+    ports:
+      - "5432:5432"

@@ -2,13 +2,18 @@
 
 namespace Sarue\Orm\Field;
 
+use Sarue\Orm\Exception\InvalidDefinitionException;
 use Sarue\Orm\Field\FieldType\Text;
 
 class FieldFactory
 {
-    public function createFromDefinition(string $fieldType, string $fieldName, array $definition): FieldInterface
+    public function createFromDefinition(string $fieldName, array $definition): FieldInterface
     {
-        $class = $this->resolveClassForFieldType($fieldType);
+        if (empty($definition['type']) || !is_string($definition['type'])) {
+            throw new InvalidDefinitionException('The field type must be a string.');
+        }
+
+        $class = $this->resolveClassForFieldType($definition['type']);
 
         /** @var \Sarue\Orm\Field\FieldInterface */
         return $class::createFromDefinition($fieldName, $definition);

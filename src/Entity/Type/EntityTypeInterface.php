@@ -15,6 +15,4 @@ interface EntityTypeInterface
     public function getField(string $fieldName): FieldInterface;
 
     public function getFields(): array;
-
-    public function getHash(): string;
 }

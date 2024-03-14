@@ -21,7 +21,5 @@ interface FieldInterface
 
     public function isRequired(): bool;
 
-    public function getHash(): string;
-
     // @todo: add methods schema(), validate(), prepareToStorage().
 }

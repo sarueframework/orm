@@ -45,8 +45,7 @@ class EntityType implements EntityTypeInterface
     public function __construct(
         protected string $entityTypeName,
         protected array $fields,
-    ) {
-    }
+    ) {}
 
     public function getName(): string
     {
@@ -58,10 +57,12 @@ class EntityType implements EntityTypeInterface
         if (!isset($this->fields[$fieldName])) {
             throw new \Exception("Field $fieldName does not exist in entity " . $this->name);
         }
+
         return $this->fields[$fieldName];
     }
 
-    public function getFields(): array {
+    public function getFields(): array
+    {
         return $this->fields;
     }
 }

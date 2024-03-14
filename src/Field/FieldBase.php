@@ -13,6 +13,7 @@ abstract class FieldBase implements FieldInterface
     public static function createFromDefinition(string $fieldName, array $definition): static
     {
         [$schemaDefinition, $additionalDefinition, $required] = static::parseDefinition($definition);
+
         return static::createFromDefinition($fieldName = $schemaDefinition, $additionalDefinition, $required);
     }
 
@@ -35,8 +36,7 @@ abstract class FieldBase implements FieldInterface
         protected array $schemaDefinition,
         protected array $additionalDefinition,
         protected bool $required,
-    ) {
-    }
+    ) {}
 
     public function getFieldName(): string
     {
@@ -66,7 +66,7 @@ abstract class FieldBase implements FieldInterface
         $additionalDefinition = $rawDefinition;
         $schemaDefinition = [];
         foreach ($additionalDefinition as $key => $value) {
-            if (in_array($key, static::SCHEMA_DEFINITION_OPTIONS, TRUE)) {
+            if (in_array($key, static::SCHEMA_DEFINITION_OPTIONS, true)) {
                 $schemaDefinition[$key] = $additionalDefinition[$key];
 
                 // The additional definition is the raw definition MINUS the schema definition.
@@ -82,11 +82,12 @@ abstract class FieldBase implements FieldInterface
 
     protected static function parseRequiredFromDefinition(array &$rawDefinition): bool
     {
-        $required = $rawDefinition['required'] ?? FALSE;
+        $required = $rawDefinition['required'] ?? false;
         if (!is_bool($required)) {
             throw new InvalidDefinitionException('Option "required" must be boolean.');
         }
         unset($rawDefinition['required']);
+
         return $required;
     }
 
@@ -105,5 +106,4 @@ abstract class FieldBase implements FieldInterface
             throw new InvalidDefinitionException('Missing required additional options: ' . implode(', ', $missingRequiredOptions));
         }
     }
-
- }
+}

@@ -15,7 +15,7 @@ class FieldFactory
 
         $class = $this->resolveClassForFieldType($definition['type']);
 
-        /** @var \Sarue\Orm\Field\FieldInterface */
+        /* @var \Sarue\Orm\Field\FieldInterface */
         return $class::createFromDefinition($fieldName, $definition);
     }
 

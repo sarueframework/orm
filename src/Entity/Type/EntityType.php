@@ -55,7 +55,7 @@ class EntityType implements EntityTypeInterface
     public function getField(string $fieldName): FieldInterface
     {
         if (!isset($this->fields[$fieldName])) {
-            throw new \Exception("Field $fieldName does not exist in entity " . $this->name);
+            throw new \Exception("Field $fieldName does not exist in entity " . $this->getName());
         }
 
         return $this->fields[$fieldName];

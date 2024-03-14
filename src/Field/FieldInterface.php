@@ -13,6 +13,13 @@ interface FieldInterface
         bool $required,
     );
 
+    public function __construct(
+        string $fieldName,
+        array $schemaDefinition,
+        array $additionalDefinition,
+        bool $required,
+    );
+
     public function getFieldName(): string;
 
     public function getSchemaDefinition(): array;

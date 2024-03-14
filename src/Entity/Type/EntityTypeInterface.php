@@ -10,6 +10,11 @@ interface EntityTypeInterface
 
     public static function createFromSchemaStorage(string $entityTypeName, array $fieldsFromStorage): static;
 
+    public function __construct(
+        string $entityTypeName,
+        array $fields,
+    );
+
     public function getName(): string;
 
     public function getField(string $fieldName): FieldInterface;

@@ -14,7 +14,7 @@ abstract class FieldBase implements FieldInterface
     {
         [$schemaDefinition, $additionalDefinition, $required] = static::parseDefinition($definition);
 
-        return static::createFromDefinition($fieldName = $schemaDefinition, $additionalDefinition, $required);
+        return static::createFromSchemaStorage($fieldName, $schemaDefinition, $additionalDefinition, $required);
     }
 
     public static function createFromSchemaStorage(

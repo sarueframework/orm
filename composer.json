@@ -5,7 +5,13 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Sarueframework\\Orm\\": "src/"
+            "Sarue\\Orm\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sarue\\Orm\\Tests\\Unit\\": "tests/unit",
+            "Sarue\\Orm\\Tests\\Integration\\": "tests/integration"
         }
     },
     "authors": [

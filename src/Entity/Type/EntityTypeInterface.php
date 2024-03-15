@@ -21,8 +21,8 @@ interface EntityTypeInterface
      *
      * The data from the storage WILL NOT be validated.
      *
-     * @param string  $entityTypeName    the name of the entity type
-     * @param mixed[] $fieldsFromStorage the data from the storage
+     * @param string                                                                            $entityTypeName    the name of the entity type
+     * @param array<array{class: string, schema: mixed[], additional: mixed[], required: bool}> $fieldsFromStorage the data from the storage
      */
     public static function createFromSchemaStorage(string $entityTypeName, array $fieldsFromStorage): static;
 

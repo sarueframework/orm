@@ -2,7 +2,9 @@
 
 namespace Sarue\Orm\Field;
 
+use PhpCsFixer\ConfigurationException\InvalidConfigurationException;
 use Sarue\Orm\Exception\InvalidDefinitionException;
+use Sarue\Orm\Validator\StringValidator\SnakeCaseValidator;
 
 abstract class FieldBase implements FieldInterface
 {
@@ -12,6 +14,10 @@ abstract class FieldBase implements FieldInterface
 
     public static function createFromDefinition(string $fieldName, array $definition): static
     {
+        if (!SnakeCaseValidator::validate($fieldName)) {
+            throw new InvalidConfigurationException("The field name $fieldName should be in snake_case and start with a letter");
+        }
+
         [$schemaDefinition, $additionalDefinition, $required] = static::parseDefinition($definition);
 
         return static::createFromSchemaStorage($fieldName, $schemaDefinition, $additionalDefinition, $required);

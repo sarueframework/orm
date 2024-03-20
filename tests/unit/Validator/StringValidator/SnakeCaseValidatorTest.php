@@ -1,5 +1,7 @@
 <?php
 
+namespace Sarue\Orm\Tests\Unit\Validator\StringValidator;
+
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

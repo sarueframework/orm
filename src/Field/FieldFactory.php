@@ -4,6 +4,7 @@ namespace Sarue\Orm\Field;
 
 use Sarue\Orm\Exception\InvalidDefinitionException;
 use Sarue\Orm\Field\FieldType\Text;
+use Sarue\Orm\Validator\StringValidator\SnakeCaseValidator;
 
 class FieldFactory
 {
@@ -21,10 +22,21 @@ class FieldFactory
             throw new InvalidDefinitionException('The field type must be a string.');
         }
 
+        if (!SnakeCaseValidator::validate($fieldName)) {
+            throw new InvalidDefinitionException("The field name $fieldName should be in snake_case and start with a letter");
+        }
+
         $class = $this->resolveClassForFieldType($definition['type']);
 
+        if (!is_subclass_of($class, FieldInterface::class)) {
+            // @todo Create proper exception.
+            throw new \Exception("Class $class is not an instance of \Sarue\Orm\Field\FieldInterface.");
+        }
+
+        [$schemaDefinition, $additionalDefinition, $required] = $class::parseDefinition($definition);
+
         /* @var \Sarue\Orm\Field\FieldInterface */
-        return $class::createFromDefinition($fieldName, $definition);
+        return new $class($fieldName, $schemaDefinition, $additionalDefinition, $required);
     }
 
     public function resolveClassForFieldType(string $fieldType): string

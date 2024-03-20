@@ -11,29 +11,31 @@ abstract class FieldBase implements FieldInterface
     protected const array REQUIRED_SCHEMA_DEFINITION_OPTIONS = [];
     protected const array REQUIRED_ADDITIONAL_DEFINITION_OPTIONS = [];
 
-    public static function createFromDefinition(string $fieldName, array $definition): static
+    /**
+     * @param mixed[] $rawDefinition the definition of the field provided by the developer
+     *
+     * @return array{0: mixed[], 1: mixed[], 2: bool}
+     */
+    public static function parseDefinition(array $rawDefinition): array
     {
-        if (!SnakeCaseValidator::validate($fieldName)) {
-            throw new InvalidConfigurationException("The field name $fieldName should be in snake_case and start with a letter");
+        $required = static::parseRequiredFromDefinition($rawDefinition);
+        ksort($rawDefinition);
+
+        $additionalDefinition = $rawDefinition;
+        $schemaDefinition = [];
+        foreach ($additionalDefinition as $key => $value) {
+            if (in_array($key, static::SCHEMA_DEFINITION_OPTIONS, true)) {
+                $schemaDefinition[$key] = $additionalDefinition[$key];
+
+                // The additional definition is the raw definition MINUS the schema definition.
+                unset($additionalDefinition[$key]);
+            }
         }
 
-        [$schemaDefinition, $additionalDefinition, $required] = static::parseDefinition($definition);
+        static::validateSchemaDefinition($schemaDefinition, $rawDefinition);
+        static::validateAdditionalDefinition($additionalDefinition, $rawDefinition);
 
-        return static::createFromSchemaStorage($fieldName, $schemaDefinition, $additionalDefinition, $required);
-    }
-
-    public static function createFromSchemaStorage(
-        string $fieldName,
-        array $schemaDefinition,
-        array $additionalDefinition,
-        bool $required,
-    ): static {
-        return new static(
-            $fieldName,
-            $schemaDefinition,
-            $additionalDefinition,
-            $required,
-        );
+        return [$schemaDefinition, $additionalDefinition, $required];
     }
 
     public function __construct(
@@ -61,33 +63,6 @@ abstract class FieldBase implements FieldInterface
     public function isRequired(): bool
     {
         return $this->required;
-    }
-
-    /**
-     * @param mixed[] $rawDefinition the definition of the field provided by the developer
-     *
-     * @return array{0: mixed[], 1: mixed[], 2: bool}
-     */
-    protected static function parseDefinition(array $rawDefinition): array
-    {
-        $required = static::parseRequiredFromDefinition($rawDefinition);
-        ksort($rawDefinition);
-
-        $additionalDefinition = $rawDefinition;
-        $schemaDefinition = [];
-        foreach ($additionalDefinition as $key => $value) {
-            if (in_array($key, static::SCHEMA_DEFINITION_OPTIONS, true)) {
-                $schemaDefinition[$key] = $additionalDefinition[$key];
-
-                // The additional definition is the raw definition MINUS the schema definition.
-                unset($additionalDefinition[$key]);
-            }
-        }
-
-        static::validateSchemaDefinition($schemaDefinition, $rawDefinition);
-        static::validateAdditionalDefinition($additionalDefinition, $rawDefinition);
-
-        return [$schemaDefinition, $additionalDefinition, $required];
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace Sarue\Orm\Entity\Type;
 
-use PhpCsFixer\ConfigurationException\InvalidConfigurationException;
 use Sarue\Orm\Exception\InvalidDefinitionException;
 use Sarue\Orm\Field\FieldFactory;
 use Sarue\Orm\Field\FieldInterface;
@@ -13,7 +12,7 @@ class EntityType implements EntityTypeInterface
     public static function createFromDefinition(string $entityTypeName, array $definition): static
     {
         if (!SnakeCaseValidator::validate($entityTypeName)) {
-            throw new InvalidConfigurationException("The entity type name $entityTypeName should be in snake_case and start with a letter");
+            throw new InvalidDefinitionException("The entity type name $entityTypeName should be in snake_case and start with a letter");
         }
 
         // @todo Properly use dependency injection for FieldFactory.

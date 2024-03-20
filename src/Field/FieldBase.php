@@ -2,7 +2,6 @@
 
 namespace Sarue\Orm\Field;
 
-use PhpCsFixer\ConfigurationException\InvalidConfigurationException;
 use Sarue\Orm\Exception\InvalidDefinitionException;
 use Sarue\Orm\Validator\StringValidator\SnakeCaseValidator;
 

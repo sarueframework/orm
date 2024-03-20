@@ -11,7 +11,7 @@ final class FieldTypeClassResolutionEvent
 
     public function getType(): string
     {
-        return $this->class;
+        return $this->type;
     }
 
     public function getClass(): ?string

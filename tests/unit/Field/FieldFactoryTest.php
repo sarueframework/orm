@@ -14,7 +14,6 @@ use Sarue\Orm\Field\FieldFactory;
 use Sarue\Orm\Field\FieldType\Text\StringFieldType;
 
 #[CoversClass(FieldFactory::class)]
-#[CoversClass(FieldTypeClassResolutionEvent::class)]
 #[UsesClass(StringFieldType::class)]
 class FieldFactoryTest extends TestCase
 {

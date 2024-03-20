@@ -27,4 +27,12 @@ interface EntityTypeInterface
      * @return FieldInterface[] $fields
      */
     public function getFields(): array;
+
+    /**
+     * Exports entity type to an array to be stored in the processed definition storage.
+     *
+     * @return array{fields: array<array{class: string, schema: mixed[], additional: mixed[], required: bool}>}
+     */
+    public function toStorage(): array;
+
 }

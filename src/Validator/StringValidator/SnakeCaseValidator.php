@@ -9,7 +9,7 @@ final class SnakeCaseValidator
      */
     public static function validate(string $string): bool
     {
-        return preg_match('/^[a-z0-9\_]+$/', $string);
+        return (bool) preg_match('/^[a-z0-9\_]+$/', $string);
     }
 
     /**

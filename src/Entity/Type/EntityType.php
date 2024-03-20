@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Server\SarueServerBundle\Entity;
+namespace Sarue\Orm\Entity\Type;
 
 use PhpCsFixer\ConfigurationException\InvalidConfigurationException;
 use Sarue\Orm\Exception\InvalidDefinitionException;
@@ -33,10 +33,10 @@ class EntityType implements EntityTypeInterface
         return new static($entityTypeName, $fields);
     }
 
-    public static function createFromSchemaStorage(string $entityTypeName, array $fieldsFromStorage): static
+    public static function createFromSchemaStorage(string $entityTypeName, array $storage): static
     {
         $fields = [];
-        foreach ($fieldsFromStorage as $fieldName => $fieldFromStorage) {
+        foreach ($storage['fields'] as $fieldName => $fieldFromStorage) {
             $fields[$fieldName] = $fieldFromStorage['class']::createFromSchemaStorage(
                 $fieldName,
                 $fieldFromStorage['schema'],
@@ -70,5 +70,20 @@ class EntityType implements EntityTypeInterface
     public function getFields(): array
     {
         return $this->fields;
+    }
+
+    public function toStorage(): array
+    {
+        return [
+            'fields' => array_map(
+                fn (FieldInterface $field) => [
+                    'class' => get_class($field),
+                    'schema' => $field->getSchemaDefinition(),
+                    'additional' => $field->getAdditionalDefinition(),
+                    'required' => $field->isRequired(),
+                ],
+                $this->getFields(),
+            ),
+        ];
     }
 }

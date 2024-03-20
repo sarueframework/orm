@@ -113,7 +113,7 @@ abstract class FieldBase implements FieldInterface
      */
     protected static function validateSchemaDefinition(array &$schemaDefinition, array $rawDefinition): void
     {
-        $missingRequiredOptions = array_diff(array_keys($schemaDefinition), static::REQUIRED_SCHEMA_DEFINITION_OPTIONS);
+        $missingRequiredOptions = array_diff(static::REQUIRED_SCHEMA_DEFINITION_OPTIONS, array_keys($schemaDefinition));
         if (!empty($missingRequiredOptions)) {
             throw new InvalidDefinitionException('Missing required schema options: ' . implode(', ', $missingRequiredOptions));
         }
@@ -125,7 +125,7 @@ abstract class FieldBase implements FieldInterface
      */
     protected static function validateAdditionalDefinition(array &$additionalDefinition, array $rawDefinition): void
     {
-        $missingRequiredOptions = array_diff(array_keys($additionalDefinition), static::REQUIRED_ADDITIONAL_DEFINITION_OPTIONS);
+        $missingRequiredOptions = array_diff(static::REQUIRED_ADDITIONAL_DEFINITION_OPTIONS, array_keys($additionalDefinition));
         if (!empty($missingRequiredOptions)) {
             throw new InvalidDefinitionException('Missing required additional options: ' . implode(', ', $missingRequiredOptions));
         }

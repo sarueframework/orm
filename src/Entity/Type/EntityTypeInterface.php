@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Server\SarueServerBundle\Entity;
+namespace Sarue\Orm\Entity\Type;
 
 use Sarue\Orm\Field\FieldInterface;
 

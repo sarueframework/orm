@@ -2,12 +2,18 @@
 
 namespace Sarue\Orm\Field;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Sarue\Orm\Event\FieldTypeClassResolutionEvent;
 use Sarue\Orm\Exception\InvalidDefinitionException;
 use Sarue\Orm\Field\FieldType\Text;
 use Sarue\Orm\Validator\StringValidator\SnakeCaseValidator;
 
 class FieldFactory
 {
+    public function __construct(
+        protected EventDispatcherInterface $dispatcher,
+    ) {}
+
     /**
      * Creates a field instance from a developer-provided raw definition.
      *
@@ -22,15 +28,14 @@ class FieldFactory
             throw new InvalidDefinitionException('The field type must be a string.');
         }
 
-        if (!SnakeCaseValidator::validate($fieldName)) {
+        if (!SnakeCaseValidator::validateStartingWithLetter($fieldName)) {
             throw new InvalidDefinitionException("The field name $fieldName should be in snake_case and start with a letter");
         }
 
         $class = $this->resolveClassForFieldType($definition['type']);
 
         if (!is_subclass_of($class, FieldInterface::class)) {
-            // @todo Create proper exception.
-            throw new \Exception("Class $class is not an instance of \Sarue\Orm\Field\FieldInterface.");
+            throw new InvalidDefinitionException("Class $class is not an instance of \Sarue\Orm\Field\FieldInterface.");
         }
 
         [$schemaDefinition, $additionalDefinition, $required] = $class::parseDefinition($definition);
@@ -70,11 +75,15 @@ class FieldFactory
             'string' => Text\StringFieldType::class,
         ];
 
-        if (empty($fieldClasses[$fieldType])) {
-            // @todo Create custom Exception and list valid field types in the exception message
-            throw new \InvalidArgumentException("$fieldType is not a valid field type.");
+        // Allows for event listeners to change the class of field type.
+        $resolutionEvent = new FieldTypeClassResolutionEvent($fieldType, $fieldClasses[$fieldType] ?? null);
+        $this->dispatcher->dispatch($resolutionEvent);
+
+        if (!$resolutionEvent->getClass()) {
+            // @todo List valid field types in the exception message
+            throw new InvalidDefinitionException("$fieldType is not a valid field type.");
         }
 
-        return $fieldClasses[$fieldType];
+        return $resolutionEvent->getClass();
     }
 }

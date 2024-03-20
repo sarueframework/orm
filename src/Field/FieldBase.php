@@ -3,7 +3,6 @@
 namespace Sarue\Orm\Field;
 
 use Sarue\Orm\Exception\InvalidDefinitionException;
-use Sarue\Orm\Validator\StringValidator\SnakeCaseValidator;
 
 abstract class FieldBase implements FieldInterface
 {
@@ -11,11 +10,6 @@ abstract class FieldBase implements FieldInterface
     protected const array REQUIRED_SCHEMA_DEFINITION_OPTIONS = [];
     protected const array REQUIRED_ADDITIONAL_DEFINITION_OPTIONS = [];
 
-    /**
-     * @param mixed[] $rawDefinition the definition of the field provided by the developer
-     *
-     * @return array{0: mixed[], 1: mixed[], 2: bool}
-     */
     public static function parseDefinition(array $rawDefinition): array
     {
         $required = static::parseRequiredFromDefinition($rawDefinition);

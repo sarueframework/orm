@@ -39,6 +39,30 @@ class FieldFactory
         return new $class($fieldName, $schemaDefinition, $additionalDefinition, $required);
     }
 
+    /**
+     * Creates a field instance from processed definitions stored in the database.
+     *
+     * The data from the storage WILL NOT be validated.
+     *
+     * @param mixed[] $schemaDefinition     the schema-related options from the storage
+     * @param mixed[] $additionalDefinition the non-schema-related options from the storage
+     * @param bool    $required             the data from the storage
+     */
+    public function createFromSchemaStorage(
+        string $class,
+        string $fieldName,
+        array $schemaDefinition,
+        array $additionalDefinition,
+        bool $required,
+    ): FieldInterface {
+        if (!is_subclass_of($class, FieldInterface::class)) {
+            // @todo Create proper exception.
+            throw new \Exception("Class $class is not an instance of \Sarue\Orm\Field\FieldInterface.");
+        }
+
+        return new $class($fieldName, $schemaDefinition, $additionalDefinition, $required);
+    }
+
     public function resolveClassForFieldType(string $fieldType): string
     {
         // @todo Figure out better way to discover Field Types

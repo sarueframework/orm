@@ -34,5 +34,4 @@ interface EntityTypeInterface
      * @return array{fields: array<array{class: string, schema: mixed[], additional: mixed[], required: bool}>}
      */
     public function toStorage(): array;
-
 }

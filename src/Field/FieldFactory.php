@@ -61,8 +61,7 @@ class FieldFactory
         bool $required,
     ): FieldInterface {
         if (!is_subclass_of($class, FieldInterface::class)) {
-            // @todo Create proper exception.
-            throw new \Exception("Class $class is not an instance of \Sarue\Orm\Field\FieldInterface.");
+            throw new InvalidDefinitionException("Class $class is not an instance of \Sarue\Orm\Field\FieldInterface.");
         }
 
         return new $class($fieldName, $schemaDefinition, $additionalDefinition, $required);

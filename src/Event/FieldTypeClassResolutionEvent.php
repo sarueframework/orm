@@ -6,7 +6,7 @@ final class FieldTypeClassResolutionEvent
 {
     public function __construct(
         protected string $type,
-        protected string $class,
+        protected ?string $class,
     ) {}
 
     public function getType(): string
@@ -14,7 +14,7 @@ final class FieldTypeClassResolutionEvent
         return $this->class;
     }
 
-    public function getClass(): string
+    public function getClass(): ?string
     {
         return $this->class;
     }

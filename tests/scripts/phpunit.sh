@@ -34,7 +34,7 @@ if [[ "coverage-100" == $RUN_MODE ]]; then
 
     rm .phpunit-temp-coverage
 
-    if [[ "100.00%" != $COVERAGE ]]; then
+    if [[ "100.00" != $COVERAGE ]]; then
         echo "Coverage is $COVERAGE, please reach 100%"
         exit 1
     fi

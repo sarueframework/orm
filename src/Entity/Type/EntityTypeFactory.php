@@ -22,7 +22,7 @@ class EntityTypeFactory
      */
     public function createFromDefinition(string $entityTypeName, array $definition): EntityTypeInterface
     {
-        if (!SnakeCaseValidator::validate($entityTypeName)) {
+        if (!SnakeCaseValidator::validateStartingWithLetter($entityTypeName)) {
             throw new InvalidDefinitionException("The entity type name $entityTypeName should be in snake_case and start with a letter");
         }
 

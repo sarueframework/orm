@@ -37,7 +37,8 @@ class EntityType implements EntityTypeInterface
             'fields' => array_map(
                 fn(FieldInterface $field) => [
                     'class' => get_class($field),
-                    'schema' => $field->getSchemaDefinition(),
+                    'schema' => $field->getSchema(),
+                    'properties' => $field->getProperties(),
                     'additional' => $field->getAdditionalDefinition(),
                     'required' => $field->isRequired(),
                 ],

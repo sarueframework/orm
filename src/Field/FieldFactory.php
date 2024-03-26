@@ -2,8 +2,6 @@
 
 namespace Sarue\Orm\Field;
 
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Sarue\Orm\Event\FieldTypeClassResolutionEvent;
 use Sarue\Orm\Exception\InvalidDefinitionException;
 use Sarue\Orm\Field\FieldType\Text;
 use Sarue\Orm\Validator\StringValidator\SnakeCaseValidator;
@@ -34,10 +32,10 @@ class FieldFactory
             throw new InvalidDefinitionException("Class $class is not an instance of \Sarue\Orm\Field\FieldInterface.");
         }
 
-        [$schemaDefinition, $additionalDefinition, $required] = $class::parseDefinition($definition);
+        [$schema, $properties, $additionalDefinition, $required] = $class::parseDefinition($definition['type'], $definition);
 
         /* @var \Sarue\Orm\Field\FieldInterface */
-        return new $class($fieldName, $schemaDefinition, $additionalDefinition, $required);
+        return new $class($fieldName, $schema, $properties, $additionalDefinition, $required);
     }
 
     /**
@@ -45,14 +43,18 @@ class FieldFactory
      *
      * The data from the storage WILL NOT be validated.
      *
-     * @param mixed[] $schemaDefinition     the schema-related options from the storage
-     * @param mixed[] $additionalDefinition the non-schema-related options from the storage
-     * @param bool    $required             the data from the storage
+     * @param string  $class                the class of the field type
+     * @param string  $fieldName            the name of the field, in snake_case
+     * @param mixed[] $schema               the schema-related properties, properly cleanedup and processed
+     * @param mixed[] $properties           the non-schema-related properties, properly cleanedup and processed
+     * @param mixed[] $additionalDefinition anything in the "additional:" part of the definition
+     * @param bool    $required             whether the field is required or not
      */
     public function createFromSchemaStorage(
         string $class,
         string $fieldName,
-        array $schemaDefinition,
+        array $schema,
+        array $properties,
         array $additionalDefinition,
         bool $required,
     ): FieldInterface {
@@ -60,7 +62,7 @@ class FieldFactory
             throw new InvalidDefinitionException("Class $class is not an instance of \Sarue\Orm\Field\FieldInterface.");
         }
 
-        return new $class($fieldName, $schemaDefinition, $additionalDefinition, $required);
+        return new $class($fieldName, $schema, $properties, $additionalDefinition, $required);
     }
 
     public function resolveClassForFieldType(string $fieldType): string

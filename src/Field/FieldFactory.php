@@ -10,10 +10,6 @@ use Sarue\Orm\Validator\StringValidator\SnakeCaseValidator;
 
 class FieldFactory
 {
-    public function __construct(
-        protected EventDispatcherInterface $dispatcher,
-    ) {}
-
     /**
      * Creates a field instance from a developer-provided raw definition.
      *
@@ -74,15 +70,11 @@ class FieldFactory
             'string' => Text\StringFieldType::class,
         ];
 
-        // Allows for event listeners to change the class of field type.
-        $resolutionEvent = new FieldTypeClassResolutionEvent($fieldType, $fieldClasses[$fieldType] ?? null);
-        $this->dispatcher->dispatch($resolutionEvent);
-
-        if (!$resolutionEvent->getClass()) {
+        if (empty($fieldClasses[$fieldType])) {
             // @todo List valid field types in the exception message
             throw new InvalidDefinitionException("$fieldType is not a valid field type.");
         }
 
-        return $resolutionEvent->getClass();
+        return $fieldClasses[$fieldType];
     }
 }

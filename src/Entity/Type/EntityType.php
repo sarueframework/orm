@@ -2,6 +2,7 @@
 
 namespace Sarue\Orm\Entity\Type;
 
+use Sarue\Orm\Exception\NonExistingFieldException;
 use Sarue\Orm\Field\FieldInterface;
 
 class EntityType implements EntityTypeInterface
@@ -19,7 +20,7 @@ class EntityType implements EntityTypeInterface
     public function getField(string $fieldName): FieldInterface
     {
         if (!isset($this->fields[$fieldName])) {
-            throw new \Exception("Field $fieldName does not exist in entity " . $this->getName());
+            throw new NonExistingFieldException("Field $fieldName does not exist in entity " . $this->getName());
         }
 
         return $this->fields[$fieldName];

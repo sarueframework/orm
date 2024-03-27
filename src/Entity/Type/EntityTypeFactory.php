@@ -45,8 +45,8 @@ class EntityTypeFactory
      *
      * The data from the storage WILL NOT be validated.
      *
-     * @param string                                                                                           $entityTypeName the name of the entity type
-     * @param array{fields: array<array{class: string, schema: mixed[], additional: mixed[], required: bool}>} $storage        the data from the storage
+     * @param string                                                                                                                $entityTypeName the name of the entity type
+     * @param array{fields: array<array{class: string, schema: mixed[], properties: mixed[], additional: mixed[], required: bool}>} $storage        the data from the storage
      */
     public function createFromSchemaStorage(string $entityTypeName, array $storage): EntityTypeInterface
     {
@@ -56,6 +56,7 @@ class EntityTypeFactory
                 $fieldFromStorage['class'],
                 $fieldName,
                 $fieldFromStorage['schema'],
+                $fieldFromStorage['properties'],
                 $fieldFromStorage['additional'],
                 $fieldFromStorage['required'],
             );

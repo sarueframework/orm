@@ -146,6 +146,8 @@ abstract class FieldBase implements FieldInterface
      *                                                                        the developer
      * @param array<string, array<string, int|string|mixed[]>> $options       either static::SCHEMA_OPTIONS or
      *                                                                        static::PROPERTY_OPTIONS
+     *
+     * @return mixed[]
      */
     protected static function parseSchemaAndProperties(array $rawDefinition, array $options): array
     {
@@ -177,5 +179,5 @@ abstract class FieldBase implements FieldInterface
         array $properties,
         array $additionalDefinition,
         bool $required,
-    );
+    ): void;
 }

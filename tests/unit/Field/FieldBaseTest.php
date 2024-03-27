@@ -88,6 +88,7 @@ class FieldBaseTest extends TestCase
             'field_name',
             ['requiredSchemaOption' => 123],
             [],
+            [],
             true,
         );
 
@@ -103,4 +104,9 @@ class TestableFieldBase extends FieldBase
     protected const array SCHEMA_DEFINITION_OPTIONS = ['requiredSchemaOption', 'optionalSchemaOption'];
     protected const array REQUIRED_SCHEMA_DEFINITION_OPTIONS = ['requiredSchemaOption'];
     protected const array REQUIRED_ADDITIONAL_DEFINITION_OPTIONS = ['requiredAdditionalOption'];
+
+    protected static function validateDefinition(array $rawDefinition, array $schema, array $properties, array $additionalDefinition, bool $required)
+    {
+        // do nothing
+    }
 }

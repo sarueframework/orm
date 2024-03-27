@@ -89,9 +89,14 @@ abstract class FieldBase implements FieldInterface
         return $this->fieldName;
     }
 
-    public function getSchemaDefinition(): array
+    public function getSchema(): array
     {
-        return $this->schemaDefinition;
+        return $this->schema;
+    }
+
+    public function getProperties(): array
+    {
+        return $this->properties;
     }
 
     public function getAdditionalDefinition(): array

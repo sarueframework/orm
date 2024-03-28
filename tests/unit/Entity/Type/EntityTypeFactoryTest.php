@@ -63,6 +63,36 @@ class EntityTypeFactoryTest extends TestCase
         $this->expectException(InvalidDefinitionException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
         $entityType = $this->entityTypeFactory->createFromDefinition($entityTypeName, $definition);
+    }
 
+    public function testCreateFromSchemaStorage(): void
+    {
+        $this->fieldFactory
+            ->expects($this->once())
+            ->method('createFromSchemaStorage')
+            ->with(
+                $this->identicalTo(self::class),
+                $this->identicalTo('field_name'),
+                $this->identicalTo(['schema' => 123]),
+                $this->identicalTo(['properties' => 123]),
+                $this->identicalTo(['additional' => 123]),
+                $this->identicalTo(true),
+            )
+            ->willReturn($this->createMock(FieldInterface::class));
+
+        $entityType = $this->entityTypeFactory->createFromSchemaStorage('person', [
+            'fields' => [
+                'field_name' => [
+                    'class' => self::class,
+                    'schema' => ['schema' => 123],
+                    'properties' => ['properties' => 123],
+                    'additional' => ['additional' => 123],
+                    'required' => true,
+                ],
+            ],
+        ]);
+
+        $this->assertEquals(['field_name'], array_keys($entityType->getFields()));
+        $this->assertInstanceOf(FieldInterface::class, $entityType->getField('field_name'));
     }
 }

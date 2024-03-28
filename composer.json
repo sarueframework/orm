@@ -33,12 +33,18 @@
     "scripts": {
         "test-cs": "vendor/bin/php-cs-fixer check --rules=@Symfony,@PER-CS2.0 src && vendor/bin/php-cs-fixer check --rules=@Symfony,@PER-CS2.0 tests && echo",
         "test-cs-fix": "vendor/bin/php-cs-fixer fix --rules=@Symfony,@PER-CS2.0 src && vendor/bin/php-cs-fixer fix --rules=@Symfony,@PER-CS2.0 tests && echo",
+        "test-phpstan": "vendor/bin/phpstan analyse src -l 9",
         "test-unit": "./tests/scripts/phpunit.sh unit just-test",
         "test-unit-coverage": "./tests/scripts/phpunit.sh unit coverage-report",
         "test-unit-coverage-100": "./tests/scripts/phpunit.sh unit coverage-100",
         "test-integration": "./tests/scripts/phpunit.sh integration just-test",
         "test-integration-coverage": "./tests/scripts/phpunit.sh integration coverage-report",
         "test-integration-coverage-100": "./tests/scripts/phpunit.sh integration coverage-100",
-        "test-phpstan": "vendor/bin/phpstan analyse src -l 9"
+        "test": [
+            "composer test-cs",
+            "composer test-phpstan",
+            "composer test-unit-coverage-100",
+            "composer test-integration-coverage-100"
+        ]
     }
 }

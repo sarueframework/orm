@@ -134,7 +134,7 @@ abstract class FieldBase implements FieldInterface
     {
         $additional = $rawDefinition['additional'] ?? [];
         if (!is_array($additional)) {
-            throw new InvalidDefinitionException('Option "additional" must be boolean.');
+            throw new InvalidDefinitionException('Option "additional" must be an array.');
         }
         unset($rawDefinition['additional']);
 

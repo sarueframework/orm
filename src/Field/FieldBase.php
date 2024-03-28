@@ -48,7 +48,7 @@ abstract class FieldBase implements FieldInterface
         $validOptions = array_merge(
             array_keys(static::SCHEMA_OPTIONS),
             array_keys(static::PROPERTY_OPTIONS),
-            ['required', 'additional'],
+            ['required', 'additional', 'type'],
         );
         $unknownOptions = array_diff(array_keys($rawDefinition), $validOptions);
         if (!empty($unknownOptions)) {
@@ -57,7 +57,7 @@ abstract class FieldBase implements FieldInterface
 
         // Parses schema and properties.
         $schema = static::parseSchemaAndProperties($rawDefinition, static::SCHEMA_OPTIONS);
-        $properties = static::parseSchemaAndProperties($rawDefinition, static::SCHEMA_OPTIONS);
+        $properties = static::parseSchemaAndProperties($rawDefinition, static::PROPERTY_OPTIONS);
 
         // Parses out "required:" and "additional:" options.
         $required = static::parseRequiredFromDefinition($rawDefinition);

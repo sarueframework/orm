@@ -14,6 +14,33 @@ use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 class EntityTypeFactoryTest extends IntegrationTestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $dispatcher = new class ($this) implements EventDispatcherInterface {
+            public function __construct(protected EntityTypeFactoryTest $testClass) {}
+
+            public function dispatch(object $event)
+            {
+                if ($event instanceof FieldTypeClassResolutionEvent) {
+                    switch ($event->getType()) {
+                        case 'testable_field':
+                            $this->testClass->assertNull($event->getClass());
+                            $event->setClass(TestableField::class);
+                            break;
+
+                        case 'invalid_field_type':
+                            $event->setClass(get_class($this->testClass));
+                            break;
+                    }
+                }
+            }
+        };
+
+        $this->entityTypeFactory = EntityTypeFactory(new FieldFactory($dispatcher));
+    }
+
     /**
      * Tests instantiation of Entity Type and Fields from a definition, then from storage.
      */
@@ -250,31 +277,6 @@ class EntityTypeFactoryTest extends IntegrationTestCase
 
         $entityTypeFactory = $this->entityTypeFactory();
         $entityTypeFactory->{$method}($entityTypeName, $definitionOrStorage);
-    }
-
-    protected function entityTypeFactory(): EntityTypeFactory
-    {
-        $dispatcher = new class ($this) implements EventDispatcherInterface {
-            public function __construct(protected EntityTypeFactoryTest $testClass) {}
-
-            public function dispatch(object $event)
-            {
-                if ($event instanceof FieldTypeClassResolutionEvent) {
-                    switch ($event->getType()) {
-                        case 'testable_field':
-                            $this->testClass->assertNull($event->getClass());
-                            $event->setClass(TestableField::class);
-                            break;
-
-                        case 'invalid_field_type':
-                            $event->setClass(get_class($this->testClass));
-                            break;
-                    }
-                }
-            }
-        };
-
-        return new EntityTypeFactory(new FieldFactory($dispatcher));
     }
 }
 

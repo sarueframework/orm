@@ -19,7 +19,6 @@ class EntityTypeTest extends TestCase
     {
         $this->field = $this->createMock(FieldInterface::class);
         $this->entityType = new EntityType('person', ['field' => $this->field]);
-
     }
 
     public function testGetName(): void

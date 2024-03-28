@@ -12,7 +12,6 @@ use Sarue\Orm\Entity\Type\EntityTypeFactory;
 use Sarue\Orm\Exception\InvalidDefinitionException;
 use Sarue\Orm\Field\FieldFactory;
 use Sarue\Orm\Field\FieldInterface;
-use Sarue\Orm\Field\FieldType\Text\StringFieldType;
 use Sarue\Orm\Validator\StringValidator\SnakeCaseValidator;
 
 #[CoversClass(EntityTypeFactory::class)]

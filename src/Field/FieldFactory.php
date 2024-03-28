@@ -68,15 +68,9 @@ class FieldFactory
     public function resolveClassForFieldType(string $fieldType): string
     {
         // @todo Figure out better way to discover Field Types
-        $fieldClasses = [
+        return match ($fieldType) {
             'string' => Text\StringFieldType::class,
-        ];
-
-        if (empty($fieldClasses[$fieldType])) {
-            // @todo List valid field types in the exception message
-            throw new InvalidDefinitionException("$fieldType is not a valid field type.");
-        }
-
-        return $fieldClasses[$fieldType];
+            default => throw new InvalidDefinitionException("$fieldType is not a valid field type."),
+        };
     }
 }

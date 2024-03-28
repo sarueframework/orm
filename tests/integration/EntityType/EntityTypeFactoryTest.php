@@ -3,9 +3,9 @@
 namespace Sarue\Orm\Tests\Integration\EntityType;
 
 use PHPUnit\Framework\Attributes\DataProvider;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Sarue\Orm\Event\FieldTypeClassResolutionEvent;
+use Sarue\Orm\Entity\Type\EntityTypeFactory;
 use Sarue\Orm\Exception\InvalidDefinitionException;
+use Sarue\Orm\Exception\InvalidFieldClassException;
 use Sarue\Orm\Field\FieldBase;
 use Sarue\Orm\Field\FieldFactory;
 use Sarue\Orm\Field\FieldType\Text\StringFieldType;
@@ -13,31 +13,24 @@ use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 class EntityTypeFactoryTest extends IntegrationTestCase
 {
+    protected EntityTypeFactory $entityTypeFactory;
+    protected FieldFactory $fieldFactory;
+
     public function setUp(): void
     {
         parent::setUp();
-
-        $dispatcher = new class ($this) implements EventDispatcherInterface {
-            public function __construct(protected EntityTypeFactoryTest $testClass) {}
-
-            public function dispatch(object $event)
+        $this->fieldFactory = new class () extends FieldFactory {
+            public function resolveClassForFieldType(string $fieldType): string
             {
-                if ($event instanceof FieldTypeClassResolutionEvent) {
-                    switch ($event->getType()) {
-                        case 'testable_field':
-                            $this->testClass->assertNull($event->getClass());
-                            $event->setClass(TestableField::class);
-                            break;
-
-                        case 'invalid_field_type':
-                            $event->setClass(get_class($this->testClass));
-                            break;
-                    }
-                }
+                return match ($fieldType) {
+                    'testable_field' => TestableField::class,
+                    'invalid_field' => InvalidClassField::class,
+                    'non_type' => EntityTypeFactoryTest::class,
+                    default => parent::resolveClassForFieldType($fieldType),
+                };
             }
         };
-
-        $this->entityTypeFactory = EntityTypeFactory(new FieldFactory($dispatcher));
+        $this->entityTypeFactory = new EntityTypeFactory($this->fieldFactory);
     }
 
     /**
@@ -45,8 +38,7 @@ class EntityTypeFactoryTest extends IntegrationTestCase
      */
     public function testInstantiation(): void
     {
-        $entityTypeFactory = $this->entityTypeFactory();
-        $entityType = $entityTypeFactory->createFromDefinition('person', [
+        $entityType = $this->entityTypeFactory->createFromDefinition('person', [
             'fields' => [
                 'first_name' => [
                     'type' => 'string',
@@ -54,14 +46,17 @@ class EntityTypeFactoryTest extends IntegrationTestCase
                 ],
                 'last_name' => [
                     'type' => 'string',
+                    'additional' => [
+                        'additional' => 936,
+                    ],
                 ],
                 'a_test' => [
                     'required' => false,
                     'type' => 'testable_field',
-                    'required_schema_option' => 123,
-                    'optional_schema_option' => 123,
-                    'required_additional_option' => 123,
-                    'optional_additional_option' => 123,
+                    'requiredSchema' => 123,
+                    'optionalSchema' => 456,
+                    'requiredProperty' => 789,
+                    'optionalProperty' => 987,
                 ],
             ],
         ]);
@@ -74,33 +69,38 @@ class EntityTypeFactoryTest extends IntegrationTestCase
                 'a_test' => [
                     'class' => TestableField::class,
                     'schema' => [
-                        'optional_schema_option' => 123,
-                        'required_schema_option' => 123,
-                    ],
-                    'additional' => [
-                        'optional_additional_option' => 123,
-                        'required_additional_option' => 123,
+                        'optionalSchema' => 456,
+                        'requiredSchema' => 123,
                         'type' => 'testable_field',
+                        'ySchema' => 9182,
+                        'zSchema' => null,
                     ],
+                    'properties' => [
+                        'optionalProperty' => 987,
+                        'requiredProperty' => 789,
+                    ],
+                    'additional' => [],
                     'required' => false,
                 ],
                 'first_name' => [
                     'class' => StringFieldType::class,
-                    'schema' => [],
-                    'additional' => ['type' => 'string'],
+                    'schema' => ['type' => 'string'],
+                    'properties' => [],
+                    'additional' => [],
                     'required' => true,
                 ],
                 'last_name' => [
                     'class' => StringFieldType::class,
-                    'schema' => [],
-                    'additional' => ['type' => 'string'],
+                    'schema' => ['type' => 'string'],
+                    'properties' => [],
+                    'additional' => ['additional' => 936],
                     'required' => false,
                 ],
             ],
         ], $storage);
 
         // Tests that the
-        $entityTypeFromStorage = $entityTypeFactory->createFromSchemaStorage('person', $storage);
+        $entityTypeFromStorage = $this->entityTypeFactory->createFromSchemaStorage('person', $storage);
         $this->assertEquals($storage, $entityTypeFromStorage->toStorage());
 
         // Tests that the classes have been created correctly.
@@ -143,25 +143,50 @@ class EntityTypeFactoryTest extends IntegrationTestCase
                 'createFromDefinition',
                 '',
                 ['fields' => ['first_name' => ['type' => 'string']]],
+                InvalidDefinitionException::class,
                 'The entity type name  should be in snake_case and start with a letter',
             ],
             [
                 'createFromDefinition',
                 'Person',
                 ['fields' => ['first_name' => ['type' => 'string']]],
+                InvalidDefinitionException::class,
                 'The entity type name Person should be in snake_case and start with a letter',
             ],
             [
                 'createFromDefinition',
                 '_person',
                 ['fields' => ['first_name' => ['type' => 'string']]],
+                InvalidDefinitionException::class,
                 'The entity type name _person should be in snake_case and start with a letter',
             ],
             [
                 'createFromDefinition',
                 'person',
                 [],
+                InvalidDefinitionException::class,
                 'Entity person has no no fields in its definition',
+            ],
+            [
+                'createFromDefinition',
+                'person',
+                ['fields' => ['field' => ['type' => 'invalid_field']]],
+                InvalidFieldClassException::class,
+                'Class Sarue\Orm\Tests\Integration\EntityType\InvalidClassField has the same options both in SCHEMA_OPTIONS and PROPERTY_OPTIONS: "option", "option2".',
+            ],
+            [
+                'createFromDefinition',
+                'person',
+                [
+                    'fields' => [
+                        'a_test' => [
+                            'invalidOption' => 'aa',
+                            'type' => 'testable_field',
+                        ],
+                    ],
+                ],
+                InvalidDefinitionException::class,
+                'Invalid options found: "invalidOption". Valid options are: "invalidOption".',
             ],
             [
                 'createFromDefinition',
@@ -174,6 +199,7 @@ class EntityTypeFactoryTest extends IntegrationTestCase
                         ],
                     ],
                 ],
+                InvalidDefinitionException::class,
                 'Option "required" must be boolean.',
             ],
             [
@@ -181,12 +207,14 @@ class EntityTypeFactoryTest extends IntegrationTestCase
                 'person',
                 [
                     'fields' => [
-                        'a_test' => [
-                            'type' => 'testable_field',
+                        'first_name' => [
+                            'type' => 'string',
+                            'additional' => 'something',
                         ],
                     ],
                 ],
-                'Missing required schema options: required_schema_option',
+                InvalidDefinitionException::class,
+                'Option "additional" must be an array.',
             ],
             [
                 'createFromDefinition',
@@ -195,11 +223,25 @@ class EntityTypeFactoryTest extends IntegrationTestCase
                     'fields' => [
                         'a_test' => [
                             'type' => 'testable_field',
-                            'required_schema_option' => 123,
                         ],
                     ],
                 ],
-                'Missing required additional options: required_additional_option',
+                InvalidDefinitionException::class,
+                'Required option "requiredSchema" is missing from definition.',
+            ],
+            [
+                'createFromDefinition',
+                'person',
+                [
+                    'fields' => [
+                        'a_test' => [
+                            'type' => 'testable_field',
+                            'requiredSchema' => 123,
+                        ],
+                    ],
+                ],
+                InvalidDefinitionException::class,
+                'Required option "requiredProperty" is missing from definition.',
             ],
             [
                 'createFromDefinition',
@@ -209,6 +251,7 @@ class EntityTypeFactoryTest extends IntegrationTestCase
                         'first_name' => [],
                     ],
                 ],
+                InvalidDefinitionException::class,
                 'The field type must be a string.',
             ],
             [
@@ -221,7 +264,22 @@ class EntityTypeFactoryTest extends IntegrationTestCase
                         ],
                     ],
                 ],
+                InvalidDefinitionException::class,
                 'The field name firstName should be in snake_case and start with a letter',
+            ],
+            [
+                'createFromDefinition',
+                'person',
+                ['fields' => ['a_field' => ['type' => 'non_type']]],
+                InvalidDefinitionException::class,
+                'Class Sarue\\Orm\\Tests\\Integration\\EntityType\\EntityTypeFactoryTest is not an instance of \\Sarue\\Orm\\Field\\FieldInterface.',
+            ],
+            [
+                'createFromDefinition',
+                'person',
+                ['fields' => ['a_field' => ['type' => 'non_existing_type']]],
+                InvalidDefinitionException::class,
+                'non_existing_type is not a valid field type.',
             ],
             [
                 'createFromSchemaStorage',
@@ -231,23 +289,13 @@ class EntityTypeFactoryTest extends IntegrationTestCase
                         'a_test' => [
                             'class' => self::class,
                             'schema' => [],
+                            'properties' => [],
                             'additional' => [],
                             'required' => false,
                         ],
                     ],
                 ],
-                'Class Sarue\Orm\Tests\Integration\EntityType\EntityTypeFactoryTest is not an instance of \Sarue\Orm\Field\FieldInterface.',
-            ],
-            [
-                'createFromDefinition',
-                'person',
-                [
-                    'fields' => [
-                        'first_name' => [
-                            'type' => 'invalid_field_type',
-                        ],
-                    ],
-                ],
+                InvalidDefinitionException::class,
                 'Class Sarue\Orm\Tests\Integration\EntityType\EntityTypeFactoryTest is not an instance of \Sarue\Orm\Field\FieldInterface.',
             ],
             [
@@ -260,6 +308,7 @@ class EntityTypeFactoryTest extends IntegrationTestCase
                         ],
                     ],
                 ],
+                InvalidDefinitionException::class,
                 'uknown_field_type is not a valid field type.',
             ],
         ];
@@ -269,27 +318,26 @@ class EntityTypeFactoryTest extends IntegrationTestCase
      * Tests errors during instantiation.
      */
     #[DataProvider('dataProviderTestInstantiationExceptions')]
-    public function testInstantiationExceptions(string $method, string $entityTypeName, array $definitionOrStorage, string $expectedExceptionMessage): void
+    public function testInstantiationExceptions(string $method, string $entityTypeName, array $definitionOrStorage, string $expectedException, string $expectedExceptionMessage): void
     {
-        $this->expectException(InvalidDefinitionException::class);
+        $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
-        $entityTypeFactory = $this->entityTypeFactory();
-        $entityTypeFactory->{$method}($entityTypeName, $definitionOrStorage);
+        $this->entityTypeFactory->{$method}($entityTypeName, $definitionOrStorage);
     }
 }
 
 class TestableField extends FieldBase
 {
-    protected const array SCHEMA_DEFINITION_OPTIONS = [
-        'required_schema_option',
-        'optional_schema_option',
+    protected const array SCHEMA_OPTIONS = [
+        'requiredSchema' => ['required' => true],
+        'optionalSchema' => [],
+        'ySchema' => ['default' => 9182],
+        'zSchema' => [],
     ];
-    protected const array REQUIRED_SCHEMA_DEFINITION_OPTIONS = [
-        'required_schema_option',
-    ];
-    protected const array REQUIRED_ADDITIONAL_DEFINITION_OPTIONS = [
-        'required_additional_option',
+    protected const array PROPERTY_OPTIONS = [
+        'requiredProperty' => ['required' => true],
+        'optionalProperty' => [],
     ];
 
     protected static function validateDefinition(
@@ -299,6 +347,23 @@ class TestableField extends FieldBase
         array $additionalDefinition,
         bool $required,
     ): void {
+        // do nothing
+    }
+}
+
+class InvalidClassField extends FieldBase
+{
+    protected const array SCHEMA_OPTIONS = [
+        'option' => ['required' => true],
+        'option2' => [],
+    ];
+    protected const array PROPERTY_OPTIONS = [
+        'option' => ['required' => true],
+        'option2' => [],
+    ];
+
+    protected static function validateDefinition(array $rawDefinition, array $schema, array $properties, array $additionalDefinition, bool $required): void
+    {
         // do nothing
     }
 }

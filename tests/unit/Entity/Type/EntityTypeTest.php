@@ -2,53 +2,55 @@
 
 namespace Sarue\Orm\Tests\Unit\Event;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Exception\NonExistingFieldException;
 use Sarue\Orm\Field\FieldInterface;
 
+#[CoversClass(EntityType::class)]
 class EntityTypeTest extends TestCase
 {
-    /**
-     * Tests getName().
-     */
+    protected EntityType $entityType;
+    protected FieldInterface&MockObject $field;
+
+    public function setUp(): void
+    {
+        $this->field = $this->createMock(FieldInterface::class);
+        $this->entityType = new EntityType('person', ['field' => $this->field]);
+
+    }
+
     public function testGetName(): void
     {
-        $this->assertEquals('person', $this->entityType()->getName());
+        $this->assertEquals('person', $this->entityType->getName());
     }
 
-    /**
-     * Tests getField().
-     */
     public function testGetField(): void
     {
-        $this->assertInstanceOf(FieldInterface::class, $this->entityType()->getField('field'));
+        $this->assertInstanceOf(FieldInterface::class, $this->entityType->getField('field'));
     }
 
-    /**
-     * Tests getField() with invalid field.
-     */
     public function testGetFieldException(): void
     {
         $this->expectException(NonExistingFieldException::class);
         $this->expectExceptionMessage('Field invalid_field does not exist in entity person');
 
-        $this->entityType()->getField('invalid_field');
+        $this->entityType->getField('invalid_field');
     }
 
     public function testGetFields(): void
     {
-        $fields = $this->entityType()->getFields();
+        $fields = $this->entityType->getFields();
         $this->assertEquals(['field'], array_keys($fields));
         $this->assertInstanceOf(FieldInterface::class, $fields['field']);
     }
 
     public function testToStorage(): void
     {
-        $entityType = $this->entityType();
-
         /** @var \PHPUnit\Framework\MockObject */
-        $field = $entityType->getField('field');
+        $field = $this->entityType->getField('field');
         $field
             ->expects($this->once())
             ->method('getSchema')
@@ -76,14 +78,6 @@ class EntityTypeTest extends TestCase
                     'required' => true,
                 ],
             ],
-        ], $entityType->toStorage());
-    }
-
-    protected function entityType(): EntityType
-    {
-        return new EntityType(
-            'person',
-            ['field' => $this->createMock(FieldInterface::class)],
-        );
+        ], $this->entityType->toStorage());
     }
 }

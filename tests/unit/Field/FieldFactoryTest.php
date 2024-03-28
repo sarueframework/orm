@@ -9,10 +9,14 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Sarue\Orm\Exception\InvalidDefinitionException;
+use Sarue\Orm\Field\FieldBase;
 use Sarue\Orm\Field\FieldFactory;
 use Sarue\Orm\Field\FieldType\Text\StringFieldType;
+use Sarue\Orm\Validator\StringValidator\SnakeCaseValidator;
 
 #[CoversClass(FieldFactory::class)]
+#[UsesClass(FieldBase::class)]
+#[UsesClass(SnakeCaseValidator::class)]
 #[UsesClass(StringFieldType::class)]
 class FieldFactoryTest extends TestCase
 {
@@ -98,8 +102,7 @@ class FieldFactoryTest extends TestCase
         $this->expectException(InvalidDefinitionException::class);
         $this->expectExceptionMessage('Class Sarue\Orm\Tests\Unit\Field\FieldFactoryTest is not an instance of \Sarue\Orm\Field\FieldInterface.');
 
-        $factory = new class() extends FieldFactory
-        {
+        $factory = new class () extends FieldFactory {
             public function resolveClassForFieldType(string $fieldType): string
             {
                 return FieldFactoryTest::class;

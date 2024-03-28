@@ -23,25 +23,31 @@ class FieldBaseTest extends TestCase
     {
         $definition = [
             'type' => 'string',
-            'requiredSchemaOption' => 123,
-            'optionalSchemaOption' => 456,
-            'requiredAdditionalOption' => 789,
-            'optionalAdditionalOption' => 987,
+            'requiredSchema' => 123,
+            'optionalSchema' => 456,
+            'requiredProperty' => 789,
+            'optionalProperty' => 987,
+            'additional' => [
+                'additionalOption' => 123,
+            ],
         ];
 
         if (!is_null($requiredDefinition)) {
             $definition['required'] = $requiredDefinition;
         }
 
-        [$schemaDefinition, $additionalDefinition, $required] = TestableFieldBase::parseDefinition($definition);
+        [$schema, $properties, $additionalDefinition, $required] = TestableFieldBase::parseDefinition('string', $definition);
         $this->assertEquals([
-            'optionalSchemaOption' => 456,
-            'requiredSchemaOption' => 123,
-        ], $schemaDefinition);
-        $this->assertEquals([
-            'optionalAdditionalOption' => 987,
-            'requiredAdditionalOption' => 789,
+            'optionalSchema' => 456,
+            'requiredSchema' => 123,
             'type' => 'string',
+        ], $schema);
+        $this->assertEquals([
+            'optionalProperty' => 987,
+            'requiredProperty' => 789,
+        ], $properties);
+        $this->assertEquals([
+            'additionalOption' => 123,
         ], $additionalDefinition);
         $this->assertEquals((bool) $requiredDefinition, $required);
     }
@@ -51,20 +57,22 @@ class FieldBaseTest extends TestCase
         return [
             [
                 [
-                    'optionalSchemaOption' => 456,
+                    'optionalSchema' => 456,
                 ],
                 InvalidDefinitionException::class,
-                'Missing required schema options: requiredSchemaOption',
+                'Required option "requiredSchema" is missing from definition.',
             ],
             [
                 [
-                    'requiredSchemaOption' => 123,
+                    'requiredSchema' => 123,
                 ],
                 InvalidDefinitionException::class,
-                'Missing required additional options: requiredAdditionalOption',
+                'Required option "requiredProperty" is missing from definition.',
             ],
             [
                 [
+                    'requiredSchema' => 123,
+                    'requiredProperty' => 123,
                     'required' => 'true',
                 ],
                 InvalidDefinitionException::class,
@@ -79,7 +87,7 @@ class FieldBaseTest extends TestCase
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
-        TestableFieldBase::parseDefinition($definition);
+        TestableFieldBase::parseDefinition('type', $definition);
     }
 
     public function testProperties(): void
@@ -93,7 +101,7 @@ class FieldBaseTest extends TestCase
         );
 
         $this->assertEquals('field_name', $field->getFieldName());
-        $this->assertEquals(['requiredSchemaOption' => 123], $field->getSchemaDefinition());
+        $this->assertEquals(['requiredSchemaOption' => 123], $field->getSchema());
         $this->assertEmpty($field->getAdditionalDefinition());
         $this->assertTrue($field->isRequired());
     }
@@ -101,11 +109,16 @@ class FieldBaseTest extends TestCase
 
 class TestableFieldBase extends FieldBase
 {
-    protected const array SCHEMA_DEFINITION_OPTIONS = ['requiredSchemaOption', 'optionalSchemaOption'];
-    protected const array REQUIRED_SCHEMA_DEFINITION_OPTIONS = ['requiredSchemaOption'];
-    protected const array REQUIRED_ADDITIONAL_DEFINITION_OPTIONS = ['requiredAdditionalOption'];
+    protected const array SCHEMA_OPTIONS = [
+        'requiredSchema' => ['required' => true],
+        'optionalSchema' => [],
+    ];
+    protected const array PROPERTY_OPTIONS = [
+        'requiredProperty' => ['required' => true],
+        'optionalProperty' => [],
+    ];
 
-    protected static function validateDefinition(array $rawDefinition, array $schema, array $properties, array $additionalDefinition, bool $required)
+    protected static function validateDefinition(array $rawDefinition, array $schema, array $properties, array $additionalDefinition, bool $required): void
     {
         // do nothing
     }

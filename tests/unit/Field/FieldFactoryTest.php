@@ -8,7 +8,6 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Sarue\Orm\Event\FieldTypeClassResolutionEvent;
 use Sarue\Orm\Exception\InvalidDefinitionException;
 use Sarue\Orm\Field\FieldFactory;
 use Sarue\Orm\Field\FieldType\Text\StringFieldType;
@@ -22,8 +21,7 @@ class FieldFactoryTest extends TestCase
 
     public function setUp(): void
     {
-        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-        $this->fieldFactory = new FieldFactory($this->eventDispatcher);
+        $this->fieldFactory = new FieldFactory();
     }
 
     public function testCreateFromDefinition(): void
@@ -95,49 +93,21 @@ class FieldFactoryTest extends TestCase
         $this->fieldFactory->createFromDefinition($fieldName, $definition);
     }
 
-    public static function dataProviderTestResolutionEvent(): array
-    {
-        return [
-            ['', InvalidDefinitionException::class, ' is not a valid field type.', null],
-            [self::class, InvalidDefinitionException::class, 'Class Sarue\Orm\Tests\Unit\Field\FieldFactoryTest is not an instance of \Sarue\Orm\Field\FieldInterface.', null],
-            [StringFieldType::class, null, null, StringFieldType::class],
-        ];
-    }
-
-    #[DataProvider('dataProviderTestResolutionEvent')]
-    public function testResolutionEvent(string $classToSet, ?string $expectedException, ?string $expectedExceptionMessage, ?string $expectedClass): void
-    {
-        if ($expectedException) {
-            $this->expectException($expectedException);
-            $this->expectExceptionMessage($expectedExceptionMessage);
-        }
-
-        $this->eventDispatcher
-            ->expects($this->once())
-            ->method('dispatch')
-            ->withAnyParameters()
-            ->willReturnCallback(fn(FieldTypeClassResolutionEvent $event) => $event->setClass($classToSet));
-
-        $field = $this->fieldFactory->createFromDefinition('field_name', [
-            'type' => 'custom_field_type',
-        ]);
-
-        $this->assertInstanceOf($expectedClass, $field);
-    }
-
     public function testCreateFromSchemaStorage(): void
     {
         $field = $this->fieldFactory->createFromSchemaStorage(
             StringFieldType::class,
             'field_name',
-            ['schemaOption' => 123],
+            ['schema' => 123],
+            ['property' => 123],
             ['additionalOption' => 123],
             false,
         );
 
         $this->assertInstanceOf(StringFieldType::class, $field);
         $this->assertEquals('field_name', $field->getFieldName());
-        $this->assertEquals(['schemaOption' => 123], $field->getSchemaDefinition());
+        $this->assertEquals(['schema' => 123], $field->getSchema());
+        $this->assertEquals(['property' => 123], $field->getProperties());
         $this->assertEquals(['additionalOption' => 123], $field->getAdditionalDefinition());
         $this->assertFalse($field->isRequired());
     }
@@ -150,6 +120,7 @@ class FieldFactoryTest extends TestCase
             self::class,
             'field_name',
             ['schemaOption' => 123],
+            ['property' => 123],
             ['additionalOption' => 123],
             false,
         );

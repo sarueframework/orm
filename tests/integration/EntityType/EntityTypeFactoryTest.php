@@ -4,7 +4,6 @@ namespace Sarue\Orm\Tests\Integration\EntityType;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Sarue\Orm\Entity\Type\EntityTypeFactory;
 use Sarue\Orm\Event\FieldTypeClassResolutionEvent;
 use Sarue\Orm\Exception\InvalidDefinitionException;
 use Sarue\Orm\Field\FieldBase;
@@ -292,4 +291,14 @@ class TestableField extends FieldBase
     protected const array REQUIRED_ADDITIONAL_DEFINITION_OPTIONS = [
         'required_additional_option',
     ];
+
+    protected static function validateDefinition(
+        array $rawDefinition,
+        array $schema,
+        array $properties,
+        array $additionalDefinition,
+        bool $required,
+    ): void {
+        // do nothing
+    }
 }

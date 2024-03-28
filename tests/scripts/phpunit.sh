@@ -14,7 +14,7 @@ fi
 
 COMMAND="vendor/bin/phpunit --fail-on-empty-test-suite --fail-on-warning --fail-on-risky --fail-on-deprecation --fail-on-notice --fail-on-skipped --fail-on-incomplete --display-incomplete --display-skipped --display-deprecations --display-errors --display-notices --display-warnings"
 
-if [[ "integration" == $TEST_TYPE ]]; then
+if [[ "unit" == $TEST_TYPE ]]; then
     COMMAND="$COMMAND --strict-coverage --strict-global-state"
 fi
 

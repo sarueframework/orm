@@ -36,14 +36,47 @@ class EntityTypeTest extends TestCase
         $this->entityType()->getField('invalid_field');
     }
 
-    /**
-     * Tests getField().
-     */
     public function testGetFields(): void
     {
         $fields = $this->entityType()->getFields();
         $this->assertEquals(['field'], array_keys($fields));
         $this->assertInstanceOf(FieldInterface::class, $fields['field']);
+    }
+
+    public function testToStorage(): void
+    {
+        $entityType = $this->entityType();
+
+        /** @var \PHPUnit\Framework\MockObject */
+        $field = $entityType->getField('field');
+        $field
+            ->expects($this->once())
+            ->method('getSchema')
+            ->willReturn(['schema' => 123]);
+        $field
+            ->expects($this->once())
+            ->method('getProperties')
+            ->willReturn(['property' => 456]);
+        $field
+            ->expects($this->once())
+            ->method('getAdditionalDefinition')
+            ->willReturn(['additional' => 789]);
+        $field
+            ->expects($this->once())
+            ->method('isRequired')
+            ->willReturn(true);
+
+        $this->assertEquals([
+            'fields' => [
+                'field' => [
+                    'class' => get_class($field),
+                    'schema' => ['schema' => 123],
+                    'properties' => ['property' => 456],
+                    'additional' => ['additional' => 789],
+                    'required' => true,
+                ],
+            ],
+        ], $entityType->toStorage());
     }
 
     protected function entityType(): EntityType

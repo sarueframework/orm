@@ -7,6 +7,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Sarue\Orm\Exception\InvalidDefinitionException;
+use Sarue\Orm\Exception\InvalidFieldClassException;
 use Sarue\Orm\Field\FieldBase;
 
 #[CoversClass(FieldBase::class)]
@@ -73,6 +74,24 @@ class FieldBaseTest extends TestCase
                 [
                     'requiredSchema' => 123,
                     'requiredProperty' => 123,
+                    'invalidOption' => 123,
+                ],
+                InvalidDefinitionException::class,
+                'Invalid options found: "invalidOption". Valid options are: "invalidOption".',
+            ],
+            [
+                [
+                    'requiredSchema' => 123,
+                    'requiredProperty' => 123,
+                    'additional' => 'aaa',
+                ],
+                InvalidDefinitionException::class,
+                'Option "additional" must be an array.',
+            ],
+            [
+                [
+                    'requiredSchema' => 123,
+                    'requiredProperty' => 123,
                     'required' => 'true',
                 ],
                 InvalidDefinitionException::class,
@@ -90,18 +109,27 @@ class FieldBaseTest extends TestCase
         TestableFieldBase::parseDefinition('type', $definition);
     }
 
+    public function testParseDefinitionFieldClassException(): void
+    {
+        $this->expectException(InvalidFieldClassException::class);
+        $this->expectExceptionMessage('Class Sarue\Orm\Tests\Unit\Field\InvalidClassField has the same options both in SCHEMA_OPTIONS and PROPERTY_OPTIONS: "option", "option2".');
+
+        InvalidClassField::parseDefinition('type', []);
+    }
+
     public function testProperties(): void
     {
         $field = new TestableFieldBase(
             'field_name',
-            ['requiredSchemaOption' => 123],
-            [],
+            ['requiredSchema' => 123],
+            ['requiredProperty' => 123],
             [],
             true,
         );
 
         $this->assertEquals('field_name', $field->getFieldName());
-        $this->assertEquals(['requiredSchemaOption' => 123], $field->getSchema());
+        $this->assertEquals(['requiredSchema' => 123], $field->getSchema());
+        $this->assertEquals(['requiredProperty' => 123], $field->getProperties());
         $this->assertEmpty($field->getAdditionalDefinition());
         $this->assertTrue($field->isRequired());
     }
@@ -116,6 +144,23 @@ class TestableFieldBase extends FieldBase
     protected const array PROPERTY_OPTIONS = [
         'requiredProperty' => ['required' => true],
         'optionalProperty' => [],
+    ];
+
+    protected static function validateDefinition(array $rawDefinition, array $schema, array $properties, array $additionalDefinition, bool $required): void
+    {
+        // do nothing
+    }
+}
+
+class InvalidClassField extends FieldBase
+{
+    protected const array SCHEMA_OPTIONS = [
+        'option' => ['required' => true],
+        'option2' => [],
+    ];
+    protected const array PROPERTY_OPTIONS = [
+        'option' => ['required' => true],
+        'option2' => [],
     ];
 
     protected static function validateDefinition(array $rawDefinition, array $schema, array $properties, array $additionalDefinition, bool $required): void

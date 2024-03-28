@@ -93,6 +93,22 @@ class FieldFactoryTest extends TestCase
         $this->fieldFactory->createFromDefinition($fieldName, $definition);
     }
 
+    public function testCreateFromDefinitionExceptionNotInstance(): void
+    {
+        $this->expectException(InvalidDefinitionException::class);
+        $this->expectExceptionMessage('Class Sarue\Orm\Tests\Unit\Field\FieldFactoryTest is not an instance of \Sarue\Orm\Field\FieldInterface.');
+
+        $factory = new class() extends FieldFactory
+        {
+            public function resolveClassForFieldType(string $fieldType): string
+            {
+                return FieldFactoryTest::class;
+            }
+        };
+
+        $factory->createFromDefinition('field_name', ['type' => 'invalid']);
+    }
+
     public function testCreateFromSchemaStorage(): void
     {
         $field = $this->fieldFactory->createFromSchemaStorage(

@@ -23,11 +23,11 @@ class EntityTypeFactory
     public function createFromDefinition(string $entityTypeName, array $definition): EntityTypeInterface
     {
         if (!SnakeCaseValidator::validateStartingWithLetter($entityTypeName)) {
-            throw new InvalidDefinitionException("The entity type name $entityTypeName should be in snake_case and start with a letter");
+            throw new InvalidDefinitionException("The entity type name $entityTypeName should be in snake_case and start with a letter.");
         }
 
         if (empty($definition['fields']) || !is_array($definition['fields'])) {
-            throw new InvalidDefinitionException("Entity $entityTypeName has no no fields in its definition");
+            throw new InvalidDefinitionException("Entity $entityTypeName has no no fields in its definition.");
         }
 
         ksort($definition['fields']);

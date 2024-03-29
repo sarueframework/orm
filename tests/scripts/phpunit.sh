@@ -23,7 +23,7 @@ if [[ "just-test" == $RUN_MODE ]]; then
 elif [[ "coverage-report" == $RUN_MODE ]]; then
     COMMAND="$COMMAND --coverage-html tests/$TEST_TYPE/coverage/ --coverage-filter src/ tests/$TEST_TYPE/"
 elif [[ "coverage-100" == $RUN_MODE ]]; then
-    COMMAND="$COMMAND --coverage-text=.phpunit-temp-coverage tests/$TEST_TYPE/coverage/ --coverage-filter src/ tests/$TEST_TYPE/"
+    COMMAND="$COMMAND --coverage-text=.phpunit-temp-coverage --coverage-filter src/ tests/$TEST_TYPE/"
 fi
 
 $COMMAND

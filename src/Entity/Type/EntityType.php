@@ -39,7 +39,6 @@ class EntityType implements EntityTypeInterface
                     'class' => get_class($field),
                     'schema' => $field->getSchema(),
                     'properties' => $field->getProperties(),
-                    'additional' => $field->getAdditionalDefinition(),
                     'required' => $field->isRequired(),
                 ],
                 $this->getFields(),

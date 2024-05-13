@@ -3,8 +3,8 @@
 namespace Sarue\Orm\Entity;
 
 use PgSql\Connection;
-use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Entity\Type\EntityTypeInterface;
+use Sarue\Orm\Exception\EntityNotFoundException;
 
 class EntityManager
 {
@@ -19,7 +19,7 @@ class EntityManager
             return new Entity($entityType, pg_fetch_array($result));
         }
 
-        throw new \Exception('Entity not found.');
+        throw new EntityNotFoundException('Entity not found.');
     }
 
     public function save(Entity $entity): void

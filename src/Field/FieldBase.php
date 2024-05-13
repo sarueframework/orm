@@ -7,38 +7,9 @@ use Sarue\Orm\Exception\InvalidFieldClassException;
 
 abstract class FieldBase implements FieldInterface
 {
-    /**
-     * The options in the definition that are schema-related. Example:
-     *
-     * @code
-     *  [
-     *      'maxLength' => [
-     *          'required' => true,
-     *      ],
-     *      'cardinality' => [
-     *          'default' => 1,
-     *      ],
-     *      'regex' => [],
-     *  ]
-     *
-     * @endcode
-     *
-     * For each property you need to define "type" (int, string, array). You may also define "required" and "default".
-     *
-     * @var array<string, array<string, int|string|mixed[]>>
-     */
-    protected const array SCHEMA_OPTIONS = [];
-
-    /**
-     * The definition of property options, see SCHEMA_DEFINITION for the format.
-     *
-     * @var array<string, array<string, int|string|mixed[]>>
-     */
-    protected const array PROPERTY_OPTIONS = [];
-
     public function __construct(
         protected string $fieldName,
-        protected array $schema,
+        protected array $schemaDefinition,
         protected array $properties,
         protected bool $required,
     ) {}
@@ -48,9 +19,9 @@ abstract class FieldBase implements FieldInterface
         return $this->fieldName;
     }
 
-    public function getSchema(): array
+    public function getSchemaDefinition(): array
     {
-        return $this->schema;
+        return $this->schemaDefinition;
     }
 
     public function getProperties(): array

@@ -6,17 +6,6 @@ use Sarue\Orm\Field\FieldInterface;
 
 interface EntityTypeInterface
 {
-    /**
-     * Builder.
-     *
-     * @param string           $entityTypeName the name of the entity type
-     * @param FieldInterface[] $fields         the list of fields, already instantiated
-     */
-    public function __construct(
-        string $entityTypeName,
-        array $fields,
-    );
-
     public function getName(): string;
 
     public function getField(string $fieldName): FieldInterface;

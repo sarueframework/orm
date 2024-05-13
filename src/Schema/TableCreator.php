@@ -20,8 +20,8 @@ class TableCreator
             $entityType->getFields(),
         ));
 
-        $mainTableSql = 'CREATE TABLE ' . $entityType->getName() . '( id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), ' . $fieldsSql . ')';
-        $revisionTableSql = 'CREATE TABLE ' . $entityType->getName() . '__revision(id uuid references ' . $entityType->getName() . '(id), revision_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),' . $fieldsSql . ')';
+        $mainTableSql = 'CREATE TABLE ' . $entityType->getTableName() . '( id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), ' . $fieldsSql . ')';
+        $revisionTableSql = 'CREATE TABLE ' . $entityType->getRevisionTableName() . '(id uuid references ' . $entityType->getName() . '(id), revision_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),' . $fieldsSql . ')';
 
         pg_query($this->connection, 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
         pg_query($this->connection, $mainTableSql);

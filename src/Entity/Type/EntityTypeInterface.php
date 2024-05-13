@@ -23,4 +23,7 @@ interface EntityTypeInterface
      * @return array{fields: array<array{class: string, schema: mixed[], additional: mixed[], required: bool}>}
      */
     public function toStorage(): array;
+
+    public function getTableName(): string;
+    public function getRevisionTableName(): string;
 }

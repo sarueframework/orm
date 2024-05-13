@@ -17,6 +17,16 @@ class EntityType implements EntityTypeInterface
         return $this->entityTypeName;
     }
 
+    public function getTableName(): string
+    {
+        return $this->getName();
+    }
+
+    public function getRevisionTableName(): string
+    {
+        return $this->getTableName() . '__revision';
+    }
+
     public function getField(string $fieldName): FieldInterface
     {
         if (!isset($this->fields[$fieldName])) {

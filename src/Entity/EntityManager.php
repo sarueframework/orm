@@ -37,15 +37,15 @@ class EntityManager
                 $columns,
                 $values,
             );
-            pg_query($this->connection, 'UPDATE ' . $entityType->getName() . ' SET ' . implode(',' , $updateFields) . " WHERE id = '" . $entity->getId() . "'");
+            pg_query($this->connection, 'UPDATE ' . $entityType->getTableName() . ' SET ' . implode(',' , $updateFields) . " WHERE id = '" . $entity->getId() . "'");
         } else {
-            $result = pg_query($this->connection, 'INSERT INTO ' . $entityType->getName() . ' (' . implode(',', $columns) . ') VALUES(' . implode(',', $values) . ') RETURNING id');
+            $result = pg_query($this->connection, 'INSERT INTO ' . $entityType->getTableName() . ' (' . implode(',', $columns) . ') VALUES(' . implode(',', $values) . ') RETURNING id');
             $id = pg_fetch_object($result)->id;
             $entity->setId($id);
         }
 
         $columns[] = 'id';
         $values[] = "'" . $entity->getId() . "'";
-        pg_query($this->connection, 'INSERT INTO ' . $entityType->getName() . '__revision (' . implode(',', $columns) . ') VALUES(' . implode(',', $values) . ') RETURNING id');
+        pg_query($this->connection, 'INSERT INTO ' . $entityType->getRevisionTableName() . ' (' . implode(',', $columns) . ') VALUES(' . implode(',', $values) . ') RETURNING id');
     }
 }

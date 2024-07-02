@@ -9,9 +9,9 @@ abstract class FieldBase implements FieldInterface
 {
     public function __construct(
         protected string $fieldName,
-        protected array $schemaDefinition,
-        protected array $properties,
-        protected bool $required,
+        protected array $schemaDefinition = [],
+        protected array $properties = [],
+        protected bool $required = false,
     ) {}
 
     public function getFieldName(): string

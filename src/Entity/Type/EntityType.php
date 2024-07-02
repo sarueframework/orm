@@ -7,10 +7,20 @@ use Sarue\Orm\Field\FieldInterface;
 
 class EntityType implements EntityTypeInterface
 {
+    /** @var \Sarue\Orm\Field\FieldInterface[] */
+    protected $fields;
+
+    /**
+     * @param \Sarue\Orm\Field\FieldInterface[]
+     */
     public function __construct(
         protected string $entityTypeName,
-        protected array $fields,
-    ) {}
+        array $fields,
+    ) {
+        foreach ($fields as $field) {
+            $this->fields[$field->getFieldName()] = $field;
+        }
+    }
 
     public function getName(): string
     {

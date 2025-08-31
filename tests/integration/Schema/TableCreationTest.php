@@ -13,13 +13,7 @@ use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 class TableCreationTest extends IntegrationTestCase
 {
-    public function testBru(): void
-    {
-        $result = pg_exec($this->connection, "SELECT * FROM person");
-        var_dump(pg_fetch_array($result));
-    }
-
-    public function __testCreateTable(): void
+    public function testCreateTable(): void
     {
         $entityType = new EntityType('person', [
             new Type\Text\Text('name', required: true),

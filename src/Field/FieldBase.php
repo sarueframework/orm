@@ -14,10 +14,6 @@ abstract class FieldBase implements FieldInterface
         protected bool $required = false,
     ) {}
 
-    public static function getManagerClass(): string {
-        return static::class . 'Manager';
-    }
-
     public function getFieldName(): string
     {
         return $this->fieldName;

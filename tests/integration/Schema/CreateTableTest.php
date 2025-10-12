@@ -2,23 +2,31 @@
 
 namespace Sarue\Orm\Tests\Integration\Schema;
 
-use App\Entity\Manager\DummyEntityManager;
-use Sarue\Orm\Schema\ManagerDumper;
+use Sarue\Orm\EntityManager\Generator\ClassGenerator;
 use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
+use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\Query\QueryFactory;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
+
+use function Sarue\Orm\Query\Condition\isLargerThan;
+use function Sarue\Orm\Query\Condition\startsWith;
 
 class CreateTableTest extends IntegrationTestCase {
 
     public function testCreateTable(): void {
-        $managerDumper = new ManagerDumper(__DIR__ . '/../var/manager');
-        $managerDumper->dumpManagerForEntity(DummyEntity::class);
+        $classGenerator = new ClassGenerator(
+            __DIR__ . '/../Dummy/Entity',
+            __DIR__ . '/../var/sarue-generated',
+            entityNamespace: 'Sarue\\Orm\\Tests\\Integration\\Dummy\\Entity\\',
+            generatedNamespace: 'Sarue\\Orm\\Tests\\Integration\\Dummy\\Generated\\',
+        );
+        $classGenerator->generateClasses();
 
+        $queryFactory = new QueryFactory();
+        $query = $queryFactory->getDummyEntityQuery();
 
-
-
-        // $entity = new DummyEntity();
-        // $entity->name->set('John Smith');
-        // $entity->age->set(900);
+        $query
+            ->age(isLargerThan(18))
+            ->name(startsWith('B'));
     }
 
 }

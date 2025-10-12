@@ -4,10 +4,16 @@ namespace Sarue\Orm\Field\Type\Text;
 
 use Doctrine\DBAL\Schema\Column;
 use Sarue\Orm\Field\FieldBase;
+use Sarue\Orm\Query\Condition\Text\TextConditionInterface;
 
 class Text extends FieldBase
 {
     protected int $value;
+
+    public static function getConditionType(): string {
+        return TextConditionInterface::class;
+    }
+
 
     public function getRawValue(): int|float|string|array {
         return $this->get();

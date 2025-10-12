@@ -4,10 +4,15 @@ namespace Sarue\Orm\Field\Type\Numeric;
 
 use Doctrine\DBAL\Schema\Column;
 use Sarue\Orm\Field\FieldBase;
+use Sarue\Orm\Query\Condition\Numeric\NumericConditionInterface;
 
 class Integer extends FieldBase
 {
     protected int $value;
+
+    public static function getConditionType(): string {
+        return NumericConditionInterface::class;
+    }
 
     public function getRawValue(): int|float|string|array {
         return $this->get();

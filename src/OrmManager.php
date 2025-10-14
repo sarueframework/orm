@@ -13,10 +13,6 @@ class OrmManager
     protected EntityDiscoveryCache $entityDiscoveryCache;
     protected QueryFactory $queryFactory;
 
-    public function createFromContainer()
-    {
-    }
-
     public function __construct(
         protected Connection $connection,
     ) {

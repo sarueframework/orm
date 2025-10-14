@@ -14,12 +14,20 @@ class Text extends FieldBase
         return TextConditionInterface::class;
     }
 
+    public static function getColumns(string $fieldName): array {
+        return [
+            Column::editor()
+                ->setUnquotedName($fieldName)
+                ->setTypeName('string')
+                ->create()
+        ];
+    }
 
     public function getRawValue(): int|float|string|array {
         return $this->get();
     }
 
-    public function setRawValue(int|float|string|array $value): self {
+    public function setRawValue(int|float|string|array $value): static {
         if (!is_string($value)) {
             throw new \Exception('Value "$value" is not a string');
         }
@@ -31,7 +39,7 @@ class Text extends FieldBase
         return $this->value;
     }
 
-    public function set(string $value): self {
+    public function set(string $value): static {
         $this->value = $value;
         return $this;
     }

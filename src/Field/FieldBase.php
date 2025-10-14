@@ -2,9 +2,6 @@
 
 namespace Sarue\Orm\Field;
 
-use Sarue\Orm\Exception\InvalidDefinitionException;
-use Sarue\Orm\Exception\InvalidFieldClassException;
-
 abstract class FieldBase implements FieldInterface
 {
     public function __construct(

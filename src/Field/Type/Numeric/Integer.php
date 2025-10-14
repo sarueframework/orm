@@ -14,11 +14,20 @@ class Integer extends FieldBase
         return NumericConditionInterface::class;
     }
 
+    public static function getColumns(string $fieldName): array {
+        return [
+            Column::editor()
+                ->setUnquotedName($fieldName)
+                ->setTypeName('integer')
+                ->create()
+        ];
+    }
+
     public function getRawValue(): int|float|string|array {
         return $this->get();
     }
 
-    public function setRawValue(int|float|string|array $value): self {
+    public function setRawValue(int|float|string|array $value): static {
         if (!is_int($value)) {
             throw new \Exception('Value "$value" is not an int');
         }
@@ -30,7 +39,7 @@ class Integer extends FieldBase
         return $this->value;
     }
 
-    public function set(int $value): self {
+    public function set(int $value): static {
         $this->value = $value;
         return $this;
     }

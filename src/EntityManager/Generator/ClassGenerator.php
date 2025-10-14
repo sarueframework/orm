@@ -2,6 +2,7 @@
 
 namespace Sarue\Orm\EntityManager\Generator;
 
+use PhpParser\Node\Expr\FuncCall;
 use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Field\FieldInterface;
 
@@ -14,8 +15,27 @@ class ClassGenerator {
     ) {}
 
     public function generateClasses(): void {
+        $queryClasses = [];
+        $entityDiscoveryCache = [];
+        foreach ($this->discoverEntityClasses() as $entityClass) {
+            $entityTypeName = $this->getShortClassName($entityClass);
+            $entityDiscoveryCache[$entityTypeName] = [
+                'class' => $entityClass,
+                'fields' => $this->discoverEntityFields($entityClass),
+            ];
+            $queryClasses[] = $this->generateQueryClassForEntity($entityClass, $entityDiscoveryCache[$entityTypeName]['fields']);
+        }
+
+        $this->generateQueryFactory($queryClasses);
+        $this->generateEntityDiscoveryCacheClass($entityDiscoveryCache);
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function discoverEntityClasses(): array {
         $phpFiles = array_filter(
-            scandir($this->entityDirectory),
+            \scandir($this->entityDirectory),
             fn($filename) => str_ends_with($filename, '.php'),
         );
 
@@ -24,20 +44,39 @@ class ClassGenerator {
             $phpFiles,
         );
 
-        $entityClasses = array_filter(
+        return array_filter(
             $possibleClasses,
             fn($className) => is_subclass_of($className, EntityInterface::class) && !(new \ReflectionClass($className))->isAbstract(),
         );
-
-        $queryClasses = [];
-        foreach ($entityClasses as $entityClass) {
-            $queryClasses[] = $this->dumpQueryForEntity($entityClass);
-        }
-
-        $this->dumpQueryFactory($queryClasses);
     }
 
-    public function dumpQueryForEntity(string $entityFullClassName): string {
+    protected function discoverEntityFields(string $entityFullClassName): array {
+        $reflection = new \ReflectionClass($entityFullClassName);
+        $fields = [];
+
+        foreach ($reflection->getProperties() as $property) {
+            $type = $property->getType()->__toString();
+            if (class_exists($type) && (is_subclass_of($type, FieldInterface::class))) {
+                $this->validateField($property);
+
+                $fields[$property->getName()] = [
+                    'type' => $type,
+                    'condition_type' => [$type, 'getConditionType'](),
+                ];
+            }
+        }
+
+        return $fields;
+    }
+
+    protected function validateField(\ReflectionProperty $property): void {
+        if ($property->getName() === 'id') {
+            // @todo Create Exception classes
+            throw new \Exception('A property named ID is forbidden.');
+        }
+    }
+
+    protected function generateQueryClassForEntity(string $entityFullClassName, array $discoveriedFields): string {
         $reflection = new \ReflectionClass($entityFullClassName);
 
         $entityNameParts = explode('\\', $entityFullClassName);
@@ -45,36 +84,44 @@ class ClassGenerator {
 
         $namespace = $this->generatedNamespace . 'Entity\\Query';
 
-        $output = "<?php\n\nnamespace $namespace;\n\nclass $queryClassName extends \\Sarue\\Orm\\Query\\QueryBase {\n";
-        $getFieldListFunction = "public function getFieldList(): array {\nreturn [\n";
+        $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass $queryClassName extends \\Sarue\\Orm\\Query\\QueryBase {\n";
 
-        foreach ($reflection->getProperties() as $property) {
-            $type = $property->getType()->__toString();
-            if (class_exists($type) && (is_subclass_of($type, FieldInterface::class))) {
-                $conditionType = [$type, 'getConditionType']();
-                $output .= "public function {$property->getName()}(\\{$conditionType} \$condition): static { return \$this->addCondition(\$condition); }\n";
-                $getFieldListFunction .= "'{$property->getName()}',\n";
-            }
+        foreach ($discoveriedFields as $fieldName => $fieldData) {
+            $generatedCode .= "public function {$fieldName}(\\{$fieldData['condition_type']} \$condition): static { return \$this->addCondition(\$condition); }\n";
         }
 
-        $output .= "\n{$getFieldListFunction}        ];\n    }\n}\n";
-        file_put_contents($this->generatedBaseDirectory . '/Entity/Query/' . $queryClassName . '.php', $output);
+        $generatedCode .= "}\n";
+        $this->dump('/Entity/Query/' . $queryClassName . '.php', $generatedCode);
 
         return $namespace .'\\' . $queryClassName;
     }
 
-    public function dumpQueryFactory(array $queryClasses): void {
+    protected function generateQueryFactory(array $queryClasses): void {
         $namespace = $this->generatedNamespace . 'Entity\\Query';
-        $output = "<?php\n\nnamespace $namespace;\n\nclass QueryFactory extends \\Sarue\\Orm\\Query\\QueryFactoryBase {\n";
-        $getEntityListFunction = "public function getEntityList(): array {\nreturn [\n";
+        $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass QueryFactory extends \\Sarue\\Orm\\Query\\QueryFactoryBase {\n";
 
         foreach ($queryClasses as $queryClass) {
-            $className = substr($queryClass, strrpos($queryClass, '\\') + 1);
-            $getEntityListFunction .= "'" . str_replace('\\', '\\\\', $queryClass) . "',\n";
-            $output .= "function get$className(): \\$queryClass { return \$this->instantiateQuery('$queryClass'); }\n";
+            $className = $this->getShortClassName($queryClass);
+            $generatedCode .= "function get$className(): \\$queryClass { return \$this->instantiateQuery(" . var_export($queryClass, TRUE) . "); }\n";
         }
-        $getEntityListFunction .= "];\n}\n";
-        $output .= $getEntityListFunction . "}\n";
-        file_put_contents($this->generatedBaseDirectory . '/Entity/Query/QueryFactory.php', $output);
+        $generatedCode .= "}\n";
+        $this->dump('/Entity/Query/QueryFactory.php', $generatedCode);
+    }
+
+    protected function generateEntityDiscoveryCacheClass(array $entityDiscoveryCache): void {
+        $namespace = $this->generatedNamespace . 'Entity';
+        $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass EntityDiscoveryCache {\n";
+        $generatedCode .= "function getCachedEntityDefinitions(): array {\n";
+        $generatedCode .= "return " . var_export($entityDiscoveryCache, TRUE) . ";\n}\n}";
+
+        $this->dump('/Entity/EntityDiscoveryCache.php', $generatedCode);
+    }
+
+    protected function getShortClassName(string $fullClassName): string {
+        return substr($fullClassName, strrpos($fullClassName, '\\') + 1);
+    }
+
+    protected function dump($classPath, $generatedCode): void {
+        file_put_contents($this->generatedBaseDirectory . $classPath, $generatedCode);
     }
 }

@@ -21,15 +21,15 @@ class OrmManager
     public function createTables(): void
     {
         $tables = [];
-        foreach ($this->getEntityDiscoveryCache()->getCachedEntityDefinitions() as $entityTypeName => $definitions) {
+        foreach ($this->getEntityDiscoveryCache()->getCachedEntityDefinitions() as $entityDefintion) {
             $tableEditor = Table::editor()
-                ->setUnquotedName($entityTypeName);
+                ->setUnquotedName($entityDefintion->name);
 
-            foreach ($definitions['fields'] as $fieldName => $fieldDefinition) {
+            foreach ($entityDefintion->fields as $fieldDefinition) {
                 /**
                  * @var \Doctrine\DBAL\Schema\Column[]
                  */
-                $columns = [$fieldDefinition['type'], 'getColumns']($fieldName);
+                $columns = [$fieldDefinition->type, 'getColumns']($fieldDefinition->name);
                 foreach ($columns as $column) {
                     $tableEditor->addColumn($column);
                 }

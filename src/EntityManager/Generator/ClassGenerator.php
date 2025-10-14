@@ -2,8 +2,17 @@
 
 namespace Sarue\Orm\EntityManager\Generator;
 
+use Attribute;
+use ReflectionClass;
+use ReflectionProperty;
+use Sarue\Orm\Attribute\Entity;
+use Sarue\Orm\Attribute\Field;
 use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Field\FieldInterface;
+use Sarue\Orm\Field\Type\Numeric\Integer;
+use Sarue\Orm\Field\Type\Text\Text;
+use Sarue\Orm\Schema\EntityDefinition;
+use Sarue\Orm\Schema\FieldDefinition;
 
 class ClassGenerator
 {
@@ -18,82 +27,110 @@ class ClassGenerator
     public function generateClasses(): void
     {
         $queryClasses = [];
-        $entityDiscoveryCache = [];
-        foreach ($this->discoverEntityClasses() as $entityClass) {
-            $entityTypeName = $this->getShortClassName($entityClass);
-            $entityDiscoveryCache[$entityTypeName] = [
-                'class' => $entityClass,
-                'fields' => $this->discoverEntityFields($entityClass),
-            ];
-            $queryClasses[] = $this->generateQueryClassForEntity($entityClass, $entityDiscoveryCache[$entityTypeName]['fields']);
+        $entityDefinitions = $this->discoverEntityDefinitions();
+        foreach ($entityDefinitions as $entityDefinition) {
+            $queryClasses[] = $this->generateQueryClassForEntity($entityDefinition);
         }
 
         $this->generateQueryFactory($queryClasses);
-        $this->generateEntityDiscoveryCacheClass($entityDiscoveryCache);
+        $this->generateEntityDiscoveryCacheClass($entityDefinitions);
     }
 
     /**
-     * @return string[]
+     * @return \Sarue\Orm\Attribute\Entity[]
      */
-    protected function discoverEntityClasses(): array
+    protected function discoverEntityDefinitions(): array
     {
-        $phpFiles = array_filter(
-            \scandir($this->entityDirectory),
-            fn ($filename) => str_ends_with($filename, '.php'),
-        );
-
-        $possibleClasses = array_map(
-            fn ($filename) => $this->entityNamespace.substr($filename, 0, -4),
-            $phpFiles,
-        );
-
-        return array_filter(
-            $possibleClasses,
-            fn ($className) => is_subclass_of($className, EntityInterface::class) && !(new \ReflectionClass($className))->isAbstract(),
-        );
-    }
-
-    protected function discoverEntityFields(string $entityFullClassName): array
-    {
-        $reflection = new \ReflectionClass($entityFullClassName);
-        $fields = [];
-
-        foreach ($reflection->getProperties() as $property) {
-            $type = $property->getType()->__toString();
-            if (class_exists($type) && is_subclass_of($type, FieldInterface::class)) {
-                $this->validateField($property);
-
-                $fields[$property->getName()] = [
-                    'type' => $type,
-                    'condition_type' => [$type, 'getConditionType'](),
-                ];
+        $entityDefinitions = [];
+        foreach (\scandir($this->entityDirectory) as $filename) {
+            if (!str_ends_with($filename, '.php')) {
+                continue;
             }
-        }
 
-        return $fields;
+            $className = $this->entityNamespace.substr($filename, 0, -4);
+
+            if (!class_exists($className)) {
+                continue;
+            }
+
+            $classReflection = new \ReflectionClass($className);
+            $entityAttributes = $classReflection->getAttributes(Entity::class);
+
+            if (empty($entityAttributes)) {
+                continue;
+            }
+
+            if (!is_subclass_of($className, EntityInterface::class)) {
+                throw new \Exception('Class ' . $className . ' has attribute Entity but it not a descendant of EntityInterface.');
+            }
+
+            if ($classReflection->isAbstract()) {
+                throw new \Exception('Class ' . $className . ' has attribute Entity but is abstract.');
+            }
+
+            $entityDefinitions[] = new EntityDefinition(
+                $this->getShortClassName($className),
+                $className,
+                $this->discoverFieldDefinitions($classReflection),
+                ...reset($entityAttributes)->getArguments()
+            );
+        };
+
+        return $entityDefinitions;
     }
 
-    protected function validateField(\ReflectionProperty $property): void
+    protected function discoverFieldDefinitions(ReflectionClass $classReflection): array
     {
-        if ('id' === $property->getName()) {
-            // @todo Create Exception classes
-            throw new \Exception('A property named ID is forbidden.');
+        $fieldDefinitions = [];
+
+        foreach ($classReflection->getProperties() as $property) {
+            $fieldAttributes = $property->getAttributes(Field::class);
+
+            if (empty($fieldAttributes)) {
+                continue;
+            }
+
+            $fieldAttribute = reset($fieldAttributes);
+
+            $type = $property->getType()->__toString();
+
+            // @todo Add support for other types of columns that map to a scalar property.
+            $type = match($type) {
+                'int' => Integer::class,
+                'string' => Text::class,
+                default =>
+                    class_exists($type) && is_subclass_of($type, FieldInterface::class) ?
+                        $type :
+                        throw new \Exception("'$type' is not a valid type for a field."),
+            };
+
+            $fieldDefinition = new FieldDefinition(
+                $property->getName(),
+                $type,
+                [$type, 'getConditionType'](),
+            );
+
+            $fieldDefinition->validate();
+
+            $fieldDefinitions[$fieldDefinition->name] = $fieldDefinition;
         }
+
+        return $fieldDefinitions;
     }
 
-    protected function generateQueryClassForEntity(string $entityFullClassName, array $discoveriedFields): string
+    protected function generateQueryClassForEntity(EntityDefinition $entityDefinition): string
     {
-        $reflection = new \ReflectionClass($entityFullClassName);
+        $reflection = new \ReflectionClass($entityDefinition->className);
 
-        $entityNameParts = explode('\\', $entityFullClassName);
+        $entityNameParts = explode('\\', $entityDefinition->className);
         $queryClassName = array_pop($entityNameParts).'Query';
 
         $namespace = $this->generatedNamespace.'Entity\\Query';
 
         $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass $queryClassName extends \\Sarue\\Orm\\Query\\QueryBase {\n";
 
-        foreach ($discoveriedFields as $fieldName => $fieldData) {
-            $generatedCode .= "public function {$fieldName}(\\{$fieldData['condition_type']} \$condition): static { return \$this->addCondition(\$condition); }\n";
+        foreach ($entityDefinition->fields as $fieldDefinition) {
+            $generatedCode .= "public function {$fieldDefinition->name}(\\{$fieldDefinition->conditionType} \$condition): static { return \$this->addCondition(\$condition); }\n";
         }
 
         $generatedCode .= "}\n";

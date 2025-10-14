@@ -11,7 +11,7 @@ class QueryFactoryBase
     protected function instantiateQuery(string $class): QueryInterface
     {
         if (!is_subclass_of($class, QueryInterface::class)) {
-            throw new \Exception('Invalid query class.');
+            throw new \Exception("Invalid query class '$class'.");
         }
 
         return new $class();

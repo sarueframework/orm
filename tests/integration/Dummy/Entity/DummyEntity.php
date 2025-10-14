@@ -2,13 +2,16 @@
 
 namespace Sarue\Orm\Tests\Integration\Dummy\Entity;
 
+use Sarue\Orm\Attribute\Entity;
+use Sarue\Orm\Attribute\Field;
 use Sarue\Orm\Entity\EntityBase;
-use Sarue\Orm\Field\Type\Numeric\Integer;
-use Sarue\Orm\Field\Type\Text\Text;
 
+#[Entity(some: "thing")]
 class DummyEntity extends EntityBase
 {
-    public readonly Integer $age;
-    public readonly Text $name;
-    public readonly string $nonField;
+    #[Field]
+    public int $age;
+
+    #[Field]
+    public string $name;
 }

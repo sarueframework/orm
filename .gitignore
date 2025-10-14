@@ -2,4 +2,5 @@
 /vendor/
 /tests/unit/coverage
 /tests/integration/coverage
+/tests/integration/var
 .php-cs-fixer.cache

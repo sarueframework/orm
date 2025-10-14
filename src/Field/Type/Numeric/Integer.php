@@ -10,24 +10,28 @@ class Integer extends FieldBase
 {
     protected int $value;
 
-    public static function getConditionType(): string {
+    public static function getConditionType(): string
+    {
         return NumericConditionInterface::class;
     }
 
-    public static function getColumns(string $fieldName): array {
+    public static function getColumns(string $fieldName): array
+    {
         return [
             Column::editor()
                 ->setUnquotedName($fieldName)
                 ->setTypeName('integer')
-                ->create()
+                ->create(),
         ];
     }
 
-    public function getRawValue(): int|float|string|array {
+    public function getRawValue(): int|float|string|array
+    {
         return $this->get();
     }
 
-    public function setRawValue(int|float|string|array $value): static {
+    public function setRawValue(int|float|string|array $value): static
+    {
         if (!is_int($value)) {
             throw new \Exception('Value "$value" is not an int');
         }
@@ -35,12 +39,15 @@ class Integer extends FieldBase
         return $this->set($value);
     }
 
-    public function get(): int {
+    public function get(): int
+    {
         return $this->value;
     }
 
-    public function set(int $value): static {
+    public function set(int $value): static
+    {
         $this->value = $value;
+
         return $this;
     }
 

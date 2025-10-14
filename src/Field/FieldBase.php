@@ -9,7 +9,8 @@ abstract class FieldBase implements FieldInterface
         protected array $schemaDefinition = [],
         protected array $properties = [],
         protected bool $required = false,
-    ) {}
+    ) {
+    }
 
     public function getFieldName(): string
     {

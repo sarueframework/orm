@@ -13,13 +13,17 @@ class OrmManager
     protected EntityDiscoveryCache $entityDiscoveryCache;
     protected QueryFactory $queryFactory;
 
-    public function createFromContainer() {}
+    public function createFromContainer()
+    {
+    }
 
     public function __construct(
         protected Connection $connection,
-    ) {}
+    ) {
+    }
 
-    public function createTables(): void {
+    public function createTables(): void
+    {
         $tables = [];
         foreach ($this->getEntityDiscoveryCache()->getCachedEntityDefinitions() as $entityTypeName => $definitions) {
             $tableEditor = Table::editor()
@@ -30,7 +34,7 @@ class OrmManager
                  * @var \Doctrine\DBAL\Schema\Column[]
                  */
                 $columns = [$fieldDefinition['type'], 'getColumns']($fieldName);
-                foreach ($columns as $column)                 {
+                foreach ($columns as $column) {
                     $tableEditor->addColumn($column);
                 }
             }
@@ -42,10 +46,10 @@ class OrmManager
         foreach ($schema->toSql($this->connection->getDatabasePlatform()) as $statement) {
             $this->connection->executeQuery($statement);
         }
-
     }
 
-    public function getEntityDiscoveryCache(): EntityDiscoveryCache {
+    public function getEntityDiscoveryCache(): EntityDiscoveryCache
+    {
         if (!isset($this->entityDiscoveryCache)) {
             $this->entityDiscoveryCache = new EntityDiscoveryCache();
         }
@@ -53,7 +57,8 @@ class OrmManager
         return $this->entityDiscoveryCache;
     }
 
-    public function getQueryFactory(): QueryFactory {
+    public function getQueryFactory(): QueryFactory
+    {
         if (!isset($this->queryFactory)) {
             $this->queryFactory = new QueryFactory();
         }

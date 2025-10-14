@@ -6,7 +6,8 @@ use Sarue\Orm\Entity\EntityBase;
 use Sarue\Orm\Field\Type\Numeric\Integer;
 use Sarue\Orm\Field\Type\Text\Text;
 
-class DummyEntity extends EntityBase {
+class DummyEntity extends EntityBase
+{
     public readonly Integer $age;
     public readonly Text $name;
     public readonly string $nonField;

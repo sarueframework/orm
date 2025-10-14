@@ -8,11 +8,13 @@ use Sarue\Orm\Query\Condition\Text\LikeCondition;
 use Sarue\Orm\Query\Condition\Text\TextConditionInterface;
 
 // Numeric functions.
-function isLargerThan(float $number): NumericConditionInterface {
+function isLargerThan(float $number): NumericConditionInterface
+{
     return new SimpleNumericCondition($number, '>');
 }
 
 // Text functions.
-function startsWith(string $string): TextConditionInterface {
+function startsWith(string $string): TextConditionInterface
+{
     return new LikeCondition("$string%");
 }

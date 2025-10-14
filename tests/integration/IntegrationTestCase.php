@@ -8,7 +8,8 @@ use PHPUnit\Framework\TestCase;
 use Sarue\Orm\EntityManager\Generator\ClassGenerator;
 use Sarue\Orm\OrmManager;
 
-class IntegrationTestCase extends TestCase {
+class IntegrationTestCase extends TestCase
+{
     protected Connection $connection;
     protected OrmManager $ormManager;
 
@@ -19,8 +20,8 @@ class IntegrationTestCase extends TestCase {
         pg_exec($databaseCreationconnection, 'CREATE DATABASE sarue_integration_test_db');
 
         $classGenerator = new ClassGenerator(
-            __DIR__ . '/Dummy/Entity',
-            __DIR__ . '/var/sarue-generated',
+            __DIR__.'/Dummy/Entity',
+            __DIR__.'/var/sarue-generated',
             'Sarue\\Orm\\Tests\\Integration\\Dummy\\Entity\\',
             'Sarue\\Orm\\Tests\\Integration\\Dummy\\Generated\\',
         );

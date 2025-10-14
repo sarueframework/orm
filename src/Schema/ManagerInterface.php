@@ -2,4 +2,6 @@
 
 namespace Sarue\Orm\Schema;
 
-interface ManagerInterface {}
+interface ManagerInterface
+{
+}

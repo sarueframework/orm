@@ -2,4 +2,6 @@
 
 namespace Sarue\Orm\Query\Condition;
 
-interface ConditionInterface {}
+interface ConditionInterface
+{
+}

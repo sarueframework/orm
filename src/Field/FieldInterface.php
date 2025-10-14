@@ -14,5 +14,6 @@ interface FieldInterface
     public static function getColumns(string $fieldName): array;
 
     public function getRawValue(): int|float|string|array;
+
     public function setRawValue(int|float|string|array $value): static;
 }

@@ -2,4 +2,6 @@
 
 namespace Sarue\Orm\Schema;
 
-class ManagerBase implements ManagerInterface {}
+class ManagerBase implements ManagerInterface
+{
+}

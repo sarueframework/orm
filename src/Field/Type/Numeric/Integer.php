@@ -3,10 +3,10 @@
 namespace Sarue\Orm\Field\Type\Numeric;
 
 use Doctrine\DBAL\Schema\Column;
-use Sarue\Orm\Field\FieldBase;
+use Sarue\Orm\Field\FieldTypeBase;
 use Sarue\Orm\Query\Condition\Numeric\NumericConditionInterface;
 
-class Integer extends FieldBase
+class Integer extends FieldTypeBase
 {
     protected int $value;
 

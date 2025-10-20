@@ -2,7 +2,7 @@
 
 namespace Sarue\Orm\Field;
 
-interface FieldInterface
+interface FieldTypeInterface
 {
     public static function getConditionType(): string;
 

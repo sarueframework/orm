@@ -8,7 +8,7 @@ use ReflectionProperty;
 use Sarue\Orm\Attribute\Entity;
 use Sarue\Orm\Attribute\Field;
 use Sarue\Orm\Entity\EntityInterface;
-use Sarue\Orm\Field\FieldInterface;
+use Sarue\Orm\Field\FieldTypeInterface;
 use Sarue\Orm\Field\Type\Numeric\Integer;
 use Sarue\Orm\Field\Type\Text\Text;
 use Sarue\Orm\Schema\EntityDefinition;
@@ -99,7 +99,7 @@ class ClassGenerator
                 'int' => Integer::class,
                 'string' => Text::class,
                 default =>
-                    class_exists($type) && is_subclass_of($type, FieldInterface::class) ?
+                    class_exists($type) && is_subclass_of($type, FieldTypeInterface::class) ?
                         $type :
                         throw new \Exception("'$type' is not a valid type for a field."),
             };

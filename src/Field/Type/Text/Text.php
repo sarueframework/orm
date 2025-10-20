@@ -3,10 +3,10 @@
 namespace Sarue\Orm\Field\Type\Text;
 
 use Doctrine\DBAL\Schema\Column;
-use Sarue\Orm\Field\FieldBase;
+use Sarue\Orm\Field\FieldTypeBase;
 use Sarue\Orm\Query\Condition\Text\TextConditionInterface;
 
-class Text extends FieldBase
+class Text extends FieldTypeBase
 {
     protected int $value;
 

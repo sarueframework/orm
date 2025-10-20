@@ -2,7 +2,7 @@
 
 namespace Sarue\Orm\Field;
 
-abstract class FieldBase implements FieldInterface
+abstract class FieldTypeBase implements FieldTypeInterface
 {
     public function __construct(
         protected string $fieldName,

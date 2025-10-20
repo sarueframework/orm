@@ -68,7 +68,7 @@ class ClassGenerator
                 throw new \Exception('Class ' . $className . ' has attribute Entity but is abstract.');
             }
 
-            $entityDefinitions[] = new EntityDefinition(
+            $entityDefinitions[$className] = new EntityDefinition(
                 $this->getShortClassName($className),
                 $className,
                 $this->discoverFieldDefinitions($classReflection),
@@ -146,7 +146,7 @@ class ClassGenerator
 
         foreach ($queryClasses as $queryClass) {
             $className = $this->getShortClassName($queryClass);
-            $generatedCode .= "function get$className(): \\$queryClass { return \$this->instantiateQuery(".var_export($queryClass, true)."); }\n";
+            $generatedCode .= "public function get$className(): \\$queryClass { return \$this->instantiateQuery(".var_export($queryClass, true)."); }\n";
         }
         $generatedCode .= "}\n";
         $this->dump('/Entity/Query/QueryFactory.php', $generatedCode);
@@ -155,8 +155,8 @@ class ClassGenerator
     protected function generateEntityDiscoveryCacheClass(array $entityDiscoveryCache): void
     {
         $namespace = $this->generatedNamespace.'Entity';
-        $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass EntityDiscoveryCache {\n";
-        $generatedCode .= "function getCachedEntityDefinitions(): array {\n";
+        $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass EntityDiscoveryCache implements \\Sarue\\Orm\\Schema\\EntityDiscoveryCacheInterface {\n";
+        $generatedCode .= "public function getCachedEntityDefinitions(): array {\n";
         $generatedCode .= 'return '.var_export($entityDiscoveryCache, true).";\n}\n}";
 
         $this->dump('/Entity/EntityDiscoveryCache.php', $generatedCode);

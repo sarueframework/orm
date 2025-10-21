@@ -2,6 +2,9 @@
 
 namespace Sarue\Orm\Field\Type;
 
+use Doctrine\DBAL\Query\QueryBuilder;
+use Sarue\Orm\Entity\EntityInterface;
+
 interface FieldTypeInterface
 {
     public string $fieldName { set; }
@@ -16,6 +19,8 @@ interface FieldTypeInterface
      * @return \Doctrine\DBAL\Schema\Column[]
      */
     public function getSchema(): array;
+
+    public function persistFieldToDatabase(QueryBuilder $query, EntityInterface $entity): void;
 
     public function validateDefinition(): void;
 }

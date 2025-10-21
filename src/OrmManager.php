@@ -53,7 +53,7 @@ class OrmManager
         ;
 
         foreach ($entityDefinition->fields as $fieldDefinition) {
-            $query->setValue($fieldDefinition->fieldName, $query->createNamedParameter($entity->{$fieldDefinition->fieldName}));
+            $fieldDefinition->persistFieldToDatabase($query, $entity);
         }
 
         $query->executeQuery();

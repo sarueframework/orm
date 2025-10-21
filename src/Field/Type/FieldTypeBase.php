@@ -2,7 +2,9 @@
 
 namespace Sarue\Orm\Field\Type;
 
+use Doctrine\DBAL\Query\QueryBuilder;
 use LogicException;
+use Sarue\Orm\Entity\EntityInterface;
 
 abstract class FieldTypeBase implements FieldTypeInterface
 {
@@ -80,5 +82,10 @@ abstract class FieldTypeBase implements FieldTypeInterface
         }
 
         return $object;
+    }
+
+    public function persistFieldToDatabase(QueryBuilder $query, EntityInterface $entity): void
+    {
+        $query->setValue($this->fieldName, $query->createNamedParameter($entity->{$this->fieldName}));
     }
 }

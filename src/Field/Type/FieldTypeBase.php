@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Orm\Field;
+namespace Sarue\Orm\Field\Type;
 
 abstract class FieldTypeBase implements FieldTypeInterface
 {

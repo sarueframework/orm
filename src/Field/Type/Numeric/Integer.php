@@ -3,7 +3,7 @@
 namespace Sarue\Orm\Field\Type\Numeric;
 
 use Doctrine\DBAL\Schema\Column;
-use Sarue\Orm\Field\FieldTypeBase;
+use Sarue\Orm\Field\Type\FieldTypeBase;
 use Sarue\Orm\Query\Condition\Numeric\NumericConditionInterface;
 
 class Integer extends FieldTypeBase

@@ -2,9 +2,7 @@
 
 namespace Sarue\Orm\EntityManager\Generator;
 
-use Attribute;
 use ReflectionClass;
-use ReflectionProperty;
 use Sarue\Orm\Attribute\Entity;
 use Sarue\Orm\Attribute\Field;
 use Sarue\Orm\Entity\EntityInterface;

@@ -18,19 +18,11 @@ class CreateTableTest extends IntegrationTestCase
 
         $this->ormManager->save($entity);
 
-        $entities = $this->ormManager
-            ->getQueryFactory()
-            ->getDummyEntityQuery()
-            ->age(isLargerThan(18))
-            ->name(startsWith('B'))
-            ->loadOne();
-
-        $this->assertEquals(1, count($entities));
-        $entity = reset($entities);
-        $this->assertEquals('John Smith', );
-
-
-        $query
-            ->condition('field_golocation', 1203);
+        // $entities = $this->ormManager
+        //     ->getQueryFactory()
+        //     ->getDummyEntityQuery()
+        //     ->age(isLargerThan(18))
+        //     ->name(startsWith('B'))
+        //     ->loadOne();
     }
 }

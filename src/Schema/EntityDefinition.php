@@ -11,20 +11,16 @@ class EntityDefinition {
         return new static(...$properties);
     }
 
+    /**
+     * @param string $name
+     * @param class-string $className
+     * @param \Sarue\Orm\Field\Type\FieldTypeInterface[] $fields
+     */
     public function __construct(
-        /**
-         * @var string
-         */
         public readonly string $name,
 
-        /**
-         * @var class-string
-         */
         public readonly string $className,
 
-        /**
-         * @var \Sarue\Orm\Schema\FieldDefinition[]
-         */
         public readonly array $fields,
 
         public string $some,

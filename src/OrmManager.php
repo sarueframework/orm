@@ -27,11 +27,7 @@ class OrmManager
                 ->setUnquotedName($entityDefintion->name);
 
             foreach ($entityDefintion->fields as $fieldDefinition) {
-                /**
-                 * @var \Doctrine\DBAL\Schema\Column[]
-                 */
-                $columns = [$fieldDefinition->type, 'getColumns']($fieldDefinition->name);
-                foreach ($columns as $column) {
+                foreach ($fieldDefinition->getSchema() as $column) {
                     $tableEditor->addColumn($column);
                 }
             }
@@ -57,7 +53,7 @@ class OrmManager
         ;
 
         foreach ($entityDefinition->fields as $fieldDefinition) {
-            $query->setValue($fieldDefinition->name, $query->createNamedParameter($entity->{$fieldDefinition->name}));
+            $query->setValue($fieldDefinition->fieldName, $query->createNamedParameter($entity->{$fieldDefinition->fieldName}));
         }
 
         $query->executeQuery();

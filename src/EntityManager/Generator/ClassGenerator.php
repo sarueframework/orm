@@ -2,11 +2,12 @@
 
 namespace Sarue\Orm\EntityManager\Generator;
 
+use ReflectionAttribute;
 use ReflectionClass;
 use Sarue\Orm\Attribute\Entity;
 use Sarue\Orm\Attribute\Field;
 use Sarue\Orm\Entity\EntityInterface;
-use Sarue\Orm\Field\FieldTypeInterface;
+use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Field\Type\Numeric\Integer;
 use Sarue\Orm\Field\Type\Text\Text;
 use Sarue\Orm\Schema\EntityDefinition;
@@ -82,35 +83,30 @@ class ClassGenerator
         $fieldDefinitions = [];
 
         foreach ($classReflection->getProperties() as $property) {
-            $fieldAttributes = $property->getAttributes(Field::class);
+            $fieldAttributes = $property->getAttributes(FieldTypeInterface::class, ReflectionAttribute::IS_INSTANCEOF);
 
             if (empty($fieldAttributes)) {
                 continue;
             }
 
+            if (count($fieldAttributes) !== 1) {
+                throw new \Exception('Cannot declare more than one field type for a property.');
+            }
+
             $fieldAttribute = reset($fieldAttributes);
 
-            $type = $property->getType()->__toString();
+            if ($property->getName() === 'id') {
+                throw new \Exception('Reserved word "id" cannot be used as a field name');
+            }
 
-            // @todo Add support for other types of columns that map to a scalar property.
-            $type = match($type) {
-                'int' => Integer::class,
-                'string' => Text::class,
-                default =>
-                    class_exists($type) && is_subclass_of($type, FieldTypeInterface::class) ?
-                        $type :
-                        throw new \Exception("'$type' is not a valid type for a field."),
-            };
+            /** @var \Sarue\Orm\Field\Type\FieldTypeInterface */
+            $fieldDefinition = $fieldAttribute->newInstance();
+            $fieldDefinition->fieldName = $property->getName();
+            $fieldDefinition->propertyType = $property->getType()?->__toString();
 
-            $fieldDefinition = new FieldDefinition(
-                $property->getName(),
-                $type,
-                [$type, 'getConditionType'](),
-            );
+            $fieldDefinition->validateDefinition();
 
-            $fieldDefinition->validate();
-
-            $fieldDefinitions[$fieldDefinition->name] = $fieldDefinition;
+            $fieldDefinitions[$fieldDefinition->fieldName] = $fieldDefinition;
         }
 
         return $fieldDefinitions;
@@ -128,7 +124,8 @@ class ClassGenerator
         $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass $queryClassName extends \\Sarue\\Orm\\Query\\QueryBase {\n";
 
         foreach ($entityDefinition->fields as $fieldDefinition) {
-            $generatedCode .= "public function {$fieldDefinition->name}(\\{$fieldDefinition->conditionType} \$condition): static { return \$this->addCondition(\$condition); }\n";
+            $conditionType = $fieldDefinition->getConditionType();
+            $generatedCode .= "public function {$fieldDefinition->fieldName}(\\{$conditionType} \$condition): static { return \$this->addCondition(\$condition); }\n";
         }
 
         $generatedCode .= "}\n";

@@ -2,7 +2,9 @@
 
 namespace Sarue\Orm\Query\Condition\Numeric;
 
-class SimpleNumericCondition implements NumericConditionInterface
+use Sarue\Orm\Query\Condition\ConditionBase;
+
+class SimpleNumericCondition extends ConditionBase implements NumericConditionInterface
 {
     public function __construct(
         public float $number,

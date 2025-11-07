@@ -2,7 +2,9 @@
 
 namespace Sarue\Orm\Query\Condition\Text;
 
-class LikeCondition implements TextConditionInterface
+use Sarue\Orm\Query\Condition\ConditionBase;
+
+class LikeCondition extends ConditionBase implements TextConditionInterface
 {
     public function __construct(
         public readonly string $sting,

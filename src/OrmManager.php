@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Sarue\Orm\Entity\EntityInterface;
+use Sarue\Orm\Query\QueryInterface;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\EntityDiscoveryCache;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\Query\QueryFactory;
 
@@ -41,22 +42,35 @@ class OrmManager
         }
     }
 
+    public function loadEntities(QueryInterface $query): array
+    {
+        $queryBuilder = $this->connection
+            ->createQueryBuilder()
+            ->select('*')
+            ->from($this->getEntityDiscoveryCache()->getCachedEntityDefinitions()[$query::ENTITY_CLASS]->name)
+        ;
+
+        $queryBuilder->where();
+
+        return $queryBuilder->executeQuery()->fetchAllAssociative();
+    }
+
     public function save(EntityInterface $entity): void {
         $entityDefinition = $this->entityDiscoveryCache->getCachedEntityDefinitions()[get_class($entity)] ?? NULL;
         if (!$entityDefinition) {
             throw new \Exception('Unknown entity ' . get_class($entity));
         }
 
-        $query = $this->connection
+        $queryBuilder = $this->connection
             ->createQueryBuilder()
             ->insert($entityDefinition->name)
         ;
 
         foreach ($entityDefinition->fields as $fieldDefinition) {
-            $fieldDefinition->persistFieldToDatabase($query, $entity);
+            $fieldDefinition->persistFieldToDatabase($queryBuilder, $entity);
         }
 
-        $query->executeQuery();
+        $queryBuilder->executeQuery();
     }
 
     public function getEntityDiscoveryCache(): EntityDiscoveryCache

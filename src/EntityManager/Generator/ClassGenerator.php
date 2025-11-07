@@ -116,16 +116,16 @@ class ClassGenerator
     {
         $reflection = new \ReflectionClass($entityDefinition->className);
 
-        $entityNameParts = explode('\\', $entityDefinition->className);
-        $queryClassName = array_pop($entityNameParts).'Query';
+        $queryClassName = $this->getShortClassName($entityDefinition->className).'Query';
 
         $namespace = $this->generatedNamespace.'Entity\\Query';
 
         $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass $queryClassName extends \\Sarue\\Orm\\Query\\QueryBase {\n";
+        $generatedCode .= "public const string ENTITY_CLASS = \\{$entityDefinition->className}::class;\n";
 
         foreach ($entityDefinition->fields as $fieldDefinition) {
             $conditionType = $fieldDefinition->getConditionType();
-            $generatedCode .= "public function {$fieldDefinition->fieldName}(\\{$conditionType} \$condition): static { return \$this->addCondition(\$condition); }\n";
+            $generatedCode .= "public function {$fieldDefinition->fieldName}(\\{$conditionType} \$condition): static { return \$this->addCondition('{$fieldDefinition->fieldName}', \$condition); }\n";
         }
 
         $generatedCode .= "}\n";

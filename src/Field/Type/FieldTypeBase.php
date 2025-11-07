@@ -84,8 +84,8 @@ abstract class FieldTypeBase implements FieldTypeInterface
         return $object;
     }
 
-    public function persistFieldToDatabase(QueryBuilder $query, EntityInterface $entity): void
+    public function persistFieldToDatabase(QueryBuilder $queryBuilder, EntityInterface $entity): void
     {
-        $query->setValue($this->fieldName, $query->createNamedParameter($entity->{$this->fieldName}));
+        $queryBuilder->setValue($this->fieldName, $queryBuilder->createNamedParameter($entity->{$this->fieldName}));
     }
 }

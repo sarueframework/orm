@@ -20,7 +20,7 @@ interface FieldTypeInterface
      */
     public function getSchema(): array;
 
-    public function persistFieldToDatabase(QueryBuilder $query, EntityInterface $entity): void;
+    public function persistFieldToDatabase(QueryBuilder $queryBuilder, EntityInterface $entity): void;
 
     public function validateDefinition(): void;
 }

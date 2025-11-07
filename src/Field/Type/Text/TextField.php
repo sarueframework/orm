@@ -6,9 +6,10 @@ use Doctrine\DBAL\Schema\Column;
 use Sarue\Orm\Field\Type\FieldTypeBase;
 use Sarue\Orm\Query\Condition\Text\TextConditionInterface;
 
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
 class TextField extends FieldTypeBase
 {
-    protected int $value;
+    protected const ALLOWED_PROPERTY_TYPES = ['string'];
 
     public function getConditionType(): string
     {

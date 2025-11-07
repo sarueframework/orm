@@ -10,6 +10,8 @@ use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Field\Type\Numeric\Integer;
 use Sarue\Orm\Field\Type\Text\Text;
+use Sarue\Orm\Query\Condition\ConditionGroupBase;
+use Sarue\Orm\Query\QueryBase;
 use Sarue\Orm\Schema\EntityDefinition;
 use Sarue\Orm\Schema\FieldDefinition;
 
@@ -28,7 +30,7 @@ class ClassGenerator
         $queryClasses = [];
         $entityDefinitions = $this->discoverEntityDefinitions();
         foreach ($entityDefinitions as $entityDefinition) {
-            $queryClasses[] = $this->generateQueryClassForEntity($entityDefinition);
+            $queryClasses[] = $this->generateClassesForEntity($entityDefinition);
         }
 
         $this->generateQueryFactory($queryClasses);
@@ -36,7 +38,7 @@ class ClassGenerator
     }
 
     /**
-     * @return \Sarue\Orm\Attribute\Entity[]
+     * @return \Sarue\Orm\Schema\EntityDefinition[]
      */
     protected function discoverEntityDefinitions(): array
     {
@@ -112,26 +114,56 @@ class ClassGenerator
         return $fieldDefinitions;
     }
 
-    protected function generateQueryClassForEntity(EntityDefinition $entityDefinition): string
+    protected function generateClassesForEntity(EntityDefinition $entityDefinition): string
     {
         $reflection = new \ReflectionClass($entityDefinition->className);
 
-        $queryClassName = $this->getShortClassName($entityDefinition->className).'Query';
-
-        $namespace = $this->generatedNamespace.'Entity\\Query';
-
-        $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass $queryClassName extends \\Sarue\\Orm\\Query\\QueryBase {\n";
-        $generatedCode .= "public const string ENTITY_CLASS = \\{$entityDefinition->className}::class;\n";
-
+        $methodParameters = "(\n?\\Sarue\\Orm\\Query\\Condition\\ConditionInterface \$_condition = null,\n";
+        $baseMethodCall = "return \$this->addConditions(\$_condition,\n [\n";
         foreach ($entityDefinition->fields as $fieldDefinition) {
             $conditionType = $fieldDefinition->getConditionType();
-            $generatedCode .= "public function {$fieldDefinition->fieldName}(\\{$conditionType} \$condition): static { return \$this->addCondition('{$fieldDefinition->fieldName}', \$condition); }\n";
+            $methodParameters .= "?\\{$conditionType} \${$fieldDefinition->fieldName} = null,\n";
+            $baseMethodCall .= "'{$fieldDefinition->fieldName}' => \${$fieldDefinition->fieldName},";
+        }
+        $methodParameters .= ')';
+        $baseMethodCall .= "\n]);";
+
+        $this->generateSingleClassForEntity($entityDefinition, 'OrConditionGroup', ConditionGroupBase::class, $methodParameters, $baseMethodCall, [
+            'or',
+        ]);
+
+        $this->generateSingleClassForEntity($entityDefinition, 'AndConditionGroup', ConditionGroupBase::class, $methodParameters, $baseMethodCall, [
+            'and',
+        ]);
+
+        return $this->generateSingleClassForEntity($entityDefinition, 'Query', QueryBase::class, $methodParameters, $baseMethodCall, [
+            'where',
+            'and',
+        ]);
+    }
+
+    protected function generateSingleClassForEntity(EntityDefinition $entityDefinition, string $classNameSuffix, string $classBase, string $methodParameters, string $baseMethodCall, array $methodsToGenerate): string {
+        $namespace = $this->generatedNamespace.'Entity\\Query';
+        $shortEntityClassName = $this->getShortClassName($entityDefinition->className);
+        $generatedClassName = $shortEntityClassName.$classNameSuffix;
+
+        $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass $generatedClassName extends \\{$classBase} {\n";
+
+        if ($classNameSuffix === 'Query') {
+            $generatedCode .= "public const string ENTITY_CLASS = \\{$entityDefinition->className}::class;\n";
+            $generatedCode .= "public function orGroup(): {$shortEntityClassName}OrConditionGroup { return new {$shortEntityClassName}OrConditionGroup(); }\n";
+            $generatedCode .= "public function andGroup(): {$shortEntityClassName}AndConditionGroup { return new {$shortEntityClassName}AndConditionGroup(); }\n";
+        }
+
+        foreach ($methodsToGenerate as $methodToGenerate) {
+            $generatedCode .= "public function {$methodToGenerate}{$methodParameters} : static {\n{$baseMethodCall}\n}\n";
         }
 
         $generatedCode .= "}\n";
-        $this->dump('/Entity/Query/'.$queryClassName.'.php', $generatedCode);
 
-        return $namespace.'\\'.$queryClassName;
+        $this->dump('/Entity/Query/'.$generatedClassName.'.php', $generatedCode);
+
+        return $namespace.'\\'.$generatedClassName;
     }
 
     protected function generateQueryFactory(array $queryClasses): void

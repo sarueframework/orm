@@ -2,12 +2,14 @@
 
 namespace Sarue\Orm\Query;
 
-interface QueryInterface
+use Sarue\Orm\Query\Condition\ConditionInterface;
+
+interface QueryInterface extends ConditionInterface
 {
     const string ENTITY_CLASS = '';
 
-    public function loadAll();
-    public function loadOne();
-    public function count();
-    public function sum();
+    // public function loadAll();
+    // public function loadOne();
+    // public function count();
+    // public function sum();
 }

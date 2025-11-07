@@ -85,7 +85,7 @@ class OrmManager
     public function getQueryFactory(): QueryFactory
     {
         if (!isset($this->queryFactory)) {
-            $this->queryFactory = new QueryFactory();
+            $this->queryFactory = new QueryFactory($this);
         }
 
         return $this->queryFactory;

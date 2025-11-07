@@ -2,20 +2,12 @@
 
 namespace Sarue\Orm\Query;
 
-use Sarue\Orm\Query\Condition\ConditionInterface;
+use Sarue\Orm\OrmManager;
+use Sarue\Orm\Query\Condition\ConditionGroupBase;
 
-class QueryBase implements QueryInterface
+class QueryBase extends ConditionGroupBase implements QueryInterface
 {
-    /**
-     * @var \Sarue\Orm\Query\Condition\ConditionInterface[]
-     */
-    protected array $conditions;
-
-    protected function addCondition(string $fieldName, ConditionInterface $condition): static
-    {
-        $condition->fieldName = $fieldName;
-        $this->conditions[] = $condition;
-
-        return $this;
-    }
+    final public function __construct(
+        protected OrmManager $ormManager,
+    ) {}
 }

@@ -7,6 +7,7 @@ use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\Query\DummyEntityQuery;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 use function Sarue\Orm\Query\Condition\isLargerThan;
+use function Sarue\Orm\Query\Condition\isLessThan;
 use function Sarue\Orm\Query\Condition\startsWith;
 
 class PrototypeTest extends IntegrationTestCase
@@ -26,21 +27,15 @@ class PrototypeTest extends IntegrationTestCase
         $this->ormManager->save($entity);
 
         $query = $this->ormManager->getQueryFactory()->getDummyEntityQuery();
-        $query
+        $entities = $query
             ->where(
-                level: EmployeeLevel::JUNIOR,
-                age: isGreaterThanOrEqualTo(20),
+                age: isLargerThan(20),
             )
-            ->and(age: isLesserThan(30))
+            ->and(age: isLessThan(30))
             ->and($query->orGroup()
                 ->or(name: startsWith('B'))
                 ->or(name: startsWith('C'))
             )
-            ->and(
-                $query->join()->department->where(code: is('DRH')),
-            );
-
-        $employees = $query->loadAll();
-
+            ->loadAll();
     }
 }

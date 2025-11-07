@@ -12,6 +12,10 @@ function isLargerThan(float $number): NumericConditionInterface
 {
     return new SimpleNumericCondition($number, '>');
 }
+function isLessThan(float $number): NumericConditionInterface
+{
+    return new SimpleNumericCondition($number, '<');
+}
 
 // Text functions.
 function startsWith(string $string): TextConditionInterface

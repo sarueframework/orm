@@ -27,8 +27,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": "^8.4",
-        "doctrine/dbal": "^4",
-        "doctrine/collections": "^2"
+        "doctrine/dbal": "^4"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.0",

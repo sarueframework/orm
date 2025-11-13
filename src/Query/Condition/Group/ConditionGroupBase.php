@@ -1,12 +1,30 @@
 <?php
 
-namespace Sarue\Orm\Query\Condition;
+namespace Sarue\Orm\Query\Condition\Group;
 
-class ConditionGroupBase implements ConditionInterface {
+use Sarue\Orm\Query\Condition\ConditionInterface;
+
+abstract class ConditionGroupBase implements ConditionInterface {
+
+    const string CONJUNCTION = ' AND ';
+
     /**
      * @var \Sarue\Orm\Query\Condition\ConditionInterface[]
      */
     protected array $conditions = [];
+
+    public function buildSql(): array
+    {
+        $sql = [];
+        foreach ($this->conditions as $delta => $condition) {
+            if ($delta) {
+                $sql[] = static::CONJUNCTION;
+            }
+            $sql = array_merge($sql, $condition->buildSql());
+        }
+
+        return $sql;
+    }
 
     protected function addConditions(?ConditionInterface $genericCondition, array $fieldConditions): static
     {

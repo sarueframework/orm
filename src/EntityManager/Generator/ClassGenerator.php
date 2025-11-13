@@ -5,15 +5,12 @@ namespace Sarue\Orm\EntityManager\Generator;
 use ReflectionAttribute;
 use ReflectionClass;
 use Sarue\Orm\Attribute\Entity;
-use Sarue\Orm\Attribute\Field;
 use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
-use Sarue\Orm\Field\Type\Numeric\Integer;
-use Sarue\Orm\Field\Type\Text\Text;
-use Sarue\Orm\Query\Condition\ConditionGroupBase;
+use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
+use Sarue\Orm\Query\Condition\Group\OrConditionGroupBase;
 use Sarue\Orm\Query\QueryBase;
 use Sarue\Orm\Schema\EntityDefinition;
-use Sarue\Orm\Schema\FieldDefinition;
 
 class ClassGenerator
 {
@@ -128,11 +125,11 @@ class ClassGenerator
         $methodParameters .= ')';
         $baseMethodCall .= "\n]);";
 
-        $this->generateSingleClassForEntity($entityDefinition, 'OrConditionGroup', ConditionGroupBase::class, $methodParameters, $baseMethodCall, [
+        $this->generateSingleClassForEntity($entityDefinition, 'OrConditionGroup', OrConditionGroupBase::class, $methodParameters, $baseMethodCall, [
             'or',
         ]);
 
-        $this->generateSingleClassForEntity($entityDefinition, 'AndConditionGroup', ConditionGroupBase::class, $methodParameters, $baseMethodCall, [
+        $this->generateSingleClassForEntity($entityDefinition, 'AndConditionGroup', AndConditionGroupBase::class, $methodParameters, $baseMethodCall, [
             'and',
         ]);
 
@@ -153,6 +150,10 @@ class ClassGenerator
             $generatedCode .= "public const string ENTITY_CLASS = \\{$entityDefinition->className}::class;\n";
             $generatedCode .= "public function orGroup(): {$shortEntityClassName}OrConditionGroup { return new {$shortEntityClassName}OrConditionGroup(); }\n";
             $generatedCode .= "public function andGroup(): {$shortEntityClassName}AndConditionGroup { return new {$shortEntityClassName}AndConditionGroup(); }\n";
+            $generatedCode .= "/**\n";
+            $generatedCode .= " * @return \\" . $entityDefinition->className . "[]\n";
+            $generatedCode .= " */\n";
+            $generatedCode .= "public function loadAll(): array { return \$this->doLoadAll(); }\n";
         }
 
         foreach ($methodsToGenerate as $methodToGenerate) {

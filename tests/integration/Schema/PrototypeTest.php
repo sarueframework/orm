@@ -3,10 +3,9 @@
 namespace Sarue\Orm\Tests\Integration\Schema;
 
 use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
-use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\Query\DummyEntityQuery;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
-use function Sarue\Orm\Query\Condition\isLargerThan;
+use function Sarue\Orm\Query\Condition\isGreaterThan;
 use function Sarue\Orm\Query\Condition\isLessThan;
 use function Sarue\Orm\Query\Condition\startsWith;
 
@@ -16,7 +15,7 @@ class PrototypeTest extends IntegrationTestCase
     {
         $entity = new DummyEntity();
         $entity->name = 'John Smith';
-        $entity->age = 20;
+        $entity->age = 21;
 
         $this->ormManager->save($entity);
 
@@ -29,13 +28,12 @@ class PrototypeTest extends IntegrationTestCase
         $query = $this->ormManager->getQueryFactory()->getDummyEntityQuery();
         $entities = $query
             ->where(
-                age: isLargerThan(20),
+                age: isGreaterThan(20),
             )
             ->and(age: isLessThan(30))
-            ->and($query->orGroup()
-                ->or(name: startsWith('B'))
-                ->or(name: startsWith('C'))
-            )
             ->loadAll();
+
+        $this->assertEquals(1, count($entities));
+        $this->assertEquals('John Smith', $entities[0]->name);
     }
 }

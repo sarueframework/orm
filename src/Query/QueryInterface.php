@@ -8,7 +8,8 @@ interface QueryInterface extends ConditionInterface
 {
     const string ENTITY_CLASS = '';
 
-    // public function loadAll();
+    public function loadAll();
+
     // public function loadOne();
     // public function count();
     // public function sum();

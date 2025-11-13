@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Sarue\Orm\Entity\EntityInterface;
+use Sarue\Orm\Query\Parameter;
 use Sarue\Orm\Query\QueryInterface;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\EntityDiscoveryCache;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\Query\QueryFactory;
@@ -89,5 +90,41 @@ class OrmManager
         }
 
         return $this->queryFactory;
+    }
+
+    public function loadAll(QueryInterface $query): array {
+
+
+        $queryBuilder = $this->connection
+            ->createQueryBuilder()
+            ->select('*')
+            ->from($this->getEntityDiscoveryCache()->getCachedEntityDefinitions()[$query::ENTITY_CLASS]->name)
+        ;
+
+        if ($whereParts = $query->buildSql()) {
+            $where = '';
+            foreach ($whereParts as $wherePart) {
+                if (is_string($wherePart)) {
+                    $where .= $wherePart;
+                }
+                elseif ($wherePart instanceof Parameter) {
+                    $where .= $queryBuilder->createPositionalParameter($wherePart->value);
+                }
+                else {
+                    throw new \Exception('buildSql returned something not a string or Parameter.');
+                }
+            }
+            $queryBuilder->where($where);
+        }
+
+        $results = $queryBuilder->executeQuery()->fetchAllAssociative();
+        $entities = [];
+
+        foreach ($results as $result) {
+            $entityClass = $query::ENTITY_CLASS;
+            $entities[] = $entityClass::fromValues($result);
+        }
+
+        return $entities;
     }
 }

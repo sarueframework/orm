@@ -2,7 +2,8 @@
 
 namespace Sarue\Orm\Query\Condition\Numeric;
 
-enum SimpleNumericConditionOperator {
+enum SimpleNumericConditionOperator
+{
     case GreaterThan;
     case GreaterThanOrEqualTo;
     case LessThan;

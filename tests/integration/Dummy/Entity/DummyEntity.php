@@ -7,7 +7,7 @@ use Sarue\Orm\Entity\EntityBase;
 use Sarue\Orm\Field\Type\Numeric\IntegerField;
 use Sarue\Orm\Field\Type\Text\TextField;
 
-#[Entity(some: "thing")]
+#[Entity(some: 'thing')]
 class DummyEntity extends EntityBase
 {
     #[IntegerField(minimum: 0, maximum: 123)]

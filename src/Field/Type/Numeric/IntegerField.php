@@ -3,20 +3,19 @@
 namespace Sarue\Orm\Field\Type\Numeric;
 
 use Doctrine\DBAL\Schema\Column;
-use Exception;
 use Sarue\Orm\Field\Type\FieldTypeBase;
 use Sarue\Orm\Query\Condition\Numeric\NumericConditionInterface;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class IntegerField extends FieldTypeBase
 {
-    const ALLOWED_PROPERTY_TYPES = ['int'];
+    public const ALLOWED_PROPERTY_TYPES = ['int'];
 
     public function __construct(
-        public readonly ?int $minimum = NULL,
-        public readonly ?int $maximum = NULL,
-    )
-    {}
+        public readonly ?int $minimum = null,
+        public readonly ?int $maximum = null,
+    ) {
+    }
 
     public function getConditionType(): string
     {

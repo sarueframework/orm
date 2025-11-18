@@ -5,15 +5,15 @@ namespace Sarue\Orm\Schema;
 /**
  * Stores the cached definition of an entity, extracted from attributes.
  */
-class EntityDefinition {
+class EntityDefinition
+{
     public static function __set_state($properties)
     {
         return new static(...$properties);
     }
 
     /**
-     * @param string $name
-     * @param class-string $className
+     * @param class-string                               $className
      * @param \Sarue\Orm\Field\Type\FieldTypeInterface[] $fields
      */
     public function __construct(
@@ -24,7 +24,6 @@ class EntityDefinition {
         public readonly array $fields,
 
         public string $some,
-    )
-    {
+    ) {
     }
 }

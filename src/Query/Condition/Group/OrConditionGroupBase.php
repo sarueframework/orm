@@ -2,6 +2,7 @@
 
 namespace Sarue\Orm\Query\Condition\Group;
 
-abstract class OrConditionGroupBase extends ConditionGroupBase {
-    const string CONJUNCTION = ' AND ';
+abstract class OrConditionGroupBase extends ConditionGroupBase
+{
+    public const string CONJUNCTION = ' AND ';
 }

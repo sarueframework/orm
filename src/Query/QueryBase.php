@@ -9,7 +9,8 @@ abstract class QueryBase extends ConditionGroupBase implements QueryInterface
 {
     final public function __construct(
         protected OrmManager $ormManager,
-    ) {}
+    ) {
+    }
 
     protected function doLoadAll()
     {

@@ -56,10 +56,11 @@ class OrmManager
         return $queryBuilder->executeQuery()->fetchAllAssociative();
     }
 
-    public function save(EntityInterface $entity): void {
-        $entityDefinition = $this->entityDiscoveryCache->getCachedEntityDefinitions()[get_class($entity)] ?? NULL;
+    public function save(EntityInterface $entity): void
+    {
+        $entityDefinition = $this->entityDiscoveryCache->getCachedEntityDefinitions()[get_class($entity)] ?? null;
         if (!$entityDefinition) {
-            throw new \Exception('Unknown entity ' . get_class($entity));
+            throw new \Exception('Unknown entity '.get_class($entity));
         }
 
         $queryBuilder = $this->connection
@@ -92,9 +93,8 @@ class OrmManager
         return $this->queryFactory;
     }
 
-    public function loadAll(QueryInterface $query): array {
-
-
+    public function loadAll(QueryInterface $query): array
+    {
         $queryBuilder = $this->connection
             ->createQueryBuilder()
             ->select('*')
@@ -106,11 +106,9 @@ class OrmManager
             foreach ($whereParts as $wherePart) {
                 if (is_string($wherePart)) {
                     $where .= $wherePart;
-                }
-                elseif ($wherePart instanceof Parameter) {
+                } elseif ($wherePart instanceof Parameter) {
                     $where .= $queryBuilder->createPositionalParameter($wherePart->value);
-                }
-                else {
+                } else {
                     throw new \Exception('buildSql returned something not a string or Parameter.');
                 }
             }

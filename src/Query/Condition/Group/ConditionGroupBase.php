@@ -4,12 +4,12 @@ namespace Sarue\Orm\Query\Condition\Group;
 
 use Sarue\Orm\Query\Condition\ConditionInterface;
 
-abstract class ConditionGroupBase implements ConditionInterface {
-
-    const string CONJUNCTION = ' AND ';
+abstract class ConditionGroupBase implements ConditionInterface
+{
+    public const string CONJUNCTION = ' AND ';
 
     /**
-     * @var \Sarue\Orm\Query\Condition\ConditionInterface[]
+     * @var ConditionInterface[]
      */
     protected array $conditions = [];
 

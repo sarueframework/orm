@@ -2,9 +2,10 @@
 
 namespace Sarue\Orm\Schema;
 
-interface EntityDiscoveryCacheInterface {
+interface EntityDiscoveryCacheInterface
+{
     /**
-     * @return \Sarue\Orm\Schema\EntityDefinition[]
+     * @return EntityDefinition[]
      */
     public function getCachedEntityDefinitions(): array;
 }

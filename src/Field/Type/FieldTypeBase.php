@@ -3,7 +3,6 @@
 namespace Sarue\Orm\Field\Type;
 
 use Doctrine\DBAL\Query\QueryBuilder;
-use LogicException;
 use Sarue\Orm\Entity\EntityInterface;
 
 abstract class FieldTypeBase implements FieldTypeInterface
@@ -12,20 +11,20 @@ abstract class FieldTypeBase implements FieldTypeInterface
 
     final protected const SET_STATE_PROPERTIES = ['required', 'fieldName', 'propertyType'];
 
-    public final string $fieldName {
+    final public string $fieldName {
         set(string $fieldName) {
             if (isset($this->fieldName)) {
-                throw new LogicException('Cannot alter property fieldName.');
+                throw new \LogicException('Cannot alter property fieldName.');
             }
 
             $this->fieldName = $fieldName;
         }
     }
 
-    public final string $propertyType {
+    final public string $propertyType {
         set(?string $propertyType) {
             if (isset($this->propertyType)) {
-                throw new LogicException('Cannot alter property propertyType.');
+                throw new \LogicException('Cannot alter property propertyType.');
             }
 
             if (empty($propertyType)) {
@@ -34,11 +33,11 @@ abstract class FieldTypeBase implements FieldTypeInterface
 
             if (str_starts_with($propertyType, '?')) {
                 $propertyType = substr($propertyType, 1);
-                $this->required = FALSE;
+                $this->required = false;
             }
             // The required may be set either here or by _set_state().
             elseif (!isset($this->required)) {
-                $this->required = TRUE;
+                $this->required = true;
             }
 
             if (str_contains($propertyType, '&') || str_contains($propertyType, '|')) {
@@ -50,17 +49,17 @@ abstract class FieldTypeBase implements FieldTypeInterface
             }
 
             if (!in_array($propertyType, static::ALLOWED_PROPERTY_TYPES, strict: true)) {
-                throw new \Exception('The property type for field ' . $this->fieldName . ' must be one of: "' . implode('", "', static::ALLOWED_PROPERTY_TYPES) . '".');
+                throw new \Exception('The property type for field '.$this->fieldName.' must be one of: "'.implode('", "', static::ALLOWED_PROPERTY_TYPES).'".');
             }
 
             $this->propertyType = $propertyType;
         }
     }
 
-    public final bool $required {
+    final public bool $required {
         set(bool $required) {
             if (isset($this->required)) {
-                throw new LogicException('Cannot alter property required.');
+                throw new \LogicException('Cannot alter property required.');
             }
 
             $this->required = $required;

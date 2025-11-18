@@ -7,7 +7,6 @@ use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 use function Sarue\Orm\Query\Condition\isGreaterThan;
 use function Sarue\Orm\Query\Condition\isLessThan;
-use function Sarue\Orm\Query\Condition\startsWith;
 
 class PrototypeTest extends IntegrationTestCase
 {

@@ -8,7 +8,8 @@ class QueryFactoryBase
 {
     public function __construct(
         protected OrmManager $ormManager,
-    ) {}
+    ) {
+    }
 
     protected function instantiateQuery(string $class): QueryInterface
     {

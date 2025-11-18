@@ -6,7 +6,7 @@ use Sarue\Orm\Query\Condition\ConditionInterface;
 
 interface QueryInterface extends ConditionInterface
 {
-    const string ENTITY_CLASS = '';
+    public const string ENTITY_CLASS = '';
 
     public function loadAll();
 

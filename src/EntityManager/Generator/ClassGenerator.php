@@ -2,8 +2,6 @@
 
 namespace Sarue\Orm\EntityManager\Generator;
 
-use ReflectionAttribute;
-use ReflectionClass;
 use Sarue\Orm\Attribute\Entity;
 use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
@@ -35,7 +33,7 @@ class ClassGenerator
     }
 
     /**
-     * @return \Sarue\Orm\Schema\EntityDefinition[]
+     * @return EntityDefinition[]
      */
     protected function discoverEntityDefinitions(): array
     {
@@ -59,11 +57,11 @@ class ClassGenerator
             }
 
             if (!is_subclass_of($className, EntityInterface::class)) {
-                throw new \Exception('Class ' . $className . ' has attribute Entity but it not a descendant of EntityInterface.');
+                throw new \Exception('Class '.$className.' has attribute Entity but it not a descendant of EntityInterface.');
             }
 
             if ($classReflection->isAbstract()) {
-                throw new \Exception('Class ' . $className . ' has attribute Entity but is abstract.');
+                throw new \Exception('Class '.$className.' has attribute Entity but is abstract.');
             }
 
             $entityDefinitions[$className] = new EntityDefinition(
@@ -72,33 +70,33 @@ class ClassGenerator
                 $this->discoverFieldDefinitions($classReflection),
                 ...reset($entityAttributes)->getArguments()
             );
-        };
+        }
 
         return $entityDefinitions;
     }
 
-    protected function discoverFieldDefinitions(ReflectionClass $classReflection): array
+    protected function discoverFieldDefinitions(\ReflectionClass $classReflection): array
     {
         $fieldDefinitions = [];
 
         foreach ($classReflection->getProperties() as $property) {
-            $fieldAttributes = $property->getAttributes(FieldTypeInterface::class, ReflectionAttribute::IS_INSTANCEOF);
+            $fieldAttributes = $property->getAttributes(FieldTypeInterface::class, \ReflectionAttribute::IS_INSTANCEOF);
 
             if (empty($fieldAttributes)) {
                 continue;
             }
 
-            if (count($fieldAttributes) !== 1) {
+            if (1 !== count($fieldAttributes)) {
                 throw new \Exception('Cannot declare more than one field type for a property.');
             }
 
             $fieldAttribute = reset($fieldAttributes);
 
-            if ($property->getName() === 'id') {
+            if ('id' === $property->getName()) {
                 throw new \Exception('Reserved word "id" cannot be used as a field name');
             }
 
-            /** @var \Sarue\Orm\Field\Type\FieldTypeInterface */
+            /** @var FieldTypeInterface */
             $fieldDefinition = $fieldAttribute->newInstance();
             $fieldDefinition->fieldName = $property->getName();
             $fieldDefinition->propertyType = $property->getType()?->__toString();
@@ -139,19 +137,20 @@ class ClassGenerator
         ]);
     }
 
-    protected function generateSingleClassForEntity(EntityDefinition $entityDefinition, string $classNameSuffix, string $classBase, string $methodParameters, string $baseMethodCall, array $methodsToGenerate): string {
+    protected function generateSingleClassForEntity(EntityDefinition $entityDefinition, string $classNameSuffix, string $classBase, string $methodParameters, string $baseMethodCall, array $methodsToGenerate): string
+    {
         $namespace = $this->generatedNamespace.'Entity\\Query';
         $shortEntityClassName = $this->getShortClassName($entityDefinition->className);
         $generatedClassName = $shortEntityClassName.$classNameSuffix;
 
         $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass $generatedClassName extends \\{$classBase} {\n";
 
-        if ($classNameSuffix === 'Query') {
+        if ('Query' === $classNameSuffix) {
             $generatedCode .= "public const string ENTITY_CLASS = \\{$entityDefinition->className}::class;\n";
             $generatedCode .= "public function orGroup(): {$shortEntityClassName}OrConditionGroup { return new {$shortEntityClassName}OrConditionGroup(); }\n";
             $generatedCode .= "public function andGroup(): {$shortEntityClassName}AndConditionGroup { return new {$shortEntityClassName}AndConditionGroup(); }\n";
             $generatedCode .= "/**\n";
-            $generatedCode .= " * @return \\" . $entityDefinition->className . "[]\n";
+            $generatedCode .= ' * @return \\'.$entityDefinition->className."[]\n";
             $generatedCode .= " */\n";
             $generatedCode .= "public function loadAll(): array { return \$this->doLoadAll(); }\n";
         }

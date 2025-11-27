@@ -8,6 +8,6 @@ enum SimpleNumericConditionOperator
     case GreaterThanOrEqualTo;
     case LessThan;
     case LessThanOrEqualTo;
-    case Equal;
-    case NotEqual;
+    case EqualTo;
+    case NotEqualTo;
 }

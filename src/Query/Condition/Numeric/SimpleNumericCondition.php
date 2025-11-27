@@ -22,8 +22,8 @@ class SimpleNumericCondition extends ConditionBase implements NumericConditionIn
                 SimpleNumericConditionOperator::GreaterThanOrEqualTo => '>=',
                 SimpleNumericConditionOperator::LessThan => '<',
                 SimpleNumericConditionOperator::LessThanOrEqualTo => '<=',
-                SimpleNumericConditionOperator::Equal => '=',
-                SimpleNumericConditionOperator::NotEqual => '<>',
+                SimpleNumericConditionOperator::EqualTo => '=',
+                SimpleNumericConditionOperator::NotEqualTo => '<>',
             },
             new Parameter($this->number),
         ];

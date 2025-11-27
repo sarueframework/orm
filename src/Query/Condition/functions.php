@@ -2,24 +2,38 @@
 
 namespace Sarue\Orm\Query\Condition;
 
+use BcMath\Number;
 use Sarue\Orm\Query\Condition\Numeric\NumericConditionInterface;
 use Sarue\Orm\Query\Condition\Numeric\SimpleNumericCondition;
 use Sarue\Orm\Query\Condition\Numeric\SimpleNumericConditionOperator;
-use Sarue\Orm\Query\Condition\Text\LikeCondition;
-use Sarue\Orm\Query\Condition\Text\TextConditionInterface;
 
 // Numeric functions.
-function isGreaterThan(float $number): NumericConditionInterface
+function isGreaterThan(int|Number $number): NumericConditionInterface
 {
     return new SimpleNumericCondition($number, SimpleNumericConditionOperator::GreaterThan);
 }
-function isLessThan(float $number): NumericConditionInterface
+
+function isGreaterThanOrEqualTo(int|Number $number): NumericConditionInterface
+{
+    return new SimpleNumericCondition($number, SimpleNumericConditionOperator::GreaterThanOrEqualTo);
+}
+
+function isLessThan(int|Number $number): NumericConditionInterface
 {
     return new SimpleNumericCondition($number, SimpleNumericConditionOperator::LessThan);
 }
 
-// Text functions.
-function startsWith(string $string): TextConditionInterface
+function isLessThanOrEqualTo(int|Number $number): NumericConditionInterface
 {
-    return new LikeCondition("$string%");
+    return new SimpleNumericCondition($number, SimpleNumericConditionOperator::LessThanOrEqualTo);
+}
+
+function isEqualTo(int|Number $number): NumericConditionInterface
+{
+    return new SimpleNumericCondition($number, SimpleNumericConditionOperator::EqualTo);
+}
+
+function isNotEqualTo(int|Number $number): NumericConditionInterface
+{
+    return new SimpleNumericCondition($number, SimpleNumericConditionOperator::NotEqualTo);
 }

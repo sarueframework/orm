@@ -8,7 +8,7 @@ use Sarue\Orm\Entity\EntityInterface;
 
 abstract class ScalarFieldTypeBase extends FieldTypeBase
 {
-    const string COLUMN_TYPE = '';
+    public const string COLUMN_TYPE = '';
 
     public function getSchema(): array
     {

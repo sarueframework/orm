@@ -2,13 +2,14 @@
 
 namespace Sarue\Orm\Query\Condition\Numeric;
 
+use BcMath\Number;
 use Sarue\Orm\Query\Condition\ConditionBase;
 use Sarue\Orm\Query\Parameter;
 
 class SimpleNumericCondition extends ConditionBase implements NumericConditionInterface
 {
     public function __construct(
-        public readonly float $number,
+        public readonly int|Number $number,
         public readonly SimpleNumericConditionOperator $operator,
     ) {
     }

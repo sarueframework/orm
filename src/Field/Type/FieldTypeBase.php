@@ -2,9 +2,6 @@
 
 namespace Sarue\Orm\Field\Type;
 
-use Doctrine\DBAL\Query\QueryBuilder;
-use Sarue\Orm\Entity\EntityInterface;
-
 abstract class FieldTypeBase implements FieldTypeInterface
 {
     protected const ALLOWED_PROPERTY_TYPES = [];
@@ -81,10 +78,5 @@ abstract class FieldTypeBase implements FieldTypeInterface
         }
 
         return $object;
-    }
-
-    public function persistFieldToDatabase(QueryBuilder $queryBuilder, EntityInterface $entity): void
-    {
-        $queryBuilder->setValue($this->fieldName, $queryBuilder->createNamedParameter($entity->{$this->fieldName}));
     }
 }

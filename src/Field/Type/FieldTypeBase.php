@@ -38,7 +38,7 @@ abstract class FieldTypeBase implements FieldTypeInterface
             }
 
             if (str_contains($propertyType, '&') || str_contains($propertyType, '|')) {
-                throw new \Exception('The use of composite properties is not supported.');
+                throw new \Exception('The use of composite types is not supported.');
             }
 
             if (empty(static::ALLOWED_PROPERTY_TYPES)) {

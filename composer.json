@@ -27,6 +27,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": "^8.4",
+        "ext-pgsql": "*",
         "doctrine/dbal": "^4"
     },
     "require-dev": {

@@ -184,7 +184,7 @@ class ClassGenerator
         $namespace = $this->generatedNamespace.'Entity';
         $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass EntityDiscoveryCache implements \\Sarue\\Orm\\Schema\\EntityDiscoveryCacheInterface {\n";
         $generatedCode .= "public function getCachedEntityDefinitions(): array {\n";
-        $generatedCode .= 'return '.var_export($entityDiscoveryCache, true).";\n}\n}";
+        $generatedCode .= "return unserialize('".str_replace("'", "\\'", serialize($entityDiscoveryCache))."');\n}\n}";
 
         $this->dump('/Entity/EntityDiscoveryCache.php', $generatedCode);
     }

@@ -33,7 +33,7 @@ abstract class NumericFieldBase extends ScalarFieldTypeBase
 
     public function validateDefinition(): void
     {
-        if ($this->minimum > $this->maximum) {
+        if (isset($this->minimum) && isset($this->maximum) && $this->minimum > $this->maximum) {
             throw new \Exception('Maximum must be larger or equal than minimum');
         }
     }

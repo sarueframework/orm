@@ -22,8 +22,6 @@ class EntityDefinition
         public readonly string $className,
 
         public readonly array $fields,
-
-        public string $some,
     ) {
     }
 }

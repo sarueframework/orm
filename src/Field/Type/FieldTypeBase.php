@@ -4,7 +4,7 @@ namespace Sarue\Orm\Field\Type;
 
 abstract class FieldTypeBase implements FieldTypeInterface
 {
-    protected const ALLOWED_PROPERTY_TYPES = [];
+    public const array ALLOWED_PROPERTY_TYPES = [];
 
     final protected const SET_STATE_PROPERTIES = ['required', 'fieldName', 'propertyType'];
 

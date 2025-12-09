@@ -2,6 +2,7 @@
 
 namespace Sarue\Orm\Tests\Integration\Schema;
 
+use BcMath\Number;
 use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
@@ -15,12 +16,14 @@ class PrototypeTest extends IntegrationTestCase
         $entity = new DummyEntity();
         $entity->name = 'John Smith';
         $entity->age = 21;
+        $entity->height = new Number('1.75');
 
         $this->ormManager->save($entity);
 
         $entity = new DummyEntity();
         $entity->name = 'Mary Klein';
         $entity->age = 17;
+        $entity->height = new Number('1.85');
 
         $this->ormManager->save($entity);
 

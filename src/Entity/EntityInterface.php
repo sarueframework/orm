@@ -4,5 +4,5 @@ namespace Sarue\Orm\Entity;
 
 interface EntityInterface
 {
-    public static function fromValues(array $values): static;
+    public static function fromDatabaseValues(array $values): static;
 }

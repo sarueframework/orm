@@ -25,6 +25,11 @@ class DecimalField extends NumericFieldBase
         return parent::__construct($minimum, $maximum);
     }
 
+    public function fromDatabaseValue(mixed $databaseValue): Number
+    {
+        return new Number($databaseValue);
+    }
+
     public function persistFieldToDatabase(QueryBuilder $queryBuilder, EntityInterface $entity): void
     {
         $queryBuilder->setValue($this->fieldName, $queryBuilder->createNamedParameter((string) $entity->{$this->fieldName}));

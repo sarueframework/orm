@@ -13,14 +13,16 @@ interface FieldTypeInterface
 
     public bool $required { set; }
 
+    public function fromDatabaseValue(mixed $databaseValue): mixed;
+
+    public function persistFieldToDatabase(QueryBuilder $queryBuilder, EntityInterface $entity): void;
+
     public function getConditionType(): string;
 
     /**
      * @return \Doctrine\DBAL\Schema\Column[]
      */
     public function createSchema(): array;
-
-    public function persistFieldToDatabase(QueryBuilder $queryBuilder, EntityInterface $entity): void;
 
     public function validateDefinition(): void;
 }

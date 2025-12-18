@@ -4,8 +4,8 @@ namespace Sarue\Orm;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Schema\Table;
 use Sarue\Orm\Entity\EntityInterface;
+use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Query\Parameter\ParameterInterface;
 use Sarue\Orm\Query\QueryInterface;
 use Sarue\Orm\Schema\EntityDefinition;
@@ -14,12 +14,44 @@ use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\Query\QueryFactory;
 
 class OrmManager
 {
+    protected static OrmManager $instance;
+
     protected EntityDiscoveryCache $entityDiscoveryCache;
     protected QueryFactory $queryFactory;
+
+    public static function getInstance(): OrmManager {
+        if (!isset(static::$instance)) {
+            throw new \Exception('ORM is not initialized');
+        }
+
+        return static::$instance;
+    }
+
+    public static function setInstance(OrmManager $instance): void {
+        static::$instance = $instance;
+    }
 
     public function __construct(
         protected Connection $connection,
     ) {
+        if (!isset(static::$instance)) {
+            static::setInstance($this);
+        }
+    }
+
+    public function getEntityDefinition(string $entityClass): EntityDefinition
+    {
+        return $this->getEntityDiscoveryCache()->getCachedEntityDefinitions()[$entityClass];
+    }
+
+    public function getFieldDefinitions(string $entityClass): array
+    {
+        return $this->getEntityDefinition($entityClass)->fields;
+    }
+
+    public function getFieldDefinition(string $entityClass, string $fieldName): FieldTypeInterface
+    {
+        return $this->getEntityDefinition($entityClass)->fields[$fieldName];
     }
 
     public function createTables(): void
@@ -40,7 +72,7 @@ class OrmManager
         $queryBuilder = $this->connection
             ->createQueryBuilder()
             ->select('*')
-            ->from($this->getEntityDiscoveryCache()->getCachedEntityDefinitions()[$query::ENTITY_CLASS]->name)
+            ->from($this->getEntityDefinition($query::ENTITY_CLASS)->name)
         ;
 
         $queryBuilder->where();
@@ -87,7 +119,7 @@ class OrmManager
 
     public function loadAll(QueryInterface $query): array
     {
-        $entityDefinition = $this->getEntityDiscoveryCache()->getCachedEntityDefinitions()[$query::ENTITY_CLASS];
+        $entityDefinition = $this->getEntityDefinition($query::ENTITY_CLASS);
 
         $queryBuilder = $this->connection
             ->createQueryBuilder()
@@ -114,7 +146,7 @@ class OrmManager
 
         foreach ($results as $result) {
             $entityClass = $query::ENTITY_CLASS;
-            $entities[] = $entityClass::fromValues($result);
+            $entities[] = $entityClass::fromDatabaseValues($result);
         }
 
         return $entities;

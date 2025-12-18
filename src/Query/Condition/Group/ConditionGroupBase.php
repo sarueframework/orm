@@ -15,13 +15,14 @@ abstract class ConditionGroupBase implements ConditionInterface
 
     public function buildSql(): array
     {
-        $sql = [];
+        $sql = ['('];
         foreach ($this->conditions as $delta => $condition) {
             if ($delta) {
                 $sql[] = static::CONJUNCTION;
             }
             $sql = array_merge($sql, $condition->buildSql());
         }
+        $sql[] = ')';
 
         return $sql;
     }

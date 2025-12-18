@@ -8,6 +8,7 @@ use Doctrine\DBAL\Schema\Table;
 use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Query\Parameter\ParameterInterface;
 use Sarue\Orm\Query\QueryInterface;
+use Sarue\Orm\Schema\EntityDefinition;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\EntityDiscoveryCache;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\Query\QueryFactory;
 
@@ -24,17 +25,8 @@ class OrmManager
     public function createTables(): void
     {
         $tables = [];
-        foreach ($this->getEntityDiscoveryCache()->getCachedEntityDefinitions() as $entityDefintion) {
-            $tableEditor = Table::editor()
-                ->setUnquotedName($entityDefintion->name);
-
-            foreach ($entityDefintion->fields as $fieldDefinition) {
-                foreach ($fieldDefinition->getSchema() as $column) {
-                    $tableEditor->addColumn($column);
-                }
-            }
-
-            $tables[] = $tableEditor->create();
+        foreach ($this->getEntityDiscoveryCache()->getCachedEntityDefinitions() as $entityDefinition) {
+            $tables[] = $entityDefinition->createTableSchema();
         }
 
         $schema = new Schema($tables);

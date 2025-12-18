@@ -20,17 +20,6 @@ abstract class NumericFieldBase extends ScalarFieldTypeBase
         return NumericConditionInterface::class;
     }
 
-    public function getSchema(): array
-    {
-        return [
-            Column::editor()
-                ->setUnquotedName($this->fieldName)
-                ->setTypeName('integer')
-                ->setNotNull($this->required)
-                ->create(),
-        ];
-    }
-
     public function validateDefinition(): void
     {
         if (isset($this->minimum) && isset($this->maximum) && $this->minimum > $this->maximum) {

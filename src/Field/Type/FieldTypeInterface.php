@@ -18,7 +18,7 @@ interface FieldTypeInterface
     /**
      * @return \Doctrine\DBAL\Schema\Column[]
      */
-    public function getSchema(): array;
+    public function createSchema(): array;
 
     public function persistFieldToDatabase(QueryBuilder $queryBuilder, EntityInterface $entity): void;
 

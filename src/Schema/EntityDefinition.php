@@ -2,6 +2,8 @@
 
 namespace Sarue\Orm\Schema;
 
+use Doctrine\DBAL\Schema\Table;
+
 /**
  * Stores the cached definition of an entity, extracted from attributes.
  */
@@ -23,5 +25,19 @@ class EntityDefinition
 
         public readonly array $fields,
     ) {
+    }
+
+    public function createTableSchema(): Table
+    {
+        $tableEditor = Table::editor()
+            ->setUnquotedName($this->name);
+
+        foreach ($this->fields as $fieldDefinition) {
+            foreach ($fieldDefinition->createSchema() as $column) {
+                $tableEditor->addColumn($column);
+            }
+        }
+
+        return $tableEditor->create();
     }
 }

@@ -20,8 +20,7 @@ class DecimalField extends NumericFieldBase
         public readonly int $scale = self::DEFAULT_SCALE,
         int|Number|null $minimum = null,
         int|Number|null $maximum = null,
-    )
-    {
+    ) {
         return parent::__construct($minimum, $maximum);
     }
 

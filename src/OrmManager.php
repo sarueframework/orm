@@ -19,7 +19,8 @@ class OrmManager
     protected EntityDiscoveryCache $entityDiscoveryCache;
     protected QueryFactory $queryFactory;
 
-    public static function getInstance(): OrmManager {
+    public static function getInstance(): OrmManager
+    {
         if (!isset(static::$instance)) {
             throw new \Exception('ORM is not initialized');
         }
@@ -27,7 +28,8 @@ class OrmManager
         return static::$instance;
     }
 
-    public static function setInstance(OrmManager $instance): void {
+    public static function setInstance(OrmManager $instance): void
+    {
         static::$instance = $instance;
     }
 

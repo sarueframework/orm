@@ -3,7 +3,6 @@
 namespace Sarue\Orm\Field\Type\Numeric;
 
 use BcMath\Number;
-use Doctrine\DBAL\Schema\Column;
 use Sarue\Orm\Field\Type\ScalarFieldTypeBase;
 use Sarue\Orm\Query\Condition\Numeric\NumericConditionInterface;
 

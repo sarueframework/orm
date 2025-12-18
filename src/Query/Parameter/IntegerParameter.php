@@ -4,7 +4,6 @@ namespace Sarue\Orm\Query\Parameter;
 
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
-use Sarue\Orm\Query\Parameter\ParameterBase;
 
 class IntegerParameter extends ParameterBase
 {

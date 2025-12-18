@@ -30,8 +30,7 @@ abstract class EntityBase implements EntityInterface
             if (str_contains($column, '__')) {
                 [$fieldName, $property] = explode('__', $column);
                 $valuesGroupedByField[$fieldName][$property] = $value;
-            }
-            else {
+            } else {
                 $valuesGroupedByField[$column] = $value;
             }
         }

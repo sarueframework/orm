@@ -6,7 +6,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Sarue\Orm\Entity\EntityInterface;
-use Sarue\Orm\Query\Parameter;
+use Sarue\Orm\Query\Parameter\ParameterInterface;
 use Sarue\Orm\Query\QueryInterface;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\EntityDiscoveryCache;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\Query\QueryFactory;
@@ -95,10 +95,12 @@ class OrmManager
 
     public function loadAll(QueryInterface $query): array
     {
+        $entityDefinition = $this->getEntityDiscoveryCache()->getCachedEntityDefinitions()[$query::ENTITY_CLASS];
+
         $queryBuilder = $this->connection
             ->createQueryBuilder()
             ->select('*')
-            ->from($this->getEntityDiscoveryCache()->getCachedEntityDefinitions()[$query::ENTITY_CLASS]->name)
+            ->from($entityDefinition->name)
         ;
 
         if ($whereParts = $query->buildSql()) {
@@ -106,8 +108,8 @@ class OrmManager
             foreach ($whereParts as $wherePart) {
                 if (is_string($wherePart)) {
                     $where .= $wherePart;
-                } elseif ($wherePart instanceof Parameter) {
-                    $where .= $queryBuilder->createPositionalParameter($wherePart->value);
+                } elseif ($wherePart instanceof ParameterInterface) {
+                    $where .= $wherePart->toStringInQuery($queryBuilder);
                 } else {
                     throw new \Exception('buildSql returned something not a string or Parameter.');
                 }

@@ -4,7 +4,8 @@ namespace Sarue\Orm\Query\Condition\Numeric;
 
 use BcMath\Number;
 use Sarue\Orm\Query\Condition\ConditionBase;
-use Sarue\Orm\Query\Parameter;
+use Sarue\Orm\Query\Parameter\IntegerParameter;
+use Sarue\Orm\Query\Parameter\NumberParameter;
 
 class SimpleNumericCondition extends ConditionBase implements NumericConditionInterface
 {
@@ -26,7 +27,7 @@ class SimpleNumericCondition extends ConditionBase implements NumericConditionIn
                 SimpleNumericConditionOperator::EqualTo => '=',
                 SimpleNumericConditionOperator::NotEqualTo => '<>',
             },
-            new Parameter($this->number),
+            ($this->number instanceof Number) ? new NumberParameter($this->number) : new IntegerParameter($this->number),
         ];
     }
 }

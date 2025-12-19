@@ -4,27 +4,29 @@ namespace Sarue\Orm\Schema;
 
 use Doctrine\DBAL\Schema\Table;
 
-/**
- * Stores the cached definition of an entity, extracted from attributes.
- */
+#[\Attribute(\Attribute::TARGET_CLASS)]
 class EntityDefinition
 {
-    public static function __set_state($properties)
-    {
-        return new static(...$properties);
-    }
+    public readonly string $name;
 
     /**
-     * @param class-string                               $className
-     * @param \Sarue\Orm\Field\Type\FieldTypeInterface[] $fields
+     * @param class-string
      */
-    public function __construct(
-        public readonly string $name,
+    public readonly string $className;
 
-        public readonly string $className,
+    /**
+     * @var \Sarue\Orm\Field\Type\FieldTypeInterface[]
+     */
+    public readonly array $fields;
 
-        public readonly array $fields,
-    ) {
+    public static function fromValues(string $name, string $className, array $fields)
+    {
+        $entityType = new static();
+        $entityType->name = $name;
+        $entityType->className = $className;
+        $entityType->fields = $fields;
+
+        return $entityType;
     }
 
     public function createTableSchema(): Table

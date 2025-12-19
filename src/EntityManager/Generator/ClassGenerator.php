@@ -2,7 +2,6 @@
 
 namespace Sarue\Orm\EntityManager\Generator;
 
-use Sarue\Orm\Attribute\Entity;
 use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
@@ -50,7 +49,7 @@ class ClassGenerator
             }
 
             $classReflection = new \ReflectionClass($className);
-            $entityAttributes = $classReflection->getAttributes(Entity::class);
+            $entityAttributes = $classReflection->getAttributes(EntityDefinition::class);
 
             if (empty($entityAttributes)) {
                 continue;
@@ -64,11 +63,10 @@ class ClassGenerator
                 throw new \Exception('Class '.$className.' has attribute Entity but is abstract.');
             }
 
-            $entityDefinitions[$className] = new EntityDefinition(
+            $entityDefinitions[$className] = EntityDefinition::fromValues(
                 $this->getShortClassName($className),
                 $className,
                 $this->discoverFieldDefinitions($classReflection),
-                ...reset($entityAttributes)->getArguments()
             );
         }
 

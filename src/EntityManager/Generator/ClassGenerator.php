@@ -2,11 +2,15 @@
 
 namespace Sarue\Orm\EntityManager\Generator;
 
+use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
+use Laminas\Code\Generator\FileGenerator;
+use Laminas\Code\Generator\MethodGenerator;
 use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
 use Sarue\Orm\Query\Condition\Group\OrConditionGroupBase;
 use Sarue\Orm\Query\QueryBase;
+use Sarue\Orm\Query\QueryFactoryBase;
 use Sarue\Orm\Schema\EntityDefinition;
 
 class ClassGenerator
@@ -167,14 +171,22 @@ class ClassGenerator
     protected function generateQueryFactory(array $queryClasses): void
     {
         $namespace = $this->generatedNamespace.'Entity\\Query';
-        $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass QueryFactory extends \\Sarue\\Orm\\Query\\QueryFactoryBase {\n";
+        $methods = [];
 
         foreach ($queryClasses as $queryClass) {
             $className = $this->getShortClassName($queryClass);
-            $generatedCode .= "public function get$className(): \\$queryClass { return \$this->instantiateQuery(".var_export($queryClass, true)."); }\n";
+            $methods[] = new MethodGenerator(
+                name: 'get'.$className,
+                body: "return \$this->instantiateQuery(".var_export($queryClass, true).");",
+            )->setReturnType($queryClass);
         }
-        $generatedCode .= "}\n";
-        $this->dump('/Entity/Query/QueryFactory.php', $generatedCode);
+
+        $this->dump('/Entity/Query/QueryFactory.php', new LaminasClassGenerator(
+            name: 'QueryFactory',
+            namespaceName: $namespace,
+            extends: QueryFactoryBase::class,
+            methods: $methods,
+        ));
     }
 
     protected function generateEntityDiscoveryCacheClass(array $entityDiscoveryCache): void
@@ -192,8 +204,15 @@ class ClassGenerator
         return substr($fullClassName, strrpos($fullClassName, '\\') + 1);
     }
 
-    protected function dump($classPath, $generatedCode): void
+    protected function dump($classPath, LaminasClassGenerator|string $classGenerator): void
     {
-        file_put_contents($this->generatedBaseDirectory.$classPath, $generatedCode);
+        if (is_string($classGenerator)) {
+            file_put_contents($this->generatedBaseDirectory.$classPath, $classGenerator);
+            return;
+        }
+
+        file_put_contents($this->generatedBaseDirectory.$classPath, new FileGenerator([
+            'classes' => [$classGenerator],
+        ])->generate());
     }
 }

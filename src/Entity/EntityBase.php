@@ -4,13 +4,13 @@ namespace Sarue\Orm\Entity;
 
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\OrmManager;
-use Sarue\Orm\Schema\EntityDefinition;
+use Sarue\Orm\Schema\EntityType;
 
 abstract class EntityBase implements EntityInterface
 {
-    public static function getDefinition(): EntityDefinition
+    public static function getTypeDefinition(): EntityType
     {
-        return OrmManager::getInstance()->getEntityDefinition(static::class);
+        return OrmManager::getInstance()->getEntityTypeDefinition(static::class);
     }
 
     public static function getFieldDefinitions(): array

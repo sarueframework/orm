@@ -5,7 +5,7 @@ namespace Sarue\Orm\Schema;
 use Doctrine\DBAL\Schema\Table;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
-class EntityDefinition
+class EntityType
 {
     public readonly string $name;
 

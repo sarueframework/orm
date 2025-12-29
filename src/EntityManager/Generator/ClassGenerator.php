@@ -11,7 +11,7 @@ use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
 use Sarue\Orm\Query\Condition\Group\OrConditionGroupBase;
 use Sarue\Orm\Query\QueryBase;
 use Sarue\Orm\Query\QueryFactoryBase;
-use Sarue\Orm\Schema\EntityDefinition;
+use Sarue\Orm\Schema\EntityType;
 
 class ClassGenerator
 {
@@ -26,21 +26,21 @@ class ClassGenerator
     public function generateClasses(): void
     {
         $queryClasses = [];
-        $entityDefinitions = $this->discoverEntityDefinitions();
-        foreach ($entityDefinitions as $entityDefinition) {
-            $queryClasses[] = $this->generateClassesForEntity($entityDefinition);
+        $entityTypeDefinitions = $this->discoverEntityDefinitions();
+        foreach ($entityTypeDefinitions as $entityTypeDefinition) {
+            $queryClasses[] = $this->generateClassesForEntity($entityTypeDefinition);
         }
 
         $this->generateQueryFactory($queryClasses);
-        $this->generateEntityDiscoveryCacheClass($entityDefinitions);
+        $this->generateEntityDiscoveryCacheClass($entityTypeDefinitions);
     }
 
     /**
-     * @return EntityDefinition[]
+     * @return EntityType[]
      */
     protected function discoverEntityDefinitions(): array
     {
-        $entityDefinitions = [];
+        $entityTypeDefinitions = [];
         foreach (\scandir($this->entityDirectory) as $filename) {
             if (!str_ends_with($filename, '.php')) {
                 continue;
@@ -53,7 +53,7 @@ class ClassGenerator
             }
 
             $classReflection = new \ReflectionClass($className);
-            $entityAttributes = $classReflection->getAttributes(EntityDefinition::class);
+            $entityAttributes = $classReflection->getAttributes(EntityType::class);
 
             if (empty($entityAttributes)) {
                 continue;
@@ -67,14 +67,14 @@ class ClassGenerator
                 throw new \Exception('Class '.$className.' has attribute Entity but is abstract.');
             }
 
-            $entityDefinitions[$className] = EntityDefinition::fromValues(
+            $entityTypeDefinitions[$className] = EntityType::fromValues(
                 $this->getShortClassName($className),
                 $className,
                 $this->discoverFieldDefinitions($classReflection),
             );
         }
 
-        return $entityDefinitions;
+        return $entityTypeDefinitions;
     }
 
     protected function discoverFieldDefinitions(\ReflectionClass $classReflection): array
@@ -111,13 +111,13 @@ class ClassGenerator
         return $fieldDefinitions;
     }
 
-    protected function generateClassesForEntity(EntityDefinition $entityDefinition): string
+    protected function generateClassesForEntity(EntityType $entityTypeDefinition): string
     {
-        $reflection = new \ReflectionClass($entityDefinition->className);
+        $reflection = new \ReflectionClass($entityTypeDefinition->className);
 
         $methodParameters = "(\n?\\Sarue\\Orm\\Query\\Condition\\ConditionInterface \$_condition = null,\n";
         $baseMethodCall = "return \$this->addConditions(\$_condition,\n [\n";
-        foreach ($entityDefinition->fields as $fieldDefinition) {
+        foreach ($entityTypeDefinition->fields as $fieldDefinition) {
             $conditionType = $fieldDefinition->getConditionType();
             $methodParameters .= "?\\{$conditionType} \${$fieldDefinition->fieldName} = null,\n";
             $baseMethodCall .= "'{$fieldDefinition->fieldName}' => \${$fieldDefinition->fieldName},";
@@ -125,34 +125,34 @@ class ClassGenerator
         $methodParameters .= ')';
         $baseMethodCall .= "\n]);";
 
-        $this->generateSingleClassForEntity($entityDefinition, 'OrConditionGroup', OrConditionGroupBase::class, $methodParameters, $baseMethodCall, [
+        $this->generateSingleClassForEntity($entityTypeDefinition, 'OrConditionGroup', OrConditionGroupBase::class, $methodParameters, $baseMethodCall, [
             'or',
         ]);
 
-        $this->generateSingleClassForEntity($entityDefinition, 'AndConditionGroup', AndConditionGroupBase::class, $methodParameters, $baseMethodCall, [
+        $this->generateSingleClassForEntity($entityTypeDefinition, 'AndConditionGroup', AndConditionGroupBase::class, $methodParameters, $baseMethodCall, [
             'and',
         ]);
 
-        return $this->generateSingleClassForEntity($entityDefinition, 'Query', QueryBase::class, $methodParameters, $baseMethodCall, [
+        return $this->generateSingleClassForEntity($entityTypeDefinition, 'Query', QueryBase::class, $methodParameters, $baseMethodCall, [
             'where',
             'and',
         ]);
     }
 
-    protected function generateSingleClassForEntity(EntityDefinition $entityDefinition, string $classNameSuffix, string $classBase, string $methodParameters, string $baseMethodCall, array $methodsToGenerate): string
+    protected function generateSingleClassForEntity(EntityType $entityTypeDefinition, string $classNameSuffix, string $classBase, string $methodParameters, string $baseMethodCall, array $methodsToGenerate): string
     {
         $namespace = $this->generatedNamespace.'Entity\\Query';
-        $shortEntityClassName = $this->getShortClassName($entityDefinition->className);
+        $shortEntityClassName = $this->getShortClassName($entityTypeDefinition->className);
         $generatedClassName = $shortEntityClassName.$classNameSuffix;
 
         $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass $generatedClassName extends \\{$classBase} {\n";
 
         if ('Query' === $classNameSuffix) {
-            $generatedCode .= "public const string ENTITY_CLASS = \\{$entityDefinition->className}::class;\n";
+            $generatedCode .= "public const string ENTITY_CLASS = \\{$entityTypeDefinition->className}::class;\n";
             $generatedCode .= "public function orGroup(): {$shortEntityClassName}OrConditionGroup { return new {$shortEntityClassName}OrConditionGroup(); }\n";
             $generatedCode .= "public function andGroup(): {$shortEntityClassName}AndConditionGroup { return new {$shortEntityClassName}AndConditionGroup(); }\n";
             $generatedCode .= "/**\n";
-            $generatedCode .= ' * @return \\'.$entityDefinition->className."[]\n";
+            $generatedCode .= ' * @return \\'.$entityTypeDefinition->className."[]\n";
             $generatedCode .= " */\n";
             $generatedCode .= "public function loadAll(): array { return \$this->doLoadAll(); }\n";
         }

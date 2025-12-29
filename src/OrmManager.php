@@ -8,7 +8,7 @@ use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Query\Parameter\ParameterInterface;
 use Sarue\Orm\Query\QueryInterface;
-use Sarue\Orm\Schema\EntityDefinition;
+use Sarue\Orm\Schema\EntityType;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\EntityDiscoveryCache;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\Query\QueryFactory;
 
@@ -41,26 +41,26 @@ class OrmManager
         }
     }
 
-    public function getEntityDefinition(string $entityClass): EntityDefinition
+    public function getEntityTypeDefinition(string $entityClass): EntityType
     {
         return $this->getEntityDiscoveryCache()->getCachedEntityDefinitions()[$entityClass];
     }
 
     public function getFieldDefinitions(string $entityClass): array
     {
-        return $this->getEntityDefinition($entityClass)->fields;
+        return $this->getEntityTypeDefinition($entityClass)->fields;
     }
 
     public function getFieldDefinition(string $entityClass, string $fieldName): FieldTypeInterface
     {
-        return $this->getEntityDefinition($entityClass)->fields[$fieldName];
+        return $this->getEntityTypeDefinition($entityClass)->fields[$fieldName];
     }
 
     public function createTables(): void
     {
         $tables = [];
-        foreach ($this->getEntityDiscoveryCache()->getCachedEntityDefinitions() as $entityDefinition) {
-            $tables[] = $entityDefinition->createTableSchema();
+        foreach ($this->getEntityDiscoveryCache()->getCachedEntityDefinitions() as $entityTypeDefinition) {
+            $tables[] = $entityTypeDefinition->createTableSchema();
         }
 
         $schema = new Schema($tables);
@@ -74,7 +74,7 @@ class OrmManager
         $queryBuilder = $this->connection
             ->createQueryBuilder()
             ->select('*')
-            ->from($this->getEntityDefinition($query::ENTITY_CLASS)->name)
+            ->from($this->getEntityTypeDefinition($query::ENTITY_CLASS)->name)
         ;
 
         $queryBuilder->where();
@@ -84,17 +84,17 @@ class OrmManager
 
     public function save(EntityInterface $entity): void
     {
-        $entityDefinition = $this->entityDiscoveryCache->getCachedEntityDefinitions()[get_class($entity)] ?? null;
-        if (!$entityDefinition) {
+        $entityTypeDefinition = $this->entityDiscoveryCache->getCachedEntityDefinitions()[get_class($entity)] ?? null;
+        if (!$entityTypeDefinition) {
             throw new \Exception('Unknown entity '.get_class($entity));
         }
 
         $queryBuilder = $this->connection
             ->createQueryBuilder()
-            ->insert($entityDefinition->name)
+            ->insert($entityTypeDefinition->name)
         ;
 
-        foreach ($entityDefinition->fields as $fieldDefinition) {
+        foreach ($entityTypeDefinition->fields as $fieldDefinition) {
             $fieldDefinition->persistFieldToDatabase($queryBuilder, $entity);
         }
 
@@ -121,12 +121,12 @@ class OrmManager
 
     public function loadAll(QueryInterface $query): array
     {
-        $entityDefinition = $this->getEntityDefinition($query::ENTITY_CLASS);
+        $entityTypeDefinition = $this->getEntityTypeDefinition($query::ENTITY_CLASS);
 
         $queryBuilder = $this->connection
             ->createQueryBuilder()
             ->select('*')
-            ->from($entityDefinition->name)
+            ->from($entityTypeDefinition->name)
         ;
 
         if ($whereParts = $query->buildSql()) {

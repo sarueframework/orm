@@ -5,7 +5,7 @@ namespace Sarue\Orm\Schema;
 interface EntityDiscoveryCacheInterface
 {
     /**
-     * @return EntityDefinition[]
+     * @return EntityType[]
      */
     public function getCachedEntityDefinitions(): array;
 }

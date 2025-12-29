@@ -25,6 +25,8 @@ class PrototypeTest extends IntegrationTestCase
         $entity->age = 17;
         $entity->height = new Number('1.85');
 
+        $this->ormManager->save($entity);
+
         $entity = new DummyEntity();
         $entity->name = 'Franz Schubert';
         $entity->age = 25;

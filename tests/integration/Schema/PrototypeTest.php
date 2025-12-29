@@ -14,16 +14,21 @@ class PrototypeTest extends IntegrationTestCase
     public function testCreateTable(): void
     {
         $entity = new DummyEntity();
-        $entity->name = 'John Smith';
+        $entity->name = 'Gustaf Mahler';
         $entity->age = 21;
         $entity->height = new Number('1.75');
 
         $this->ormManager->save($entity);
 
         $entity = new DummyEntity();
-        $entity->name = 'Mary Klein';
+        $entity->name = 'Louise Farrenc';
         $entity->age = 17;
         $entity->height = new Number('1.85');
+
+        $entity = new DummyEntity();
+        $entity->name = 'Franz Schubert';
+        $entity->age = 25;
+        $entity->height = new Number('1.57');
 
         $this->ormManager->save($entity);
 
@@ -35,7 +40,8 @@ class PrototypeTest extends IntegrationTestCase
             ->and(age: isLessThan(30))
             ->loadAll();
 
-        $this->assertEquals(1, count($entities));
-        $this->assertEquals('John Smith', $entities[0]->name);
+        $this->assertEquals(2, count($entities));
+        $this->assertEquals('Gustaf Mahler', $entities[0]->name);
+        $this->assertEquals('Franz Schubert', $entities[1]->name);
     }
 }

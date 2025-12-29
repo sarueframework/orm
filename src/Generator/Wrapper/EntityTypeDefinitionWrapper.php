@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Orm\EntityManager\Generator\Wrapper;
+namespace Sarue\Orm\Generator\Wrapper;
 
 use Sarue\Orm\Entity\Type\EntityType;
 

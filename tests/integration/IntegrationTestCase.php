@@ -5,7 +5,7 @@ namespace Sarue\Orm\Tests\Integration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use PHPUnit\Framework\TestCase;
-use Sarue\Orm\EntityManager\Generator\ClassGenerator;
+use Sarue\Orm\Generator\ClassGenerator;
 use Sarue\Orm\OrmManager;
 
 class IntegrationTestCase extends TestCase

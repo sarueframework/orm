@@ -1,14 +1,14 @@
 <?php
 
-namespace Sarue\Orm\EntityManager\Generator;
+namespace Sarue\Orm\Generator;
 
 use BcMath\Number;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Sarue\Orm\Entity\EntityInterface;
-use Sarue\Orm\EntityManager\Generator\Wrapper\EntityTypeDefinitionWrapper;
-use Sarue\Orm\EntityManager\Generator\Wrapper\FieldDefinitionWrapper;
+use Sarue\Orm\Generator\Wrapper\EntityTypeDefinitionWrapper;
+use Sarue\Orm\Generator\Wrapper\FieldDefinitionWrapper;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
 use Sarue\Orm\Query\Condition\Group\OrConditionGroupBase;

@@ -41,25 +41,30 @@ class OrmManager
         }
     }
 
+    public function getEntityTypeDefinitions(): array
+    {
+        return $this->getEntityTypeDefinitionRepository()->getEntityTypeDefinitions();
+    }
+
     public function getEntityTypeDefinition(string $entityClass): EntityType
     {
-        return $this->getEntityTypeDefinitionRepository()->getCachedEntityDefinitions()[$entityClass];
+        return $this->getEntityTypeDefinitionRepository()->getEntityTypeDefinition($entityClass);
     }
 
     public function getFieldDefinitions(string $entityClass): array
     {
-        return $this->getEntityTypeDefinition($entityClass)->fields;
+        return $this->getEntityTypeDefinitionRepository()->getFieldDefinitions($entityClass);
     }
 
     public function getFieldDefinition(string $entityClass, string $fieldName): FieldTypeInterface
     {
-        return $this->getEntityTypeDefinition($entityClass)->fields[$fieldName];
+        return $this->getEntityTypeDefinitionRepository()->getFieldDefinition($entityClass, $fieldName);
     }
 
     public function createTables(): void
     {
         $tables = [];
-        foreach ($this->getEntityTypeDefinitionRepository()->getCachedEntityDefinitions() as $entityTypeDefinition) {
+        foreach ($this->getEntityTypeDefinitionRepository()->getEntityTypeDefinitions() as $entityTypeDefinition) {
             $tables[] = $entityTypeDefinition->createTableSchema();
         }
 
@@ -84,7 +89,7 @@ class OrmManager
 
     public function save(EntityInterface $entity): void
     {
-        $entityTypeDefinition = $this->EntityTypeDefinitionRepository->getCachedEntityDefinitions()[get_class($entity)] ?? null;
+        $entityTypeDefinition = $this->EntityTypeDefinitionRepository->getEntityTypeDefinitions()[get_class($entity)] ?? null;
         if (!$entityTypeDefinition) {
             throw new \Exception('Unknown entity '.get_class($entity));
         }

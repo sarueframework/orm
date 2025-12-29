@@ -228,7 +228,7 @@ class ClassGenerator
 
         $methods = [
             new MethodGenerator(
-                name: 'getCachedEntityDefinitions',
+                name: 'getEntityTypeDefinitions',
                 body: $generatedCode,
             )->setReturnType('array'),
         ];

@@ -29,17 +29,23 @@ class EntityType
         return $entityType;
     }
 
-    public function createTableSchema(): Table
+    public function createTableSchemas(): array
     {
         $tableEditor = Table::editor()
             ->setUnquotedName($this->name);
+        $revisionTableEditor = Table::editor()
+            ->setUnquotedName($this->name . '__revision');
 
         foreach ($this->fields as $fieldDefinition) {
             foreach ($fieldDefinition->createSchema() as $column) {
                 $tableEditor->addColumn($column);
+                $revisionTableEditor->addColumn($column);
             }
         }
 
-        return $tableEditor->create();
+        return [
+            $tableEditor->create(),
+            $revisionTableEditor->create(),
+        ];
     }
 }

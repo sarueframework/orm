@@ -65,7 +65,7 @@ class OrmManager
     {
         $tables = [];
         foreach ($this->getEntityTypeDefinitionRepository()->getEntityTypeDefinitions() as $entityTypeDefinition) {
-            $tables[] = $entityTypeDefinition->createTableSchema();
+            $tables = array_merge($tables, $entityTypeDefinition->createTableSchemas());
         }
 
         $schema = new Schema($tables);

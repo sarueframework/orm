@@ -8,7 +8,7 @@ use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Query\Parameter\ParameterInterface;
 use Sarue\Orm\Query\QueryInterface;
-use Sarue\Orm\Schema\EntityType;
+use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\EntityDiscoveryCache;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\Query\QueryFactory;
 

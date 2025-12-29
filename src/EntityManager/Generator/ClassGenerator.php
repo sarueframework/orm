@@ -15,7 +15,7 @@ use Sarue\Orm\Query\Condition\Group\OrConditionGroupBase;
 use Sarue\Orm\Query\QueryBase;
 use Sarue\Orm\Query\QueryFactoryBase;
 use Sarue\Orm\Schema\EntityDiscoveryCacheBase;
-use Sarue\Orm\Schema\EntityType;
+use Sarue\Orm\Entity\Type\EntityType;
 
 class ClassGenerator
 {

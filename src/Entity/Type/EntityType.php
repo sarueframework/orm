@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Orm\Schema;
+namespace Sarue\Orm\Entity\Type;
 
 use Doctrine\DBAL\Schema\Table;
 

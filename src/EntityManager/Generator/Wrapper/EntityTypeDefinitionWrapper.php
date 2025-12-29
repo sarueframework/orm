@@ -2,7 +2,7 @@
 
 namespace Sarue\Orm\EntityManager\Generator\Wrapper;
 
-use Sarue\Orm\Schema\EntityType;
+use Sarue\Orm\Entity\Type\EntityType;
 
 /**
  * @internal

@@ -4,7 +4,7 @@ namespace Sarue\Orm\Entity;
 
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\OrmManager;
-use Sarue\Orm\Schema\EntityType;
+use Sarue\Orm\Entity\Type\EntityType;
 
 abstract class EntityBase implements EntityInterface
 {

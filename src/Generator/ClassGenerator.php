@@ -14,7 +14,7 @@ use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
 use Sarue\Orm\Query\Condition\Group\OrConditionGroupBase;
 use Sarue\Orm\Query\QueryBase;
 use Sarue\Orm\Query\QueryFactoryBase;
-use Sarue\Orm\Schema\EntityDiscoveryCacheBase;
+use Sarue\Orm\Entity\Type\EntityTypeDefinitionRepositoryBase;
 use Sarue\Orm\Entity\Type\EntityType;
 
 class ClassGenerator
@@ -36,7 +36,7 @@ class ClassGenerator
         }
 
         $this->generateQueryFactory($queryClasses);
-        $this->generateEntityDiscoveryCacheClass($entityTypeDefinitionWrappers);
+        $this->generateEntityTypeDefinitionRepositoryClass($entityTypeDefinitionWrappers);
     }
 
     /**
@@ -204,7 +204,7 @@ class ClassGenerator
     /**
      * @param EntityTypeDefinitionWrapper[] $entityTypeDefinitionWrappers
      */
-    protected function generateEntityDiscoveryCacheClass(array $entityTypeDefinitionWrappers): void
+    protected function generateEntityTypeDefinitionRepositoryClass(array $entityTypeDefinitionWrappers): void
     {
         $generatedCode = "return [\n";
         foreach ($entityTypeDefinitionWrappers as $entityTypeDefinitionWrapper) {
@@ -232,12 +232,12 @@ class ClassGenerator
                 body: $generatedCode,
             )->setReturnType('array'),
         ];
-        //$generatedCode .= "return unserialize('".str_replace("'", "\\'", serialize($entityDiscoveryCache))."');\n}\n}";
+        //$generatedCode .= "return unserialize('".str_replace("'", "\\'", serialize($EntityTypeDefinitionRepository))."');\n}\n}";
 
-        $this->dump('/Entity/EntityDiscoveryCache.php', new LaminasClassGenerator(
-            name: 'EntityDiscoveryCache',
+        $this->dump('/Entity/EntityTypeDefinitionRepository.php', new LaminasClassGenerator(
+            name: 'EntityTypeDefinitionRepository',
             namespaceName: $this->generatedNamespace.'Entity',
-            extends: EntityDiscoveryCacheBase::class,
+            extends: EntityTypeDefinitionRepositoryBase::class,
             methods: $methods,
         ));
     }

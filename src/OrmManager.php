@@ -74,19 +74,6 @@ class OrmManager
         }
     }
 
-    public function loadEntities(QueryInterface $query): array
-    {
-        $queryBuilder = $this->connection
-            ->createQueryBuilder()
-            ->select('*')
-            ->from($this->getEntityTypeDefinition($query::ENTITY_CLASS)->name)
-        ;
-
-        $queryBuilder->where();
-
-        return $queryBuilder->executeQuery()->fetchAllAssociative();
-    }
-
     public function save(EntityInterface $entity): void
     {
         $entityTypeDefinition = $this->EntityTypeDefinitionRepository->getEntityTypeDefinitions()[get_class($entity)] ?? null;

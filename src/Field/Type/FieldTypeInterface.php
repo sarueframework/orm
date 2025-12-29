@@ -7,11 +7,13 @@ use Sarue\Orm\Entity\EntityInterface;
 
 interface FieldTypeInterface
 {
-    public string $fieldName { set; }
+    public function initializeDefinition(string $fieldName, string $propertyType): static;
 
-    public string $propertyType { set; }
+    public function getFieldName(): string;
 
-    public bool $required { set; }
+    public function getPropertyType(): string;
+
+    public function isRequired(): bool;
 
     public function fromDatabaseValue(mixed $databaseValue): mixed;
 

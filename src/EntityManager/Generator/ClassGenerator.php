@@ -2,15 +2,19 @@
 
 namespace Sarue\Orm\EntityManager\Generator;
 
+use BcMath\Number;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Sarue\Orm\Entity\EntityInterface;
+use Sarue\Orm\EntityManager\Generator\Wrapper\EntityTypeDefinitionWrapper;
+use Sarue\Orm\EntityManager\Generator\Wrapper\FieldDefinitionWrapper;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
 use Sarue\Orm\Query\Condition\Group\OrConditionGroupBase;
 use Sarue\Orm\Query\QueryBase;
 use Sarue\Orm\Query\QueryFactoryBase;
+use Sarue\Orm\Schema\EntityDiscoveryCacheBase;
 use Sarue\Orm\Schema\EntityType;
 
 class ClassGenerator
@@ -26,21 +30,21 @@ class ClassGenerator
     public function generateClasses(): void
     {
         $queryClasses = [];
-        $entityTypeDefinitions = $this->discoverEntityDefinitions();
-        foreach ($entityTypeDefinitions as $entityTypeDefinition) {
-            $queryClasses[] = $this->generateClassesForEntity($entityTypeDefinition);
+        $entityTypeDefinitionWrappers = $this->discoverEntityDefinitions();
+        foreach ($entityTypeDefinitionWrappers as $entityTypeDefinitionWrapper) {
+            $queryClasses[] = $this->generateClassesForEntity($entityTypeDefinitionWrapper->entityTypeDefinition);
         }
 
         $this->generateQueryFactory($queryClasses);
-        $this->generateEntityDiscoveryCacheClass($entityTypeDefinitions);
+        $this->generateEntityDiscoveryCacheClass($entityTypeDefinitionWrappers);
     }
 
     /**
-     * @return EntityType[]
+     * @return EntityTypeDefinitionWrapper[]
      */
     protected function discoverEntityDefinitions(): array
     {
-        $entityTypeDefinitions = [];
+        $entityTypeDefinitionWrappers = [];
         foreach (\scandir($this->entityDirectory) as $filename) {
             if (!str_ends_with($filename, '.php')) {
                 continue;
@@ -67,19 +71,29 @@ class ClassGenerator
                 throw new \Exception('Class '.$className.' has attribute Entity but is abstract.');
             }
 
-            $entityTypeDefinitions[$className] = EntityType::fromValues(
-                $this->getShortClassName($className),
-                $className,
-                $this->discoverFieldDefinitions($classReflection),
+            $fieldDefinitionWrappers = $this->discoverFieldDefinitions($classReflection);
+            $fieldDefinitions = array_map(fn(FieldDefinitionWrapper $fieldDefinitionWrapper): FieldTypeInterface => $fieldDefinitionWrapper->fieldDefinition, $fieldDefinitionWrappers);
+
+            $entityTypeDefinitionWrappers[$className] = new EntityTypeDefinitionWrapper(
+                EntityType::fromValues(
+                    $this->getShortClassName($className),
+                    $className,
+                    $fieldDefinitions,
+                ),
+                $classReflection,
+                $fieldDefinitionWrappers,
             );
         }
 
-        return $entityTypeDefinitions;
+        return $entityTypeDefinitionWrappers;
     }
 
+    /**
+     * @return FieldDefinitionWrapper[]
+     */
     protected function discoverFieldDefinitions(\ReflectionClass $classReflection): array
     {
-        $fieldDefinitions = [];
+        $fieldDefinitionWrappers = [];
 
         foreach ($classReflection->getProperties() as $property) {
             $fieldAttributes = $property->getAttributes(FieldTypeInterface::class, \ReflectionAttribute::IS_INSTANCEOF);
@@ -100,27 +114,27 @@ class ClassGenerator
 
             /** @var FieldTypeInterface */
             $fieldDefinition = $fieldAttribute->newInstance();
-            $fieldDefinition->fieldName = $property->getName();
-            $fieldDefinition->propertyType = $property->getType()?->__toString();
+            $fieldDefinition->initializeDefinition($property->getName(), $property->getType()?->__toString());
 
             $fieldDefinition->validateDefinition();
 
-            $fieldDefinitions[$fieldDefinition->fieldName] = $fieldDefinition;
+            $fieldDefinitionWrappers[$fieldDefinition->getFieldName()] = new FieldDefinitionWrapper(
+                $fieldDefinition,
+                $fieldAttribute,
+            );
         }
 
-        return $fieldDefinitions;
+        return $fieldDefinitionWrappers;
     }
 
     protected function generateClassesForEntity(EntityType $entityTypeDefinition): string
     {
-        $reflection = new \ReflectionClass($entityTypeDefinition->className);
-
         $methodParameters = "(\n?\\Sarue\\Orm\\Query\\Condition\\ConditionInterface \$_condition = null,\n";
         $baseMethodCall = "return \$this->addConditions(\$_condition,\n [\n";
         foreach ($entityTypeDefinition->fields as $fieldDefinition) {
             $conditionType = $fieldDefinition->getConditionType();
-            $methodParameters .= "?\\{$conditionType} \${$fieldDefinition->fieldName} = null,\n";
-            $baseMethodCall .= "'{$fieldDefinition->fieldName}' => \${$fieldDefinition->fieldName},";
+            $methodParameters .= "?\\{$conditionType} \${$fieldDefinition->getFieldName()} = null,\n";
+            $baseMethodCall .= "'{$fieldDefinition->getFieldName()}' => \${$fieldDefinition->getFieldName()},";
         }
         $methodParameters .= ')';
         $baseMethodCall .= "\n]);";
@@ -170,9 +184,7 @@ class ClassGenerator
 
     protected function generateQueryFactory(array $queryClasses): void
     {
-        $namespace = $this->generatedNamespace.'Entity\\Query';
         $methods = [];
-
         foreach ($queryClasses as $queryClass) {
             $className = $this->getShortClassName($queryClass);
             $methods[] = new MethodGenerator(
@@ -183,20 +195,51 @@ class ClassGenerator
 
         $this->dump('/Entity/Query/QueryFactory.php', new LaminasClassGenerator(
             name: 'QueryFactory',
-            namespaceName: $namespace,
+            namespaceName: $this->generatedNamespace.'Entity\\Query',
             extends: QueryFactoryBase::class,
             methods: $methods,
         ));
     }
 
-    protected function generateEntityDiscoveryCacheClass(array $entityDiscoveryCache): void
+    /**
+     * @param EntityTypeDefinitionWrapper[] $entityTypeDefinitionWrappers
+     */
+    protected function generateEntityDiscoveryCacheClass(array $entityTypeDefinitionWrappers): void
     {
-        $namespace = $this->generatedNamespace.'Entity';
-        $generatedCode = "<?php\n\nnamespace $namespace;\n\nclass EntityDiscoveryCache implements \\Sarue\\Orm\\Schema\\EntityDiscoveryCacheInterface {\n";
-        $generatedCode .= "public function getCachedEntityDefinitions(): array {\n";
-        $generatedCode .= "return unserialize('".str_replace("'", "\\'", serialize($entityDiscoveryCache))."');\n}\n}";
+        $generatedCode = "return [\n";
+        foreach ($entityTypeDefinitionWrappers as $entityTypeDefinitionWrapper) {
+            $entityTypeDefinition = $entityTypeDefinitionWrapper->entityTypeDefinition;
+            $generatedCode .= '    '.var_export($entityTypeDefinition->className, true).' => \\'.EntityType::class."::fromValues(\n";
+            $generatedCode .= '        '.var_export($entityTypeDefinition->name, true).",\n";
+            $generatedCode .= '        '.var_export($entityTypeDefinition->className, true).",\n";
+            $generatedCode .= "        [\n";
+            foreach ($entityTypeDefinitionWrapper->fieldDefinitionWrappers as $fieldDefinitionWrapper) {
+                $fieldDefinition = $fieldDefinitionWrapper->fieldDefinition;
+                $generatedCode .= "            ".var_export($fieldDefinition->getFieldName(), true).' => new \\'.get_class($fieldDefinition)."(\n";
+                foreach ($fieldDefinitionWrapper->attributeReflection->getArguments() as $argumentName => $argumentValue) {
+                    $generatedCode .= '                '.$argumentName.': '.$this->safeVarExport($argumentValue).",\n";
+                }
+                $generatedCode .= "            )->initializeDefinition(".var_export($fieldDefinition->getFieldName(), true).",".var_export($fieldDefinition->getPropertyType(), true)."),\n";
+            }
+            $generatedCode .= "        ],\n";
+            $generatedCode .= "    ),\n";
+        }
+        $generatedCode .= "];\n";
 
-        $this->dump('/Entity/EntityDiscoveryCache.php', $generatedCode);
+        $methods = [
+            new MethodGenerator(
+                name: 'getCachedEntityDefinitions',
+                body: $generatedCode,
+            )->setReturnType('array'),
+        ];
+        //$generatedCode .= "return unserialize('".str_replace("'", "\\'", serialize($entityDiscoveryCache))."');\n}\n}";
+
+        $this->dump('/Entity/EntityDiscoveryCache.php', new LaminasClassGenerator(
+            name: 'EntityDiscoveryCache',
+            namespaceName: $this->generatedNamespace.'Entity',
+            extends: EntityDiscoveryCacheBase::class,
+            methods: $methods,
+        ));
     }
 
     protected function getShortClassName(string $fullClassName): string
@@ -214,5 +257,17 @@ class ClassGenerator
         file_put_contents($this->generatedBaseDirectory.$classPath, new FileGenerator([
             'classes' => [$classGenerator],
         ])->generate());
+    }
+
+    protected function safeVarExport(mixed $variable): string
+    {
+        if (is_int($variable) || is_string($variable)) {
+           return var_export($variable, true);
+        }
+        elseif ($variable instanceof Number) {
+            return "new \\BcMath\\Number('{$variable}')";
+        }
+
+        throw new \Exception('Unsupported parameter type');
     }
 }

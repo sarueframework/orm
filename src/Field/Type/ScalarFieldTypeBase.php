@@ -18,7 +18,12 @@ abstract class ScalarFieldTypeBase extends FieldTypeBase
 
     public function persistFieldToDatabase(QueryBuilder $queryBuilder, EntityInterface $entity): void
     {
-        $queryBuilder->setValue($this->fieldName, $queryBuilder->createNamedParameter($entity->{$this->fieldName}));
+        if (isset($entity->{$this->fieldName})) {
+            $queryBuilder->setValue($this->fieldName, $queryBuilder->createNamedParameter($entity->{$this->fieldName}));
+        }
+        elseif ($this->isRequired()) {
+            throw new \Exception("Required field '{$this->fieldName}' is not set.");
+        }
     }
 
     protected function getColumnEditor(): ColumnEditor

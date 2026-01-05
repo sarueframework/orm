@@ -6,6 +6,7 @@ use BcMath\Number;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
+use ReflectionAttribute;
 use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Generator\Wrapper\EntityTypeDefinitionWrapper;
 use Sarue\Orm\Generator\Wrapper\FieldDefinitionWrapper;
@@ -16,6 +17,7 @@ use Sarue\Orm\Query\QueryBase;
 use Sarue\Orm\Query\QueryFactoryBase;
 use Sarue\Orm\Entity\Type\EntityTypeDefinitionRepositoryBase;
 use Sarue\Orm\Entity\Type\EntityType;
+use Sarue\Orm\Field\Type\Uuid\UuidField;
 
 class ClassGenerator
 {
@@ -93,7 +95,9 @@ class ClassGenerator
      */
     protected function discoverFieldDefinitions(\ReflectionClass $classReflection): array
     {
-        $fieldDefinitionWrappers = [];
+        $fieldDefinitionWrappers = [
+            'id' => new FieldDefinitionWrapper(new UuidField(TRUE)->initializeDefinition('id', '?string'), '?string', ['generateIdByDefault' => TRUE]),
+        ];
 
         foreach ($classReflection->getProperties() as $property) {
             $fieldAttributes = $property->getAttributes(FieldTypeInterface::class, \ReflectionAttribute::IS_INSTANCEOF);
@@ -120,7 +124,8 @@ class ClassGenerator
 
             $fieldDefinitionWrappers[$fieldDefinition->getFieldName()] = new FieldDefinitionWrapper(
                 $fieldDefinition,
-                $fieldAttribute,
+                $property->getType()?->__toString(),
+                $fieldAttribute->getArguments(),
             );
         }
 
@@ -216,10 +221,10 @@ class ClassGenerator
             foreach ($entityTypeDefinitionWrapper->fieldDefinitionWrappers as $fieldDefinitionWrapper) {
                 $fieldDefinition = $fieldDefinitionWrapper->fieldDefinition;
                 $generatedCode .= "            ".var_export($fieldDefinition->getFieldName(), true).' => new \\'.get_class($fieldDefinition)."(\n";
-                foreach ($fieldDefinitionWrapper->attributeReflection->getArguments() as $argumentName => $argumentValue) {
+                foreach ($fieldDefinitionWrapper->arguments as $argumentName => $argumentValue) {
                     $generatedCode .= '                '.$argumentName.': '.$this->safeVarExport($argumentValue).",\n";
                 }
-                $generatedCode .= "            )->initializeDefinition(".var_export($fieldDefinition->getFieldName(), true).",".var_export($fieldDefinition->getPropertyType(), true)."),\n";
+                $generatedCode .= "            )->initializeDefinition(".var_export($fieldDefinition->getFieldName(), true).",".var_export($fieldDefinitionWrapper->propertyType, true)."),\n";
             }
             $generatedCode .= "        ],\n";
             $generatedCode .= "    ),\n";
@@ -261,7 +266,7 @@ class ClassGenerator
 
     protected function safeVarExport(mixed $variable): string
     {
-        if (is_int($variable) || is_string($variable)) {
+        if (is_int($variable) || is_string($variable) || is_bool($variable)) {
            return var_export($variable, true);
         }
         elseif ($variable instanceof Number) {

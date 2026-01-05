@@ -14,7 +14,8 @@ class FieldDefinitionWrapper
      */
     public function __construct(
         public readonly FieldTypeInterface $fieldDefinition,
-        public readonly \ReflectionAttribute $attributeReflection,
+        public readonly string $propertyType,
+        public readonly array $arguments = [],
     )
     {
     }

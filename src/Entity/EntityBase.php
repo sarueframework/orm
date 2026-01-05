@@ -8,6 +8,8 @@ use Sarue\Orm\Entity\Type\EntityType;
 
 abstract class EntityBase implements EntityInterface
 {
+    public readonly ?string $id;
+
     public static function getTypeDefinition(): EntityType
     {
         return OrmManager::getInstance()->getEntityTypeDefinition(static::class);
@@ -45,5 +47,10 @@ abstract class EntityBase implements EntityInterface
         }
 
         return $entity;
+    }
+
+    public function isNew(): bool
+    {
+        return !isset($this->id);
     }
 }

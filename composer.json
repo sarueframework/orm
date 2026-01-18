@@ -26,7 +26,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^8.4",
+        "php": "^8.5",
         "ext-pgsql": "*",
         "doctrine/dbal": "^4",
         "laminas/laminas-code": "^4.17"

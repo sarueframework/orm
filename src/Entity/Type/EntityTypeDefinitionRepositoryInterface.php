@@ -16,5 +16,4 @@ interface EntityTypeDefinitionRepositoryInterface
     public function getFieldDefinitions(string $entityClass): array;
 
     public function getFieldDefinition(string $entityClass, string $fieldName): FieldTypeInterface;
-
 }

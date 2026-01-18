@@ -20,8 +20,7 @@ abstract class ScalarFieldTypeBase extends FieldTypeBase
     {
         if (isset($entity->{$this->fieldName})) {
             $queryBuilder->setValue($this->fieldName, $queryBuilder->createNamedParameter($entity->{$this->fieldName}));
-        }
-        elseif ($this->isRequired()) {
+        } elseif ($this->isRequired()) {
             throw new \Exception("Required field '{$this->fieldName}' is not set.");
         }
     }

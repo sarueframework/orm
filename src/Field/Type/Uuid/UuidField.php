@@ -13,9 +13,8 @@ class UuidField extends ScalarFieldTypeBase
     public const array ALLOWED_PROPERTY_TYPES = ['string'];
 
     public function __construct(
-        public readonly bool $generateIdByDefault = FALSE,
-    )
-    {
+        public readonly bool $generateIdByDefault = false,
+    ) {
     }
 
     public function getConditionType(): string
@@ -25,7 +24,7 @@ class UuidField extends ScalarFieldTypeBase
 
     public function fromDatabaseValue(mixed $databaseValue): mixed
     {
-        return NULL;
+        return null;
     }
 
     public function validateDefinition(): void

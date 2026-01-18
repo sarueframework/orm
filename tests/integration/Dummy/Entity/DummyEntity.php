@@ -4,10 +4,10 @@ namespace Sarue\Orm\Tests\Integration\Dummy\Entity;
 
 use BcMath\Number;
 use Sarue\Orm\Entity\EntityBase;
+use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Field\Type\Numeric\DecimalField;
 use Sarue\Orm\Field\Type\Numeric\IntegerField;
 use Sarue\Orm\Field\Type\Text\TextField;
-use Sarue\Orm\Entity\Type\EntityType;
 
 #[EntityType]
 class DummyEntity extends EntityBase

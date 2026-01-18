@@ -2,9 +2,9 @@
 
 namespace Sarue\Orm\Entity;
 
+use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\OrmManager;
-use Sarue\Orm\Entity\Type\EntityType;
 
 abstract class EntityBase implements EntityInterface
 {

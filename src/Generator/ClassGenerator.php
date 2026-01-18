@@ -6,18 +6,17 @@ use BcMath\Number;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
-use ReflectionAttribute;
 use Sarue\Orm\Entity\EntityInterface;
+use Sarue\Orm\Entity\Type\EntityType;
+use Sarue\Orm\Entity\Type\EntityTypeDefinitionRepositoryBase;
+use Sarue\Orm\Field\Type\FieldTypeInterface;
+use Sarue\Orm\Field\Type\Uuid\UuidField;
 use Sarue\Orm\Generator\Wrapper\EntityTypeDefinitionWrapper;
 use Sarue\Orm\Generator\Wrapper\FieldDefinitionWrapper;
-use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
 use Sarue\Orm\Query\Condition\Group\OrConditionGroupBase;
 use Sarue\Orm\Query\QueryBase;
 use Sarue\Orm\Query\QueryFactoryBase;
-use Sarue\Orm\Entity\Type\EntityTypeDefinitionRepositoryBase;
-use Sarue\Orm\Entity\Type\EntityType;
-use Sarue\Orm\Field\Type\Uuid\UuidField;
 
 class ClassGenerator
 {
@@ -74,7 +73,7 @@ class ClassGenerator
             }
 
             $fieldDefinitionWrappers = $this->discoverFieldDefinitions($classReflection);
-            $fieldDefinitions = array_map(fn(FieldDefinitionWrapper $fieldDefinitionWrapper): FieldTypeInterface => $fieldDefinitionWrapper->fieldDefinition, $fieldDefinitionWrappers);
+            $fieldDefinitions = array_map(fn (FieldDefinitionWrapper $fieldDefinitionWrapper): FieldTypeInterface => $fieldDefinitionWrapper->fieldDefinition, $fieldDefinitionWrappers);
 
             $entityTypeDefinitionWrappers[$className] = new EntityTypeDefinitionWrapper(
                 EntityType::fromValues(
@@ -96,7 +95,7 @@ class ClassGenerator
     protected function discoverFieldDefinitions(\ReflectionClass $classReflection): array
     {
         $fieldDefinitionWrappers = [
-            'id' => new FieldDefinitionWrapper(new UuidField(TRUE)->initializeDefinition('id', '?string'), '?string', ['generateIdByDefault' => TRUE]),
+            'id' => new FieldDefinitionWrapper(new UuidField(true)->initializeDefinition('id', '?string'), '?string', ['generateIdByDefault' => true]),
         ];
 
         foreach ($classReflection->getProperties() as $property) {
@@ -194,7 +193,7 @@ class ClassGenerator
             $className = $this->getShortClassName($queryClass);
             $methods[] = new MethodGenerator(
                 name: 'get'.$className,
-                body: "return \$this->instantiateQuery(".var_export($queryClass, true).");",
+                body: 'return $this->instantiateQuery('.var_export($queryClass, true).');',
             )->setReturnType($queryClass);
         }
 
@@ -220,11 +219,11 @@ class ClassGenerator
             $generatedCode .= "        [\n";
             foreach ($entityTypeDefinitionWrapper->fieldDefinitionWrappers as $fieldDefinitionWrapper) {
                 $fieldDefinition = $fieldDefinitionWrapper->fieldDefinition;
-                $generatedCode .= "            ".var_export($fieldDefinition->getFieldName(), true).' => new \\'.get_class($fieldDefinition)."(\n";
+                $generatedCode .= '            '.var_export($fieldDefinition->getFieldName(), true).' => new \\'.get_class($fieldDefinition)."(\n";
                 foreach ($fieldDefinitionWrapper->arguments as $argumentName => $argumentValue) {
                     $generatedCode .= '                '.$argumentName.': '.$this->safeVarExport($argumentValue).",\n";
                 }
-                $generatedCode .= "            )->initializeDefinition(".var_export($fieldDefinition->getFieldName(), true).",".var_export($fieldDefinitionWrapper->propertyType, true)."),\n";
+                $generatedCode .= '            )->initializeDefinition('.var_export($fieldDefinition->getFieldName(), true).','.var_export($fieldDefinitionWrapper->propertyType, true)."),\n";
             }
             $generatedCode .= "        ],\n";
             $generatedCode .= "    ),\n";
@@ -237,7 +236,6 @@ class ClassGenerator
                 body: $generatedCode,
             )->setReturnType('array'),
         ];
-        //$generatedCode .= "return unserialize('".str_replace("'", "\\'", serialize($EntityTypeDefinitionRepository))."');\n}\n}";
 
         $this->dump('/Entity/EntityTypeDefinitionRepository.php', new LaminasClassGenerator(
             name: 'EntityTypeDefinitionRepository',
@@ -256,6 +254,7 @@ class ClassGenerator
     {
         if (is_string($classGenerator)) {
             file_put_contents($this->generatedBaseDirectory.$classPath, $classGenerator);
+
             return;
         }
 
@@ -267,9 +266,8 @@ class ClassGenerator
     protected function safeVarExport(mixed $variable): string
     {
         if (is_int($variable) || is_string($variable) || is_bool($variable)) {
-           return var_export($variable, true);
-        }
-        elseif ($variable instanceof Number) {
+            return var_export($variable, true);
+        } elseif ($variable instanceof Number) {
             return "new \\BcMath\\Number('{$variable}')";
         }
 

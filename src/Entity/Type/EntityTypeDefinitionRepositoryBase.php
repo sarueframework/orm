@@ -18,6 +18,6 @@ abstract class EntityTypeDefinitionRepositoryBase implements EntityTypeDefinitio
 
     public function getFieldDefinition(string $entityClass, string $fieldName): FieldTypeInterface
     {
-        return $this->getEntityTypeDefinition($entityClass)->fields[$fieldName] ?? throw new \Exception("Field {$fieldName} not found in entity {$entityClass}.");;
+        return $this->getEntityTypeDefinition($entityClass)->fields[$fieldName] ?? throw new \Exception("Field {$fieldName} not found in entity {$entityClass}.");
     }
 }

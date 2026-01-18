@@ -5,10 +5,10 @@ namespace Sarue\Orm;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Sarue\Orm\Entity\EntityInterface;
+use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Query\Parameter\ParameterInterface;
 use Sarue\Orm\Query\QueryInterface;
-use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\EntityTypeDefinitionRepository;
 use Sarue\Orm\Tests\Integration\Dummy\Generated\Entity\Query\QueryFactory;
 

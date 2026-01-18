@@ -34,7 +34,7 @@ class EntityType
         $tableEditor = Table::editor()
             ->setUnquotedName($this->name);
         $revisionTableEditor = Table::editor()
-            ->setUnquotedName($this->name . '__revision');
+            ->setUnquotedName($this->name.'__revision');
 
         foreach ($this->fields as $fieldDefinition) {
             foreach ($fieldDefinition->createSchema() as $column) {

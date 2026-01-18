@@ -9,14 +9,10 @@ use Sarue\Orm\Field\Type\FieldTypeInterface;
  */
 class FieldDefinitionWrapper
 {
-    /**
-     * @param
-     */
     public function __construct(
         public readonly FieldTypeInterface $fieldDefinition,
         public readonly string $propertyType,
         public readonly array $arguments = [],
-    )
-    {
+    ) {
     }
 }

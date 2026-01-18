@@ -16,7 +16,6 @@ class EntityTypeDefinitionWrapper
         public readonly EntityType $entityTypeDefinition,
         public readonly \ReflectionClass $reflectionClass,
         public readonly array $fieldDefinitionWrappers,
-    )
-    {
+    ) {
     }
 }

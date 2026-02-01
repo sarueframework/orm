@@ -6,11 +6,10 @@ use BcMath\Number;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
-use Sarue\Orm\Entity\EntityInterface;
+use Sarue\Orm\Entity\EntityBase;
 use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Entity\Type\EntityTypeDefinitionRepositoryBase;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
-use Sarue\Orm\Field\Type\Uuid\UuidField;
 use Sarue\Orm\Generator\Wrapper\EntityTypeDefinitionWrapper;
 use Sarue\Orm\Generator\Wrapper\FieldDefinitionWrapper;
 use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
@@ -64,8 +63,8 @@ class ClassGenerator
                 continue;
             }
 
-            if (!is_subclass_of($className, EntityInterface::class)) {
-                throw new \Exception('Class '.$className.' has attribute Entity but it not a descendant of EntityInterface.');
+            if (!is_subclass_of($className, EntityBase::class)) {
+                throw new \Exception('Class '.$className.' has attribute Entity but it not a descendant of Sarue\Orm\Entity\EntityBase.');
             }
 
             if ($classReflection->isAbstract()) {
@@ -94,9 +93,7 @@ class ClassGenerator
      */
     protected function discoverFieldDefinitions(\ReflectionClass $classReflection): array
     {
-        $fieldDefinitionWrappers = [
-            'id' => new FieldDefinitionWrapper(new UuidField(true)->initializeDefinition('id', '?string'), '?string', ['generateIdByDefault' => true]),
-        ];
+        $fieldDefinitionWrappers = [];
 
         foreach ($classReflection->getProperties() as $property) {
             $fieldAttributes = $property->getAttributes(FieldTypeInterface::class, \ReflectionAttribute::IS_INSTANCEOF);
@@ -110,10 +107,6 @@ class ClassGenerator
             }
 
             $fieldAttribute = reset($fieldAttributes);
-
-            if ('id' === $property->getName()) {
-                throw new \Exception('Reserved word "id" cannot be used as a field name');
-            }
 
             /** @var FieldTypeInterface */
             $fieldDefinition = $fieldAttribute->newInstance();

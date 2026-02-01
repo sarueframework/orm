@@ -4,11 +4,13 @@ namespace Sarue\Orm\Entity;
 
 use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
+use Sarue\Orm\Field\Type\Uuid\UuidField;
 use Sarue\Orm\OrmManager;
 
 abstract class EntityBase implements EntityInterface
 {
-    public readonly ?string $id;
+    #[UuidField]
+    final public readonly ?string $id;
 
     public static function getTypeDefinition(): EntityType
     {

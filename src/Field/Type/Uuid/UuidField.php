@@ -6,6 +6,7 @@ use Doctrine\DBAL\Schema\ColumnEditor;
 use Sarue\Orm\Field\Type\ScalarFieldTypeBase;
 use Sarue\Orm\Query\Condition\Numeric\UuidConditionInterface;
 
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
 class UuidField extends ScalarFieldTypeBase
 {
     public const string COLUMN_TYPE = 'guid';

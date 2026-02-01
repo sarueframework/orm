@@ -3,14 +3,14 @@
 namespace Sarue\Orm\Tests\Integration\Dummy\Entity;
 
 use BcMath\Number;
-use Sarue\Orm\Entity\EntityBase;
+use Sarue\Orm\Entity\AbstractLogEntity;
 use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Field\Type\Numeric\DecimalField;
 use Sarue\Orm\Field\Type\Numeric\IntegerField;
 use Sarue\Orm\Field\Type\Text\TextField;
 
 #[EntityType]
-class DummyEntity extends EntityBase
+class DummyEntity extends AbstractLogEntity
 {
     #[IntegerField(minimum: 0, maximum: 123)]
     public ?int $age;

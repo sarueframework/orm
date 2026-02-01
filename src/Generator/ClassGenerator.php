@@ -6,7 +6,7 @@ use BcMath\Number;
 use Laminas\Code\Generator\ClassGenerator as LaminasClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
-use Sarue\Orm\Entity\EntityBase;
+use Sarue\Orm\Entity\AbstractBaseEntity;
 use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Entity\Type\EntityTypeDefinitionRepositoryBase;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
@@ -63,8 +63,8 @@ class ClassGenerator
                 continue;
             }
 
-            if (!is_subclass_of($className, EntityBase::class)) {
-                throw new \Exception('Class '.$className.' has attribute Entity but it not a descendant of Sarue\Orm\Entity\EntityBase.');
+            if (!is_subclass_of($className, AbstractBaseEntity::class)) {
+                throw new \Exception('Class '.$className.' has attribute Entity but it not a descendant of Sarue\Orm\Entity\AbstractBaseEntity.');
             }
 
             if ($classReflection->isAbstract()) {

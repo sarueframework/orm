@@ -7,7 +7,7 @@ use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Field\Type\Uuid\UuidField;
 use Sarue\Orm\OrmManager;
 
-abstract class EntityBase implements EntityInterface
+abstract class AbstractBaseEntity implements EntityInterface
 {
     #[UuidField]
     final public readonly ?string $id;

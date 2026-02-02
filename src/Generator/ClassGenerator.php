@@ -162,6 +162,7 @@ class ClassGenerator
             $generatedCode .= "public const string ENTITY_CLASS = \\{$entityTypeDefinition->className}::class;\n";
             $generatedCode .= "public function orGroup(): {$shortEntityClassName}OrConditionGroup { return new {$shortEntityClassName}OrConditionGroup(); }\n";
             $generatedCode .= "public function andGroup(): {$shortEntityClassName}AndConditionGroup { return new {$shortEntityClassName}AndConditionGroup(); }\n";
+            $generatedCode .= "public function loadById(string \$id): \\{$entityTypeDefinition->className} { return \$this->doLoadById(\$id); }\n";
             $generatedCode .= "/**\n";
             $generatedCode .= ' * @return \\'.$entityTypeDefinition->className."[]\n";
             $generatedCode .= " */\n";

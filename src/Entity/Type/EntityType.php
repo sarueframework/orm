@@ -2,6 +2,7 @@
 
 namespace Sarue\Orm\Entity\Type;
 
+use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
@@ -42,6 +43,12 @@ class EntityType
                 $revisionTableEditor->addColumn($column);
             }
         }
+
+        $tableEditor->addPrimaryKeyConstraint(
+            PrimaryKeyConstraint::editor()
+                ->setUnquotedColumnNames('id')
+                ->create()
+        );
 
         return [
             $tableEditor->create(),

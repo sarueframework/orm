@@ -2,6 +2,7 @@
 
 namespace Sarue\Orm\Entity;
 
+use Ramsey\Uuid\Uuid;
 use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Field\Type\Uuid\UuidField;
@@ -9,7 +10,9 @@ use Sarue\Orm\OrmManager;
 
 abstract class AbstractBaseEntity implements EntityInterface
 {
-    #[UuidField]
+    #[UuidField(
+        generateIdByDefault: true,
+    )]
     final public readonly ?string $id;
 
     public static function getTypeDefinition(): EntityType
@@ -51,8 +54,22 @@ abstract class AbstractBaseEntity implements EntityInterface
         return $entity;
     }
 
-    public function isNew(): bool
+    final public function isNew(): bool
     {
         return !isset($this->id);
+    }
+
+    final public function initializeId(): void
+    {
+        if (!$this->isNew()) {
+            throw new \Exception('Initializing already initialized ID');
+        }
+
+        $this->id = $this->generateId();
+    }
+
+    protected function generateId(): string
+    {
+        return Uuid::uuid4()->toString();
     }
 }

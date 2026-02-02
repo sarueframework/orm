@@ -28,7 +28,7 @@ class IntegrationTestCase extends TestCase
         $classGenerator->generateClasses();
 
         $this->connection = DriverManager::getConnection([
-            'dbname' => 'sarue_integration_test_db ',
+            'dbname' => 'sarue_integration_test_db',
             'user' => 'postgres',
             'password' => 'sarue',
             'host' => 'localhost',
@@ -39,5 +39,10 @@ class IntegrationTestCase extends TestCase
         $this->ormManager = new OrmManager($this->connection);
 
         $this->ormManager->createTables();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->connection->close();
     }
 }

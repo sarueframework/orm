@@ -3,6 +3,8 @@
 namespace Sarue\Orm;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Schema\Schema;
 use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Entity\Type\EntityType;
@@ -86,6 +88,10 @@ class OrmManager
             ->insert($entityTypeDefinition->name)
         ;
 
+        if ($entity->isNew()) {
+            $entity->initializeId();
+        }
+
         foreach ($entityTypeDefinition->fields as $fieldDefinition) {
             $fieldDefinition->persistFieldToDatabase($queryBuilder, $entity);
         }
@@ -111,16 +117,21 @@ class OrmManager
         return $this->queryFactory;
     }
 
+    public function loadById(QueryInterface $query, string $id): EntityInterface
+    {
+        $queryBuilder = $this->createLoadQueryBuilder($query);
+        $queryBuilder->where('id = '.$queryBuilder->createPositionalParameter($id, ParameterType::STRING));
+        $entities = $this->doLoadEntities($query, $queryBuilder);
+        if (empty($entities)) {
+            throw new \Exception('ID not found.');
+        }
+
+        return reset($entities);
+    }
+
     public function loadAll(QueryInterface $query): array
     {
-        $entityTypeDefinition = $this->getEntityTypeDefinition($query::ENTITY_CLASS);
-
-        $queryBuilder = $this->connection
-            ->createQueryBuilder()
-            ->select('*')
-            ->from($entityTypeDefinition->name)
-        ;
-
+        $queryBuilder = $this->createLoadQueryBuilder($query);
         if ($whereParts = $query->buildSql()) {
             $where = '';
             foreach ($whereParts as $wherePart) {
@@ -135,6 +146,22 @@ class OrmManager
             $queryBuilder->where($where);
         }
 
+        return $this->doLoadEntities($query, $queryBuilder);
+    }
+
+    protected function createLoadQueryBuilder(QueryInterface $query): QueryBuilder
+    {
+        $entityTypeDefinition = $this->getEntityTypeDefinition($query::ENTITY_CLASS);
+
+        return $this->connection
+            ->createQueryBuilder()
+            ->select('*')
+            ->from($entityTypeDefinition->name)
+        ;
+    }
+
+    protected function doLoadEntities(QueryInterface $query, QueryBuilder $queryBuilder): array
+    {
         $results = $queryBuilder->executeQuery()->fetchAllAssociative();
         $entities = [];
 

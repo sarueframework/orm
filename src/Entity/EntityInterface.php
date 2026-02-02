@@ -10,5 +10,7 @@ interface EntityInterface
 
     public function isNew(): bool;
 
+    public function initializeId(): void;
+
     public function mayDelete(): bool;
 }

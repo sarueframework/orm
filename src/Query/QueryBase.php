@@ -12,6 +12,11 @@ abstract class QueryBase extends ConditionGroupBase implements QueryInterface
     ) {
     }
 
+    protected function doLoadById(string $id)
+    {
+        return $this->ormManager->loadById($this, $id);
+    }
+
     protected function doLoadAll()
     {
         return $this->ormManager->loadAll($this);

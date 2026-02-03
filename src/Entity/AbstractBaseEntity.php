@@ -2,7 +2,6 @@
 
 namespace Sarue\Orm\Entity;
 
-use Ramsey\Uuid\Uuid;
 use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Field\Type\Uuid\UuidField;
@@ -59,17 +58,12 @@ abstract class AbstractBaseEntity implements EntityInterface
         return !isset($this->id);
     }
 
-    final public function initializeId(): void
+    final public function initializeId(string $id): void
     {
         if (!$this->isNew()) {
-            throw new \Exception('Initializing already initialized ID');
+            throw new \Exception('Cannot override ID.');
         }
 
-        $this->id = $this->generateId();
-    }
-
-    protected function generateId(): string
-    {
-        return Uuid::uuid4()->toString();
+        $this->id = $id;
     }
 }

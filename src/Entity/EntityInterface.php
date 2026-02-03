@@ -8,9 +8,9 @@ interface EntityInterface
 
     public static function isRevisionable(): bool;
 
-    public function isNew(): bool;
+    public function initializeId(string $id): void;
 
-    public function initializeId(): void;
+    public function isNew(): bool;
 
     public function mayDelete(): bool;
 }

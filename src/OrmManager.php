@@ -88,15 +88,15 @@ class OrmManager
             ->insert($entityTypeDefinition->name)
         ;
 
-        if ($entity->isNew()) {
-            $entity->initializeId();
-        }
-
         foreach ($entityTypeDefinition->fields as $fieldDefinition) {
             $fieldDefinition->persistFieldToDatabase($queryBuilder, $entity);
         }
 
-        $queryBuilder->executeQuery();
+        $sql = $queryBuilder->getSQL();
+        $sql .= ' RETURNING id';
+
+        $result = $this->connection->executeQuery($sql, $queryBuilder->getParameters(), $queryBuilder->getParameterTypes());
+        $entity->initializeId($result->fetchOne());
     }
 
     public function getEntityTypeDefinitionRepository(): EntityTypeDefinitionRepository

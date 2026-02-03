@@ -9,6 +9,6 @@ class UuidDefaultValue implements DefaultExpression
 {
     public function toSQL(AbstractPlatform $platform): string
     {
-        return 'gen_random_uuid()';
+        return 'uuidv7()';
     }
 }

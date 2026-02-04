@@ -12,10 +12,10 @@ use Sarue\Orm\Entity\Type\EntityTypeDefinitionRepositoryBase;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Generator\Wrapper\EntityTypeDefinitionWrapper;
 use Sarue\Orm\Generator\Wrapper\FieldDefinitionWrapper;
+use Sarue\Orm\Query\AbstractQuery;
 use Sarue\Orm\Query\AbstractQueryFactory;
 use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
 use Sarue\Orm\Query\Condition\Group\OrConditionGroupBase;
-use Sarue\Orm\Query\QueryBase;
 
 class ClassGenerator
 {
@@ -145,7 +145,7 @@ class ClassGenerator
             'and',
         ]);
 
-        return $this->generateSingleClassForEntity($entityTypeDefinition, 'Query', QueryBase::class, $methodParameters, $baseMethodCall, [
+        return $this->generateSingleClassForEntity($entityTypeDefinition, 'Query', AbstractQuery::class, $methodParameters, $baseMethodCall, [
             'where',
             'and',
         ]);

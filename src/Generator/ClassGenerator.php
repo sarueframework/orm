@@ -9,6 +9,8 @@ use Laminas\Code\Generator\MethodGenerator;
 use Sarue\Orm\Entity\AbstractBaseEntity;
 use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Entity\Type\EntityTypeDefinitionRepositoryBase;
+use Sarue\Orm\Exception\EntityDefinition\AbstractEntityTypeException;
+use Sarue\Orm\Exception\EntityDefinition\BadInheritanceException;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Generator\Wrapper\EntityTypeDefinitionWrapper;
 use Sarue\Orm\Generator\Wrapper\FieldDefinitionWrapper;
@@ -65,11 +67,11 @@ class ClassGenerator
             }
 
             if (!is_subclass_of($className, AbstractBaseEntity::class)) {
-                throw new \Exception('Class '.$className.' has attribute Entity but it not a descendant of Sarue\Orm\Entity\AbstractBaseEntity.');
+                throw new BadInheritanceException('Class '.$className.' has attribute #[EntityType] but it not a descendant of Sarue\Orm\Entity\AbstractBaseEntity.');
             }
 
             if ($classReflection->isAbstract()) {
-                throw new \Exception('Class '.$className.' has attribute Entity but is abstract.');
+                throw new AbstractEntityTypeException('Class '.$className.' has attribute #[EntityType] but is abstract.');
             }
 
             $fieldDefinitionWrappers = $this->discoverFieldDefinitions($classReflection);

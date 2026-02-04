@@ -3,6 +3,7 @@
 namespace Sarue\Orm\Entity;
 
 use Sarue\Orm\Entity\Type\EntityType;
+use Sarue\Orm\Exception\MayNotDeleteException;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Field\Type\Uuid\UuidField;
 use Sarue\Orm\OrmManager;
@@ -66,4 +67,22 @@ abstract class AbstractBaseEntity implements EntityInterface
 
         $this->id = $id;
     }
+
+    public function assertUpdateAccess(): void
+    {
+        if (!$this->mayUpdate()) {
+            throw new MayNotDeleteException();
+        }
+    }
+
+    public function assertDeleteAccess(): void
+    {
+        if (!$this->mayDelete()) {
+            throw new MayNotDeleteException();
+        }
+    }
+
+    abstract protected function mayUpdate(): bool;
+
+    abstract protected function mayDelete(): bool;
 }

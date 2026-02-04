@@ -78,10 +78,11 @@ class OrmManager
 
     public function save(EntityInterface $entity): void
     {
-        $entityTypeDefinition = $this->EntityTypeDefinitionRepository->getEntityTypeDefinitions()[get_class($entity)] ?? null;
-        if (!$entityTypeDefinition) {
-            throw new \Exception('Unknown entity '.get_class($entity));
+        if (!$entity->isNew()) {
+            $entity->assertUpdateAccess();
         }
+
+        $entityTypeDefinition = $entity->getTypeDefinition();
 
         $queryBuilder = $this->connection
             ->createQueryBuilder()

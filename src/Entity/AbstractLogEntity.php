@@ -14,7 +14,12 @@ abstract class AbstractLogEntity extends AbstractBaseEntity
         return false;
     }
 
-    final public function mayDelete(): bool
+    final protected function mayUpdate(): bool
+    {
+        return false;
+    }
+
+    final protected function mayDelete(): bool
     {
         return false;
     }

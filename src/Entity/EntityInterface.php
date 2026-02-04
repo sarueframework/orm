@@ -2,8 +2,17 @@
 
 namespace Sarue\Orm\Entity;
 
+use Sarue\Orm\Entity\Type\EntityType;
+use Sarue\Orm\Field\Type\FieldTypeInterface;
+
 interface EntityInterface
 {
+    public static function getTypeDefinition(): EntityType;
+
+    public static function getFieldDefinitions(): array;
+
+    public static function getFieldDefinition(string $fieldName): FieldTypeInterface;
+
     public static function fromDatabaseValues(array $values): static;
 
     public static function isRevisionable(): bool;
@@ -12,5 +21,7 @@ interface EntityInterface
 
     public function isNew(): bool;
 
-    public function mayDelete(): bool;
+    public function assertUpdateAccess(): void;
+
+    public function assertDeleteAccess(): void;
 }

@@ -4,7 +4,7 @@ namespace Sarue\Orm\Query;
 
 use Sarue\Orm\OrmManager;
 
-class QueryFactoryBase
+abstract class AbstractQueryFactory
 {
     public function __construct(
         protected OrmManager $ormManager,

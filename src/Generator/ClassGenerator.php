@@ -12,18 +12,19 @@ use Sarue\Orm\Entity\Type\EntityTypeDefinitionRepositoryBase;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Generator\Wrapper\EntityTypeDefinitionWrapper;
 use Sarue\Orm\Generator\Wrapper\FieldDefinitionWrapper;
+use Sarue\Orm\Query\AbstractQueryFactory;
 use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
 use Sarue\Orm\Query\Condition\Group\OrConditionGroupBase;
 use Sarue\Orm\Query\QueryBase;
-use Sarue\Orm\Query\QueryFactoryBase;
 
 class ClassGenerator
 {
+    public const GENERATED_CLASS_NAMESPACE = 'Sarue\\Orm\\Generated\\';
+
     public function __construct(
         protected string $entityDirectory,
         protected string $generatedBaseDirectory,
         protected string $entityNamespace = 'App\\Entity\\',
-        protected string $generatedNamespace = 'App\\Generated\\Sarue\\',
     ) {
     }
 
@@ -152,7 +153,7 @@ class ClassGenerator
 
     protected function generateSingleClassForEntity(EntityType $entityTypeDefinition, string $classNameSuffix, string $classBase, string $methodParameters, string $baseMethodCall, array $methodsToGenerate): string
     {
-        $namespace = $this->generatedNamespace.'Entity\\Query';
+        $namespace = static::GENERATED_CLASS_NAMESPACE.'Entity\\Query';
         $shortEntityClassName = $this->getShortClassName($entityTypeDefinition->className);
         $generatedClassName = $shortEntityClassName.$classNameSuffix;
 
@@ -193,8 +194,8 @@ class ClassGenerator
 
         $this->dump('/Entity/Query/QueryFactory.php', new LaminasClassGenerator(
             name: 'QueryFactory',
-            namespaceName: $this->generatedNamespace.'Entity\\Query',
-            extends: QueryFactoryBase::class,
+            namespaceName: static::GENERATED_CLASS_NAMESPACE.'Entity\\Query',
+            extends: AbstractQueryFactory::class,
             methods: $methods,
         ));
     }
@@ -233,7 +234,7 @@ class ClassGenerator
 
         $this->dump('/Entity/EntityTypeDefinitionRepository.php', new LaminasClassGenerator(
             name: 'EntityTypeDefinitionRepository',
-            namespaceName: $this->generatedNamespace.'Entity',
+            namespaceName: static::GENERATED_CLASS_NAMESPACE.'Entity',
             extends: EntityTypeDefinitionRepositoryBase::class,
             methods: $methods,
         ));

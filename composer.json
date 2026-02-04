@@ -15,7 +15,7 @@
         "psr-4": {
             "Sarue\\Orm\\Tests\\Unit\\": "tests/unit",
             "Sarue\\Orm\\Tests\\Integration\\": "tests/integration",
-            "Sarue\\Orm\\Tests\\Integration\\Dummy\\Generated\\": "tests/integration/var/sarue-generated"
+            "Sarue\\Orm\\Generated\\": "tests/integration/var/sarue-generated"
         }
     },
     "authors": [

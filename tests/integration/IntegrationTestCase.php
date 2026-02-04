@@ -23,7 +23,6 @@ class IntegrationTestCase extends TestCase
             __DIR__.'/Dummy/Entity',
             __DIR__.'/var/sarue-generated',
             'Sarue\\Orm\\Tests\\Integration\\Dummy\\Entity\\',
-            'Sarue\\Orm\\Tests\\Integration\\Dummy\\Generated\\',
         );
         $classGenerator->generateClasses();
 

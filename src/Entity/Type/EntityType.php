@@ -34,13 +34,19 @@ class EntityType
     {
         $tableEditor = Table::editor()
             ->setUnquotedName($this->name);
-        $revisionTableEditor = Table::editor()
-            ->setUnquotedName($this->name.'__revision');
+
+        if ($this->isRevisionable()) {
+            $revisionTableEditor = Table::editor()
+                ->setUnquotedName($this->name.'__revision');
+        }
 
         foreach ($this->fields as $fieldDefinition) {
             foreach ($fieldDefinition->createSchema() as $column) {
                 $tableEditor->addColumn($column);
-                $revisionTableEditor->addColumn($column);
+
+                if ($this->isRevisionable()) {
+                    $revisionTableEditor->addColumn($column);
+                }
             }
         }
 
@@ -50,9 +56,16 @@ class EntityType
                 ->create()
         );
 
-        return [
+        return $this->isRevisionable() ? [
             $tableEditor->create(),
             $revisionTableEditor->create(),
+        ] : [
+            $tableEditor->create(),
         ];
+    }
+
+    public function isRevisionable(): bool
+    {
+        return $this->className::isRevisionable();
     }
 }

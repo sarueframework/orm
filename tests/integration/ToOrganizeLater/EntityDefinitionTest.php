@@ -2,6 +2,7 @@
 
 namespace Sarue\Orm\Tests\Integration\ToOrganizeLater;
 
+use Doctrine\DBAL\Schema\Table;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Sarue\Orm\Exception\EntityDefinition\AbstractEntityTypeException;
 use Sarue\Orm\Exception\EntityDefinition\BadInheritanceException;
@@ -27,6 +28,14 @@ class EntityDefinitionTest extends IntegrationTestCase
         $this->assertCount(2, $logEntityFieldDefinitions);
         $this->assertArrayHasKey('id', $logEntityFieldDefinitions);
         $this->assertArrayHasKey('message', $logEntityFieldDefinitions);
+
+        $schemaManager = $this->connection->createSchemaManager();
+
+        $tables = $schemaManager->introspectTables();
+        $tableNames = array_map(fn (Table $table): string => $table->getObjectName()->toString(), $tables);
+        $this->assertCount(1, $tableNames);
+        $this->assertContains('"dummylogentity"', $tableNames);
+        $this->assertNotContains('"dummylogentity__revision"', $tableNames);
     }
 
     public static function dataProviderForTestEntityException(): array

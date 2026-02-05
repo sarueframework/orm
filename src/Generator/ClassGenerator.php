@@ -11,6 +11,7 @@ use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Entity\Type\EntityTypeDefinitionRepositoryBase;
 use Sarue\Orm\Exception\EntityDefinition\AbstractEntityTypeException;
 use Sarue\Orm\Exception\EntityDefinition\BadInheritanceException;
+use Sarue\Orm\Exception\EntityDefinition\MultipleAttributesInPropertyException;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Generator\Wrapper\EntityTypeDefinitionWrapper;
 use Sarue\Orm\Generator\Wrapper\FieldDefinitionWrapper;
@@ -106,7 +107,7 @@ class ClassGenerator
             }
 
             if (1 !== count($fieldAttributes)) {
-                throw new \Exception('Cannot declare more than one field type for a property.');
+                throw new MultipleAttributesInPropertyException('Multiple field types have been declared for property "'.$property->getName().'" in '.$classReflection->getName().'.');
             }
 
             $fieldAttribute = reset($fieldAttributes);

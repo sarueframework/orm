@@ -11,4 +11,6 @@ class DummyLogEntity extends AbstractLogEntity
 {
     #[TextField]
     public string $message;
+
+    public string $notAField;
 }

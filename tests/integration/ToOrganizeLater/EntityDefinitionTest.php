@@ -8,6 +8,7 @@ use Sarue\Orm\Exception\EntityDefinition\AbstractEntityTypeException;
 use Sarue\Orm\Exception\EntityDefinition\BadInheritanceException;
 use Sarue\Orm\Exception\EntityDefinition\MultipleAttributesInPropertyException;
 use Sarue\Orm\Generator\ClassGenerator;
+use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
 use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyLogEntity;
 use Sarue\Orm\Tests\Integration\Dummy\Entity\NotAnEntity;
 use Sarue\Orm\Tests\Integration\Dummy\ExceptionEntity\AbstractEntityType\AbstractEntityTypeEntity;
@@ -20,7 +21,8 @@ class EntityDefinitionTest extends IntegrationTestCase
     public function testEntityDefinition(): void
     {
         $entityDefinitions = $this->ormManager->getEntityTypeDefinitions();
-        $this->assertCount(1, $entityDefinitions);
+        $this->assertCount(2, $entityDefinitions);
+        $this->assertArrayHasKey(DummyEntity::class, $entityDefinitions);
         $this->assertArrayHasKey(DummyLogEntity::class, $entityDefinitions);
         $this->assertArrayNotHasKey(NotAnEntity::class, $entityDefinitions);
 
@@ -33,7 +35,9 @@ class EntityDefinitionTest extends IntegrationTestCase
 
         $tables = $schemaManager->introspectTables();
         $tableNames = array_map(fn (Table $table): string => $table->getObjectName()->toString(), $tables);
-        $this->assertCount(1, $tableNames);
+        $this->assertCount(3, $tableNames);
+        $this->assertContains('"dummyentity"', $tableNames);
+        $this->assertContains('"dummyentity__revision"', $tableNames);
         $this->assertContains('"dummylogentity"', $tableNames);
         $this->assertNotContains('"dummylogentity__revision"', $tableNames);
     }

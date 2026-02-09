@@ -10,5 +10,5 @@ use Sarue\Orm\Field\Type\Text\TextField;
 class DummyEntity extends AbstractEntity
 {
     #[TextField]
-    public string $message;
+    public string $name;
 }

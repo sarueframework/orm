@@ -30,14 +30,24 @@ class EntityType
         return $entityType;
     }
 
+    public function getTableName(): string
+    {
+        return $this->name;
+    }
+
+    public function getRevisionTableName(): string
+    {
+        return $this->name.'__revision';
+    }
+
     public function createTableSchemas(): array
     {
         $tableEditor = Table::editor()
-            ->setUnquotedName($this->name);
+            ->setUnquotedName($this->getTableName());
 
         if ($this->isRevisionable()) {
             $revisionTableEditor = Table::editor()
-                ->setUnquotedName($this->name.'__revision');
+                ->setUnquotedName($this->getRevisionTableName());
         }
 
         foreach ($this->fields as $fieldDefinition) {

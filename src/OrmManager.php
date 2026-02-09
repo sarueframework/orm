@@ -84,19 +84,21 @@ class OrmManager
 
         $entityTypeDefinition = $entity->getTypeDefinition();
 
-        $queryBuilder = $this->connection
-            ->createQueryBuilder()
-            ->insert($entityTypeDefinition->name)
-        ;
+        $this->connection->beginTransaction();
 
-        foreach ($entityTypeDefinition->fields as $fieldDefinition) {
-            $fieldDefinition->persistFieldToDatabase($queryBuilder, $entity);
-        }
-
+        $queryBuilder = $this->createInsertQueryBuilder($entityTypeDefinition, $entity, $entityTypeDefinition->getTableName());
         $sql = $queryBuilder->getSQL();
         $sql .= ' RETURNING id';
-
         $result = $this->connection->executeQuery($sql, $queryBuilder->getParameters(), $queryBuilder->getParameterTypes());
+
+        if ($entity->isRevisionable()) {
+            $queryBuilder = $this->createInsertQueryBuilder($entityTypeDefinition, $entity, $entityTypeDefinition->getRevisionTableName());
+            $sql = $queryBuilder->getSQL();
+            $this->connection->executeQuery($sql, $queryBuilder->getParameters(), $queryBuilder->getParameterTypes());
+            // $sql .= ' RETURNING meta__revisionid';
+        }
+        $this->connection->commit();
+
         $entity->initializeId($result->fetchOne());
     }
 
@@ -159,6 +161,20 @@ class OrmManager
             ->select('*')
             ->from($entityTypeDefinition->name)
         ;
+    }
+
+    protected function createInsertQueryBuilder(EntityType $entityTypeDefinition, EntityInterface $entity, string $tableName): QueryBuilder
+    {
+        $queryBuilder = $this->connection
+            ->createQueryBuilder()
+            ->insert($tableName)
+        ;
+
+        foreach ($entityTypeDefinition->fields as $fieldDefinition) {
+            $fieldDefinition->persistFieldToDatabase($queryBuilder, $entity);
+        }
+
+        return $queryBuilder;
     }
 
     protected function doLoadEntities(QueryInterface $query, QueryBuilder $queryBuilder): array

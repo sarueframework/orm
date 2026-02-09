@@ -4,6 +4,7 @@ namespace Sarue\Orm\Entity\Type;
 
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
+use Sarue\Orm\Entity\RevisionableEntityInterface;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class EntityType
@@ -76,6 +77,6 @@ class EntityType
 
     public function isRevisionable(): bool
     {
-        return $this->className::isRevisionable();
+        return is_subclass_of($this->className, RevisionableEntityInterface::class);
     }
 }

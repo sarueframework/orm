@@ -91,7 +91,7 @@ class OrmManager
         $sql .= ' RETURNING id';
         $result = $this->connection->executeQuery($sql, $queryBuilder->getParameters(), $queryBuilder->getParameterTypes());
 
-        if ($entity->isRevisionable()) {
+        if ($entityTypeDefinition->isRevisionable()) {
             $queryBuilder = $this->createInsertQueryBuilder($entityTypeDefinition, $entity, $entityTypeDefinition->getRevisionTableName());
             $sql = $queryBuilder->getSQL();
             $this->connection->executeQuery($sql, $queryBuilder->getParameters(), $queryBuilder->getParameterTypes());

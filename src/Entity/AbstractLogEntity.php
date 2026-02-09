@@ -9,11 +9,6 @@ namespace Sarue\Orm\Entity;
  */
 abstract class AbstractLogEntity extends AbstractBaseEntity
 {
-    final public static function isRevisionable(): bool
-    {
-        return false;
-    }
-
     final protected function mayUpdate(): bool
     {
         return false;

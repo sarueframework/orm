@@ -18,7 +18,7 @@ class OrmManager
 {
     protected static OrmManager $instance;
 
-    protected EntityTypeDefinitionRepository $EntityTypeDefinitionRepository;
+    protected EntityTypeDefinitionRepository $entityTypeDefinitionRepository;
     protected QueryFactory $queryFactory;
 
     public static function getInstance(): OrmManager
@@ -104,11 +104,11 @@ class OrmManager
 
     public function getEntityTypeDefinitionRepository(): EntityTypeDefinitionRepository
     {
-        if (!isset($this->EntityTypeDefinitionRepository)) {
-            $this->EntityTypeDefinitionRepository = new EntityTypeDefinitionRepository();
+        if (!isset($this->entityTypeDefinitionRepository)) {
+            $this->entityTypeDefinitionRepository = new EntityTypeDefinitionRepository();
         }
 
-        return $this->EntityTypeDefinitionRepository;
+        return $this->entityTypeDefinitionRepository;
     }
 
     public function getQueryFactory(): QueryFactory

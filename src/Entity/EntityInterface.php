@@ -20,6 +20,8 @@ interface EntityInterface
      */
     public function toDatabaseValues(): array;
 
+    public function save(): void;
+
     public function initializeId(string $id): void;
 
     public function isNew(): bool;

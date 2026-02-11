@@ -9,6 +9,6 @@ class NullParameter implements ParameterInterface
 {
     public function toStringInQuery(QueryBuilder $queryBuilder): string
     {
-        return $queryBuilder->createNamedParameter(null, ParameterType::NULL);
+        return $queryBuilder->createPositionalParameter(null, ParameterType::NULL);
     }
 }

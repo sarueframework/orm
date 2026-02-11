@@ -47,10 +47,10 @@ abstract class AbstractBaseEntity implements EntityInterface
         $entity = new static();
 
         foreach (static::getFieldDefinitions() as $fieldName => $fieldDefinition) {
-            if (!array_key_exists($fieldName, $valuesGroupedByField)) {
+            if (!array_key_exists(strtolower($fieldName), $valuesGroupedByField)) {
                 throw new \Exception("Field $fieldName was not provided.");
             }
-            $entity->{$fieldName} = $fieldDefinition->fromDatabaseValue($valuesGroupedByField[$fieldName]);
+            $entity->{$fieldName} = $fieldDefinition->fromDatabaseValue($valuesGroupedByField[strtolower($fieldName)]);
         }
 
         return $entity;
@@ -66,6 +66,11 @@ abstract class AbstractBaseEntity implements EntityInterface
         }
 
         return $databaseValues;
+    }
+
+    public function save(): void
+    {
+        OrmManager::getInstance()->save($this);
     }
 
     final public function isNew(): bool

@@ -37,10 +37,7 @@ class OrmManager
         Connection $connection,
     ) {
         $this->connector = new OrmDatabaseConnector($connection, $this);
-
-        if (!isset(static::$instance)) {
-            static::setInstance($this);
-        }
+        static::setInstance($this);
     }
 
     // Methods that instantiate subordinate classes.

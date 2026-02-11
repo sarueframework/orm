@@ -4,6 +4,8 @@ namespace Sarue\Orm\Field\Type\Text;
 
 use Sarue\Orm\Field\Type\ScalarFieldTypeBase;
 use Sarue\Orm\Query\Condition\Text\TextConditionInterface;
+use Sarue\Orm\Query\Parameter\NullParameter;
+use Sarue\Orm\Query\Parameter\StringParameter;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class TextField extends ScalarFieldTypeBase
@@ -18,6 +20,14 @@ class TextField extends ScalarFieldTypeBase
         }
 
         return $databaseValue;
+    }
+
+    public function toDatabaseValues(mixed $fieldValue): array
+    {
+        // @todo Validate if value is string or ?string & not required.
+        return [
+            $this->fieldName => $fieldValue ? new StringParameter($fieldValue) : new NullParameter(),
+        ];
     }
 
     public function getConditionType(): string

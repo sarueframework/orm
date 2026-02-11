@@ -63,30 +63,52 @@ class OrmDatabaseConnector
         return $this->doLoadEntities($query, $queryBuilder);
     }
 
-    public function save(EntityInterface $entity): void
+    public function save(EntityInterface $entity, EntityType $entityTypeDefinition): void
     {
-        if (!$entity->isNew()) {
+        if ($entity->isNew()) {
+            $entity->assertInsertAccess();
+
+            if ($entityTypeDefinition->isRevisionable()) {
+                $this->connection->beginTransaction();
+                $this->saveInsert($entity, $entityTypeDefinition);
+                $this->saveRevision($entity, $entityTypeDefinition);
+                $this->connection->commit();
+            } else {
+                $this->saveInsert($entity, $entityTypeDefinition);
+            }
+        } else {
             $entity->assertUpdateAccess();
+
+            if ($entityTypeDefinition->isRevisionable()) {
+                $this->connection->beginTransaction();
+                $this->saveUpdate($entity, $entityTypeDefinition);
+                $this->saveRevision($entity, $entityTypeDefinition);
+                $this->connection->commit();
+            } else {
+                $this->saveInsert($entity, $entityTypeDefinition);
+            }
         }
+    }
 
-        $entityTypeDefinition = $entity->getTypeDefinition();
-
-        $this->connection->beginTransaction();
-
+    protected function saveInsert(EntityInterface $entity, EntityType $entityTypeDefinition): void
+    {
         $queryBuilder = $this->createInsertQueryBuilder($entityTypeDefinition, $entity, $entityTypeDefinition->getTableName());
         $sql = $queryBuilder->getSQL();
         $sql .= ' RETURNING id';
         $result = $this->connection->executeQuery($sql, $queryBuilder->getParameters(), $queryBuilder->getParameterTypes());
-
-        if ($entityTypeDefinition->isRevisionable()) {
-            $queryBuilder = $this->createInsertQueryBuilder($entityTypeDefinition, $entity, $entityTypeDefinition->getRevisionTableName());
-            $sql = $queryBuilder->getSQL();
-            $this->connection->executeQuery($sql, $queryBuilder->getParameters(), $queryBuilder->getParameterTypes());
-            // $sql .= ' RETURNING meta__revisionid';
-        }
-        $this->connection->commit();
-
         $entity->initializeId($result->fetchOne());
+    }
+
+    protected function saveUpdate(EntityInterface $entity, EntityType $entityTypeDefinition): void
+    {
+        $queryBuilder = $this->createUpdateQueryBuilder($entityTypeDefinition, $entity, $entityTypeDefinition->getTableName());
+        $queryBuilder->executeQuery();
+    }
+
+    protected function saveRevision(EntityInterface $entity, EntityType $entityTypeDefinition): void
+    {
+        $queryBuilder = $this->createInsertQueryBuilder($entityTypeDefinition, $entity, $entityTypeDefinition->getRevisionTableName());
+        $queryBuilder->executeQuery();
     }
 
     protected function createLoadQueryBuilder(QueryInterface $query, string $table): QueryBuilder
@@ -105,11 +127,26 @@ class OrmDatabaseConnector
             ->insert($tableName)
         ;
 
-        foreach ($entityTypeDefinition->fields as $fieldDefinition) {
-            $fieldDefinition->persistFieldToDatabase($queryBuilder, $entity);
+        foreach ($entity->toDatabaseValues() as $columnName => $value) {
+            $queryBuilder->setValue($columnName, $value->toStringInQuery($queryBuilder));
         }
 
         return $queryBuilder;
+    }
+
+    protected function createUpdateQueryBuilder(EntityType $entityTypeDefinition, EntityInterface $entity, string $tableName): QueryBuilder
+    {
+        $queryBuilder = $this->connection
+            ->createQueryBuilder()
+            ->update($tableName)
+        ;
+
+        foreach ($entity->toDatabaseValues() as $columnName => $value) {
+            $queryBuilder->set($columnName, $value->toStringInQuery($queryBuilder));
+        }
+
+        return $queryBuilder
+            ->where('id='.$queryBuilder->createPositionalParameter($entity->id, ParameterType::STRING));
     }
 
     protected function doLoadEntities(QueryInterface $query, QueryBuilder $queryBuilder): array

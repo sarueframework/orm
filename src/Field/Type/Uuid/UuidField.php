@@ -5,6 +5,8 @@ namespace Sarue\Orm\Field\Type\Uuid;
 use Doctrine\DBAL\Schema\ColumnEditor;
 use Sarue\Orm\Field\Type\ScalarFieldTypeBase;
 use Sarue\Orm\Query\Condition\Numeric\UuidConditionInterface;
+use Sarue\Orm\Query\Parameter\NullParameter;
+use Sarue\Orm\Query\Parameter\StringParameter;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class UuidField extends ScalarFieldTypeBase
@@ -25,7 +27,15 @@ class UuidField extends ScalarFieldTypeBase
 
     public function fromDatabaseValue(mixed $databaseValue): mixed
     {
-        return null;
+        return $databaseValue;
+    }
+
+    public function toDatabaseValues(mixed $fieldValue): array
+    {
+        // @todo Validate if value is string or ?string & not required.
+        return [
+            $this->fieldName => $fieldValue ? new StringParameter($fieldValue) : new NullParameter(),
+        ];
     }
 
     public function validateDefinition(): void

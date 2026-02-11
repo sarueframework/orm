@@ -2,9 +2,6 @@
 
 namespace Sarue\Orm\Field\Type;
 
-use Doctrine\DBAL\Query\QueryBuilder;
-use Sarue\Orm\Entity\EntityInterface;
-
 interface FieldTypeInterface
 {
     public function initializeDefinition(string $fieldName, string $propertyType): static;
@@ -17,7 +14,7 @@ interface FieldTypeInterface
 
     public function fromDatabaseValue(mixed $databaseValue): mixed;
 
-    public function persistFieldToDatabase(QueryBuilder $queryBuilder, EntityInterface $entity): void;
+    public function toDatabaseValues(mixed $fieldValue): array;
 
     public function getConditionType(): string;
 

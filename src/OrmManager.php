@@ -111,6 +111,6 @@ class OrmManager
 
     public function save(EntityInterface $entity): void
     {
-        $this->connector->save($entity);
+        $this->connector->save($entity, $this->getEntityTypeDefinition(get_class($entity)));
     }
 }

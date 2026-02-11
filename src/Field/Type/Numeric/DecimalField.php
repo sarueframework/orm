@@ -3,9 +3,7 @@
 namespace Sarue\Orm\Field\Type\Numeric;
 
 use BcMath\Number;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Schema\ColumnEditor;
-use Sarue\Orm\Entity\EntityInterface;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class DecimalField extends NumericFieldBase
@@ -27,11 +25,6 @@ class DecimalField extends NumericFieldBase
     public function fromDatabaseValue(mixed $databaseValue): Number
     {
         return new Number($databaseValue);
-    }
-
-    public function persistFieldToDatabase(QueryBuilder $queryBuilder, EntityInterface $entity): void
-    {
-        $queryBuilder->setValue($this->fieldName, $queryBuilder->createNamedParameter((string) $entity->{$this->fieldName}));
     }
 
     protected function getColumnEditor(): ColumnEditor

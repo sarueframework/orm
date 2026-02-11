@@ -2,6 +2,8 @@
 
 namespace Sarue\Orm\Field\Type\Numeric;
 
+use Sarue\Orm\Query\Parameter\IntegerParameter;
+
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class IntegerField extends NumericFieldBase
 {
@@ -15,5 +17,13 @@ class IntegerField extends NumericFieldBase
         }
 
         return $databaseValue;
+    }
+
+    public function toDatabaseValues(mixed $fieldValue): array
+    {
+        // @todo Validate if value is string or ?string & not required.
+        return [
+            $this->fieldName => $fieldValue ? new IntegerParameter($fieldValue) : new NullParameter(),
+        ];
     }
 }

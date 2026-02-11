@@ -2,7 +2,6 @@
 
 namespace Sarue\Orm\Tests\Integration\ToOrganizeLater;
 
-use Sarue\Orm\Exception\MayNotDeleteException;
 use Sarue\Orm\Exception\MayNotUpdateException;
 use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
 use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyLogEntity;
@@ -27,7 +26,7 @@ class EntitySaveTest extends IntegrationTestCase
         $this->assertEquals('Qui SitAmet', $loadedEntity2->message);
     }
 
-    public function __testSaveRevisionableEntity(): void
+    public function testSaveRevisionableEntity(): void
     {
         $entity1 = new DummyEntity();
         $entity1->name = 'johann bach';
@@ -35,16 +34,18 @@ class EntitySaveTest extends IntegrationTestCase
         $entity1->name = 'Johann Sebastian Bach';
         $this->ormManager->save($entity1);
 
-        $entity2 = new DummyLogEntity();
-        $entity2->message = 'fanny mendy';
+        $entity2 = new DummyEntity();
+        $entity2->name = 'fanny mendy';
         $this->ormManager->save($entity2);
-        $entity2->message = 'Fanny Mendelssohn';
+        $entity2->name = 'Fanny Mendelssohn';
         $this->ormManager->save($entity2);
 
         $loadedEntity1 = $this->ormManager->getQueryFactory()->getDummyEntityQuery()->loadById($entity1->id);
         $loadedEntity2 = $this->ormManager->getQueryFactory()->getDummyEntityQuery()->loadById($entity2->id);
 
+        $this->assertEquals($entity1->id, $loadedEntity1->id);
         $this->assertEquals('Johann Sebastian Bach', $loadedEntity1->name);
+        $this->assertEquals($entity2->id, $loadedEntity2->id);
         $this->assertEquals('Fanny Mendelssohn', $loadedEntity2->name);
     }
 

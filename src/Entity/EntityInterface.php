@@ -15,6 +15,11 @@ interface EntityInterface
 
     public static function fromDatabaseValues(array $values): static;
 
+    /**
+     * @return array<string,\Sarue\Orm\Query\Parameter\ParameterInterface>
+     */
+    public function toDatabaseValues(): array;
+
     public function initializeId(string $id): void;
 
     public function isNew(): bool;

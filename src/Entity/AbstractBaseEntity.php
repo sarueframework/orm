@@ -60,8 +60,12 @@ abstract class AbstractBaseEntity implements EntityInterface
     {
         $databaseValues = [];
         foreach (static::getFieldDefinitions() as $fieldName => $fieldDefinition) {
-            $databaseValues = array_merge($fieldDefinition->toDatabaseValues())
+            if ('id' !== $fieldName) {
+                $databaseValues = array_merge($databaseValues, $fieldDefinition->toDatabaseValues(isset($this->{$fieldName}) ? $this->{$fieldName} : null));
+            }
         }
+
+        return $databaseValues;
     }
 
     final public function isNew(): bool
@@ -78,7 +82,6 @@ abstract class AbstractBaseEntity implements EntityInterface
 
         $this->id = $id;
     }
-
 
     public function assertInsertAccess(): void
     {

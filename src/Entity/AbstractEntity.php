@@ -9,6 +9,12 @@ namespace Sarue\Orm\Entity;
  */
 abstract class AbstractEntity extends AbstractBaseEntity implements RevisionableEntityInterface
 {
+    protected function mayInsert(): bool
+    {
+        // @todo implement permissions.
+        return true;
+    }
+
     protected function mayUpdate(): bool
     {
         // @todo implement permissions.

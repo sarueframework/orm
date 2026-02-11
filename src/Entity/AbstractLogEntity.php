@@ -9,6 +9,12 @@ namespace Sarue\Orm\Entity;
  */
 abstract class AbstractLogEntity extends AbstractBaseEntity
 {
+    protected function mayInsert(): bool
+    {
+        // @todo implement permissions.
+        return true;
+    }
+
     final protected function mayUpdate(): bool
     {
         return false;

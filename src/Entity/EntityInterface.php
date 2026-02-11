@@ -19,6 +19,8 @@ interface EntityInterface
 
     public function isNew(): bool;
 
+    public function assertInsertAccess(): void;
+
     public function assertUpdateAccess(): void;
 
     public function assertDeleteAccess(): void;

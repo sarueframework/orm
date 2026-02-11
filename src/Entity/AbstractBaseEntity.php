@@ -4,6 +4,8 @@ namespace Sarue\Orm\Entity;
 
 use Sarue\Orm\Entity\Type\EntityType;
 use Sarue\Orm\Exception\MayNotDeleteException;
+use Sarue\Orm\Exception\MayNotInsertException;
+use Sarue\Orm\Exception\MayNotUpdateException;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Field\Type\Uuid\UuidField;
 use Sarue\Orm\OrmManager;
@@ -54,8 +56,17 @@ abstract class AbstractBaseEntity implements EntityInterface
         return $entity;
     }
 
+    public function toDatabaseValues(): array
+    {
+        $databaseValues = [];
+        foreach (static::getFieldDefinitions() as $fieldName => $fieldDefinition) {
+            $databaseValues = array_merge($fieldDefinition->toDatabaseValues())
+        }
+    }
+
     final public function isNew(): bool
     {
+        // @todo Allow for settings IDs in new entities.
         return !isset($this->id);
     }
 
@@ -68,10 +79,18 @@ abstract class AbstractBaseEntity implements EntityInterface
         $this->id = $id;
     }
 
+
+    public function assertInsertAccess(): void
+    {
+        if (!$this->mayInsert()) {
+            throw new MayNotInsertException();
+        }
+    }
+
     public function assertUpdateAccess(): void
     {
         if (!$this->mayUpdate()) {
-            throw new MayNotDeleteException();
+            throw new MayNotUpdateException();
         }
     }
 
@@ -81,6 +100,8 @@ abstract class AbstractBaseEntity implements EntityInterface
             throw new MayNotDeleteException();
         }
     }
+
+    abstract protected function mayInsert(): bool;
 
     abstract protected function mayUpdate(): bool;
 

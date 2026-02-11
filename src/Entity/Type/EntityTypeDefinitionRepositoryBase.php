@@ -8,7 +8,7 @@ abstract class EntityTypeDefinitionRepositoryBase implements EntityTypeDefinitio
 {
     public function getEntityTypeDefinition(string $entityClass): EntityType
     {
-        return $this->getEntityTypeDefinitions()[$entityClass] ?? throw new \Exception("Entity {$entityClass} not found.");
+        return $this->getEntityTypeDefinitions()[$entityClass] ?? throw new \Exception("Entity \"{$entityClass}\" not found.");
     }
 
     public function getFieldDefinitions(string $entityClass): array

@@ -6,7 +6,7 @@ use BcMath\Number;
 use Doctrine\DBAL\Schema\ColumnEditor;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-class DecimalField extends NumericFieldBase
+class DecimalField extends AbstractNumericField
 {
     public const int DEFAULT_PRECISION = 30;
     public const int DEFAULT_SCALE = 10;

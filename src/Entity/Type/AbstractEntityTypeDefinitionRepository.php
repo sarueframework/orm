@@ -4,7 +4,7 @@ namespace Sarue\Orm\Entity\Type;
 
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 
-abstract class EntityTypeDefinitionRepositoryBase implements EntityTypeDefinitionRepositoryInterface
+abstract class AbstractEntityTypeDefinitionRepository implements EntityTypeDefinitionRepositoryInterface
 {
     public function getEntityTypeDefinition(string $entityClass): EntityType
     {

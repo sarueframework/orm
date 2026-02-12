@@ -5,7 +5,7 @@ namespace Sarue\Orm\Field\Type;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ColumnEditor;
 
-abstract class ScalarFieldTypeBase extends FieldTypeBase
+abstract class AbstractScalarFieldType extends AbstractFieldType
 {
     public const string COLUMN_TYPE = '';
 

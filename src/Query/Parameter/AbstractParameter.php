@@ -6,7 +6,7 @@ use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
 
-abstract class ParameterBase implements ParameterInterface
+abstract class AbstractParameter implements ParameterInterface
 {
     protected const ParameterType|ArrayParameterType PARAMETER_TYPE = ParameterType::STRING;
 

@@ -12,8 +12,8 @@ use Laminas\Code\Generator\ParameterGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 use Sarue\Orm\Entity\AbstractBaseEntity;
+use Sarue\Orm\Entity\Type\AbstractEntityTypeDefinitionRepository;
 use Sarue\Orm\Entity\Type\EntityType;
-use Sarue\Orm\Entity\Type\EntityTypeDefinitionRepositoryBase;
 use Sarue\Orm\Exception\EntityDefinition\AbstractEntityTypeException;
 use Sarue\Orm\Exception\EntityDefinition\BadInheritanceException;
 use Sarue\Orm\Exception\EntityDefinition\MultipleAttributesInPropertyException;
@@ -23,8 +23,8 @@ use Sarue\Orm\Generator\Wrapper\FieldDefinitionWrapper;
 use Sarue\Orm\Query\AbstractQuery;
 use Sarue\Orm\Query\AbstractQueryFactory;
 use Sarue\Orm\Query\Condition\ConditionInterface;
-use Sarue\Orm\Query\Condition\Group\AndConditionGroupBase;
-use Sarue\Orm\Query\Condition\Group\OrConditionGroupBase;
+use Sarue\Orm\Query\Condition\Group\AbstractAndConditionGroup;
+use Sarue\Orm\Query\Condition\Group\AbstractOrConditionGroup;
 
 class ClassGenerator
 {
@@ -148,11 +148,11 @@ class ClassGenerator
         // $methodParameters .= ')';
         $baseMethodCall .= "\n]);";
 
-        $this->generateSingleClassForEntity($entityTypeDefinition, 'OrConditionGroup', OrConditionGroupBase::class, $methodParameters, $baseMethodCall, [
+        $this->generateSingleClassForEntity($entityTypeDefinition, 'OrConditionGroup', AbstractOrConditionGroup::class, $methodParameters, $baseMethodCall, [
             'or',
         ]);
 
-        $this->generateSingleClassForEntity($entityTypeDefinition, 'AndConditionGroup', AndConditionGroupBase::class, $methodParameters, $baseMethodCall, [
+        $this->generateSingleClassForEntity($entityTypeDefinition, 'AndConditionGroup', AbstractAndConditionGroup::class, $methodParameters, $baseMethodCall, [
             'and',
         ]);
 
@@ -291,7 +291,7 @@ class ClassGenerator
         $this->dump('/Entity/EntityTypeDefinitionRepository.php', new LaminasClassGenerator(
             name: 'EntityTypeDefinitionRepository',
             namespaceName: static::GENERATED_CLASS_NAMESPACE.'Entity',
-            extends: EntityTypeDefinitionRepositoryBase::class,
+            extends: AbstractEntityTypeDefinitionRepository::class,
             methods: $methods,
         ));
     }

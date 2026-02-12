@@ -3,11 +3,11 @@
 namespace Sarue\Orm\Query\Condition\Numeric;
 
 use BcMath\Number;
-use Sarue\Orm\Query\Condition\ConditionBase;
+use Sarue\Orm\Query\Condition\AbstractCondition;
 use Sarue\Orm\Query\Parameter\IntegerParameter;
 use Sarue\Orm\Query\Parameter\NumberParameter;
 
-class SimpleNumericCondition extends ConditionBase implements NumericConditionInterface
+class SimpleNumericCondition extends AbstractCondition implements NumericConditionInterface
 {
     public function __construct(
         public readonly int|Number $number,

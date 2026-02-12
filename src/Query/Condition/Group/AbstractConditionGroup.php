@@ -4,7 +4,7 @@ namespace Sarue\Orm\Query\Condition\Group;
 
 use Sarue\Orm\Query\Condition\ConditionInterface;
 
-abstract class ConditionGroupBase implements ConditionInterface
+abstract class AbstractConditionGroup implements ConditionInterface
 {
     public const string CONJUNCTION = ' AND ';
 

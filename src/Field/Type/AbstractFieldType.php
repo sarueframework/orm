@@ -2,7 +2,7 @@
 
 namespace Sarue\Orm\Field\Type;
 
-abstract class FieldTypeBase implements FieldTypeInterface
+abstract class AbstractFieldType implements FieldTypeInterface
 {
     public const array ALLOWED_PROPERTY_TYPES = [];
 

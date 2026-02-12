@@ -3,10 +3,10 @@
 namespace Sarue\Orm\Field\Type\Numeric;
 
 use BcMath\Number;
-use Sarue\Orm\Field\Type\ScalarFieldTypeBase;
+use Sarue\Orm\Field\Type\AbstractScalarFieldType;
 use Sarue\Orm\Query\Condition\Numeric\NumericConditionInterface;
 
-abstract class NumericFieldBase extends ScalarFieldTypeBase
+abstract class AbstractNumericField extends AbstractScalarFieldType
 {
     public function __construct(
         public readonly int|Number|null $minimum = null,

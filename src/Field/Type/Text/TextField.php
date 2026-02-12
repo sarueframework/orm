@@ -2,13 +2,13 @@
 
 namespace Sarue\Orm\Field\Type\Text;
 
-use Sarue\Orm\Field\Type\ScalarFieldTypeBase;
+use Sarue\Orm\Field\Type\AbstractScalarFieldType;
 use Sarue\Orm\Query\Condition\Text\TextConditionInterface;
 use Sarue\Orm\Query\Parameter\NullParameter;
 use Sarue\Orm\Query\Parameter\StringParameter;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-class TextField extends ScalarFieldTypeBase
+class TextField extends AbstractScalarFieldType
 {
     public const array ALLOWED_PROPERTY_TYPES = ['string'];
     public const string COLUMN_TYPE = 'string';

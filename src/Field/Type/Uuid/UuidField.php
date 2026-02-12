@@ -3,13 +3,13 @@
 namespace Sarue\Orm\Field\Type\Uuid;
 
 use Doctrine\DBAL\Schema\ColumnEditor;
-use Sarue\Orm\Field\Type\ScalarFieldTypeBase;
+use Sarue\Orm\Field\Type\AbstractScalarFieldType;
 use Sarue\Orm\Query\Condition\Numeric\UuidConditionInterface;
 use Sarue\Orm\Query\Parameter\NullParameter;
 use Sarue\Orm\Query\Parameter\StringParameter;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-class UuidField extends ScalarFieldTypeBase
+class UuidField extends AbstractScalarFieldType
 {
     public const string COLUMN_TYPE = 'guid';
 

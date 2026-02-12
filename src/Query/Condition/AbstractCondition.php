@@ -2,7 +2,7 @@
 
 namespace Sarue\Orm\Query\Condition;
 
-abstract class ConditionBase implements ConditionInterface
+abstract class AbstractCondition implements ConditionInterface
 {
     final public string $fieldName {
         set(string $fieldName) {

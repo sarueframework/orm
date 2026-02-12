@@ -3,9 +3,9 @@
 namespace Sarue\Orm\Query;
 
 use Sarue\Orm\OrmManager;
-use Sarue\Orm\Query\Condition\Group\ConditionGroupBase;
+use Sarue\Orm\Query\Condition\Group\AbstractConditionGroup;
 
-abstract class AbstractQuery extends ConditionGroupBase implements QueryInterface
+abstract class AbstractQuery extends AbstractConditionGroup implements QueryInterface
 {
     final public function __construct(
         protected OrmManager $ormManager,

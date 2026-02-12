@@ -6,7 +6,7 @@ use Sarue\Orm\Query\Parameter\IntegerParameter;
 use Sarue\Orm\Query\Parameter\NullParameter;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-class IntegerField extends NumericFieldBase
+class IntegerField extends AbstractNumericField
 {
     public const array ALLOWED_PROPERTY_TYPES = ['int'];
     public const string COLUMN_TYPE = 'integer';

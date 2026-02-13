@@ -28,7 +28,7 @@ class MethodTagWithParameters extends MethodTag
     {
         return '@method'.
             ($this->isStatic ? ' static' : '').
-            (!empty($this->types) ? ' '.$this->getTypesAsString() : '').
+            (!empty($this->types) ? ' '.$this->getTypesAsString().' ' : '').
             $this->methodName.'('.
             (!empty($this->parameters) ? $this->generateParameters() : '').
             ')'.

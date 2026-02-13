@@ -5,7 +5,8 @@
     "license": "MIT",
     "autoload": {
         "files": [
-            "src/Query/Condition/functions.php"
+            "src/Query/Condition/functions.php",
+            "src/Query/Sort/functions.php"
         ],
         "psr-4": {
             "Sarue\\Orm\\": "src/"

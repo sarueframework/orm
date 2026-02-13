@@ -6,6 +6,8 @@ use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 use function Sarue\Orm\Query\Condition\isGreaterThan;
+use function Sarue\Orm\Query\Condition\isLessThanOrEqualTo;
+use function Sarue\Orm\Query\Sort\asc;
 
 class EntityQueryTest extends IntegrationTestCase
 {
@@ -44,6 +46,39 @@ class EntityQueryTest extends IntegrationTestCase
             )
             ->loadAll()
         ;
+
+        $composers19thCentury = $this->ormManager
+            ->getQueryFactory()
+            ->getDummyEntityQuery()
+            ->where(
+                yearOfBirth: isGreaterThan(1800),
+            )
+            ->and(
+                yearOfBirth: isLessThanOrEqualTo(1900),
+            )
+            ->orderBy(
+                name: asc(),
+            )
+            ->loadAll()
+        ;
+
+        $composers20thCentury = $this->ormManager
+            ->getQueryFactory()
+            ->getDummyEntityQuery()
+            ->where(
+                yearOfBirth: isGreaterThan(1900),
+            )
+            ->loadAll()
+        ;
+
+        $this->assertCount(2, $composers19thCentury);
+        $mendelssohn = reset($composers19thCentury);
+        $mahler = next($composers19thCentury);
+        $this->assertEquals('Felix Mendelssohn', $mendelssohn->name);
+        $this->assertEquals(1809, $mendelssohn->yearOfBirth);
+        $this->assertEquals('Gustav Mahler', $mahler->name);
+        $this->assertEquals(1860, $mahler->yearOfBirth);
+
         $this->assertCount(1, $composers20thCentury);
         $shostakovich = reset($composers20thCentury);
         $this->assertEquals('Dmitri Shostakovich', $shostakovich->name);

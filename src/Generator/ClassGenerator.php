@@ -28,6 +28,7 @@ use Sarue\Orm\Query\AbstractQueryFactory;
 use Sarue\Orm\Query\Condition\ConditionInterface;
 use Sarue\Orm\Query\Condition\Group\AbstractAndConditionGroup;
 use Sarue\Orm\Query\Condition\Group\AbstractOrConditionGroup;
+use Sarue\Orm\Query\Sort\SortExpressionInterface;
 
 class ClassGenerator
 {
@@ -139,9 +140,12 @@ class ClassGenerator
 
     protected function generateClassesForEntity(EntityType $entityTypeDefinition): string
     {
-        $methodParameters = [
-            new ParameterGenerator('_condition', '?'.ConditionInterface::class, new ValueGenerator(type: ValueGenerator::TYPE_NULL)),
-        ];
+        $methodParameters = [];
+
+        foreach ($entityTypeDefinition->fields as $fieldDefinition) {
+            $conditionType = $fieldDefinition->getConditionType();
+            $methodParameters[] = new ParameterGenerator($fieldDefinition->getFieldName(), '?'.$conditionType, new ValueGenerator(type: ValueGenerator::TYPE_NULL));
+        }
 
         $this->generateSingleClassForEntity($entityTypeDefinition, 'OrConditionGroup', AbstractOrConditionGroup::class, $methodParameters, [
             'or',
@@ -154,6 +158,7 @@ class ClassGenerator
         return $this->generateSingleClassForEntity($entityTypeDefinition, 'Query', AbstractQuery::class, $methodParameters, [
             'where',
             'and',
+            'orderBy',
         ]);
     }
 
@@ -195,11 +200,21 @@ class ClassGenerator
                 ->setReturnType('array');
         }
 
+        $conditionMethodParameters = array_merge(
+            [new ParameterGenerator('_condition', '?'.ConditionInterface::class, new ValueGenerator(type: ValueGenerator::TYPE_NULL))],
+            $methodParameters,
+        );
+
+        $sortMethodParameters = array_merge(
+            [new ParameterGenerator('_sort', '?'.SortExpressionInterface::class, new ValueGenerator(type: ValueGenerator::TYPE_NULL))],
+            $methodParameters,
+        );
+
         $classDocBlock = new DocBlockGenerator('Query for '.$shortEntityClassName.' entities.');
         foreach ($methodsToGenerate as $methodToGenerate) {
             $classDocBlock->setTag(
                 new MethodTagWithParameters($methodToGenerate, ['static'])
-                    ->setParameters($methodParameters)
+                    ->setParameters('orderBy' === $methodToGenerate ? $sortMethodParameters : $conditionMethodParameters)
             );
         }
 

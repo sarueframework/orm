@@ -46,9 +46,9 @@ class OrmDatabaseConnector
     public function loadAll(QueryInterface $query, EntityType $entityTypeDefinition): array
     {
         $queryBuilder = $this->createLoadQueryBuilder($query, $entityTypeDefinition->getTableName());
-        if ($whereParts = $query->buildSql()) {
+        if ($query->hasWhere()) {
             $where = '';
-            foreach ($whereParts as $wherePart) {
+            foreach ($query->buildSql() as $wherePart) {
                 if (is_string($wherePart)) {
                     $where .= $wherePart;
                 } elseif ($wherePart instanceof ParameterInterface) {
@@ -58,6 +58,10 @@ class OrmDatabaseConnector
                 }
             }
             $queryBuilder->where($where);
+        }
+
+        foreach ($query->getSortExpressions() as $sortExpression) {
+            $queryBuilder->addOrderBy($sortExpression->sortExpression(), $sortExpression->sortOrder()->value);
         }
 
         return $this->doLoadEntities($query, $queryBuilder);

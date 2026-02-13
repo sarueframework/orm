@@ -10,6 +10,7 @@ use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
+use Laminas\Code\Generator\TypeGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 use Sarue\Orm\Entity\AbstractBaseEntity;
 use Sarue\Orm\Entity\Type\AbstractEntityTypeDefinitionRepository;
@@ -18,6 +19,8 @@ use Sarue\Orm\Exception\EntityDefinition\AbstractEntityTypeException;
 use Sarue\Orm\Exception\EntityDefinition\BadInheritanceException;
 use Sarue\Orm\Exception\EntityDefinition\MultipleAttributesInPropertyException;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
+use Sarue\Orm\Generator\Laminas\MethodTagWithParameters;
+use Sarue\Orm\Generator\Laminas\PropertyGeneratorWithTypedConstant;
 use Sarue\Orm\Generator\Wrapper\EntityTypeDefinitionWrapper;
 use Sarue\Orm\Generator\Wrapper\FieldDefinitionWrapper;
 use Sarue\Orm\Query\AbstractQuery;
@@ -139,30 +142,22 @@ class ClassGenerator
         $methodParameters = [
             new ParameterGenerator('_condition', '?'.ConditionInterface::class, new ValueGenerator(type: ValueGenerator::TYPE_NULL)),
         ];
-        $baseMethodCall = "return \$this->addConditions(\$_condition,\n [\n";
-        foreach ($entityTypeDefinition->fields as $fieldDefinition) {
-            $conditionType = $fieldDefinition->getConditionType();
-            $methodParameters[] = new ParameterGenerator($fieldDefinition->getFieldName(), '?'.$conditionType, new ValueGenerator(type: ValueGenerator::TYPE_NULL));
-            $baseMethodCall .= "'{$fieldDefinition->getFieldName()}' => \${$fieldDefinition->getFieldName()},";
-        }
-        // $methodParameters .= ')';
-        $baseMethodCall .= "\n]);";
 
-        $this->generateSingleClassForEntity($entityTypeDefinition, 'OrConditionGroup', AbstractOrConditionGroup::class, $methodParameters, $baseMethodCall, [
+        $this->generateSingleClassForEntity($entityTypeDefinition, 'OrConditionGroup', AbstractOrConditionGroup::class, $methodParameters, [
             'or',
         ]);
 
-        $this->generateSingleClassForEntity($entityTypeDefinition, 'AndConditionGroup', AbstractAndConditionGroup::class, $methodParameters, $baseMethodCall, [
+        $this->generateSingleClassForEntity($entityTypeDefinition, 'AndConditionGroup', AbstractAndConditionGroup::class, $methodParameters, [
             'and',
         ]);
 
-        return $this->generateSingleClassForEntity($entityTypeDefinition, 'Query', AbstractQuery::class, $methodParameters, $baseMethodCall, [
+        return $this->generateSingleClassForEntity($entityTypeDefinition, 'Query', AbstractQuery::class, $methodParameters, [
             'where',
             'and',
         ]);
     }
 
-    protected function generateSingleClassForEntity(EntityType $entityTypeDefinition, string $classNameSuffix, string $classBase, array $methodParameters, string $baseMethodCall, array $methodsToGenerate): string
+    protected function generateSingleClassForEntity(EntityType $entityTypeDefinition, string $classNameSuffix, string $classBase, array $methodParameters, array $methodsToGenerate): string
     {
         $namespace = static::GENERATED_CLASS_NAMESPACE.'Entity\\Query';
         $shortEntityClassName = $this->getShortClassName($entityTypeDefinition->className);
@@ -188,29 +183,24 @@ class ClassGenerator
                 body: 'return $this->doLoadById($id);',
             )->setReturnType($entityTypeDefinition->className);
 
-            // $generatedCode .= "/**\n";
-            // $generatedCode .= ' * @return \\'.."[]\n";
-            // $generatedCode .= " */\n";
             $methods[] = new MethodGenerator(
                 name: 'loadAll',
                 body: 'return $this->doLoadAll();',
             )
                 ->setDocBlock(new DocBlockGenerator()
-                    ->setTags([
-                        new ReturnTag([
-                            'datatype' => '\\'.$entityTypeDefinition->className.'[]',
-                        ]),
-                    ])
+                    ->setTag(new ReturnTag([
+                        'datatype' => '\\'.$entityTypeDefinition->className.'[]',
+                    ])),
                 )
                 ->setReturnType('array');
         }
 
+        $classDocBlock = new DocBlockGenerator('Query for '.$shortEntityClassName.' entities.');
         foreach ($methodsToGenerate as $methodToGenerate) {
-            $methods[] = new MethodGenerator(
-                name: $methodToGenerate,
-                parameters: $methodParameters,
-                body: $baseMethodCall,
-            )->setReturnType('static');
+            $classDocBlock->setTag(
+                new MethodTagWithParameters($methodToGenerate, ['static'])
+                    ->setParameters($methodParameters)
+            );
         }
 
         $classGenerator = new LaminasClassGenerator(
@@ -218,20 +208,16 @@ class ClassGenerator
             namespaceName: static::GENERATED_CLASS_NAMESPACE.'Entity\\Query',
             extends: $classBase,
             methods: $methods,
-        );
-        if ('Query' === $classNameSuffix) {
-            $classGenerator->addConstants([
-                new class('ENTITY_CLASS', $entityTypeDefinition->className, PropertyGenerator::FLAG_CONSTANT) extends PropertyGenerator {
-                    public function generate()
-                    {
-                        $output = parent::generate();
-                        $output = str_replace('public const', 'public const  string', $output);
-
-                        return $output;
-                    }
-                },
-            ]);
-        }
+            docBlock: $classDocBlock,
+        )
+            ->addConstantFromGenerator(
+                new PropertyGeneratorWithTypedConstant(
+                    'ENTITY_CLASS',
+                    $entityTypeDefinition->className,
+                    PropertyGenerator::FLAG_CONSTANT,
+                    TypeGenerator::fromTypeString('string'),
+                )
+            );
         $this->dump('/Entity/Query/'.$generatedClassName.'.php', $classGenerator);
 
         return $namespace.'\\'.$generatedClassName;

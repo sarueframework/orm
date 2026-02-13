@@ -74,6 +74,9 @@ class OrmManager
         return $this->getEntityTypeDefinitionRepository()->getEntityTypeDefinition($entityClass);
     }
 
+    /**
+     * @return FieldTypeInterface[]
+     */
     public function getFieldDefinitions(string $entityClass): array
     {
         return $this->getEntityTypeDefinitionRepository()->getFieldDefinitions($entityClass);

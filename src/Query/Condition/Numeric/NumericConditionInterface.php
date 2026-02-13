@@ -2,8 +2,8 @@
 
 namespace Sarue\Orm\Query\Condition\Numeric;
 
-use Sarue\Orm\Query\Condition\ConditionInterface;
+use Sarue\Orm\Query\Condition\FieldConditionInterface;
 
-interface NumericConditionInterface extends ConditionInterface
+interface NumericConditionInterface extends FieldConditionInterface
 {
 }

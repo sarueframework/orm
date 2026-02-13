@@ -2,9 +2,9 @@
 
 namespace Sarue\Orm\Query\Condition\Text;
 
-use Sarue\Orm\Query\Condition\AbstractCondition;
+use Sarue\Orm\Query\Condition\AbstractFieldCondition;
 
-class LikeCondition extends AbstractCondition implements TextConditionInterface
+class LikeCondition extends AbstractFieldCondition implements TextConditionInterface
 {
     public function __construct(
         public readonly string $sting,

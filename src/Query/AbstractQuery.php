@@ -2,15 +2,11 @@
 
 namespace Sarue\Orm\Query;
 
-use Sarue\Orm\OrmManager;
 use Sarue\Orm\Query\Condition\Group\AbstractConditionGroup;
 
 abstract class AbstractQuery extends AbstractConditionGroup implements QueryInterface
 {
-    final public function __construct(
-        protected OrmManager $ormManager,
-    ) {
-    }
+    protected const array QUERY_METHODS = ['where', 'and'];
 
     protected function doLoadById(string $id)
     {

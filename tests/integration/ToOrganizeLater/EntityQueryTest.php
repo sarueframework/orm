@@ -11,7 +11,56 @@ use function Sarue\Orm\Query\Sort\asc;
 
 class EntityQueryTest extends IntegrationTestCase
 {
-    public function testNumericQueries(): void
+    public function testAllNumericConditions()
+    {
+        $years = [
+            1900,
+            1901,
+            1902,
+            1903,
+            1904,
+        ];
+        foreach ($years as $year) {
+            $entity = new DummyEntity();
+            $entity->name = 'AA';
+            $entity->yearOfBirth = $year;
+            $entity->save();
+        }
+
+        // Not using DataProvider so that the test runs more quickly with just
+        // one batch of insertions.
+        $testCases = [
+            ['isGreaterThan', [1903, 1904]],
+            ['isGreaterThanOrEqualTo', [1902, 1903, 1904]],
+            ['isLessThan', [1900, 1901]],
+            ['isLessThanOrEqualTo', [1900, 1901, 1902]],
+            ['isEqualTo', [1902]],
+            ['isNotEqualTo', [1900, 1901, 1903, 1904]],
+        ];
+
+        foreach ($testCases as $testCase) {
+            [$function, $expected] = $testCase;
+
+            $entities = $this->ormManager
+                ->getQueryFactory()
+                ->getDummyEntityQuery()
+                ->where(
+                    yearOfBirth: ('Sarue\\Orm\\Query\\Condition\\'.$function)(1902),
+                )
+                ->orderBy(yearOfBirth: asc())
+                ->loadAll()
+            ;
+            $this->assertEquals(
+                $expected,
+                array_map(
+                    fn (DummyEntity $entity) => $entity->yearOfBirth,
+                    $entities,
+                ),
+            );
+        }
+    }
+
+    public function testCombinedNumericConditions(): void
     {
         $entity1 = new DummyEntity();
         $entity1->name = 'Ludwig van Beethoven';

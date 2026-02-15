@@ -31,6 +31,11 @@ class EntityDefinitionTest extends IntegrationTestCase
         $this->assertArrayHasKey('id', $logEntityFieldDefinitions);
         $this->assertArrayHasKey('message', $logEntityFieldDefinitions);
 
+        $idFieldDefinition = DummyLogEntity::getFieldDefinition('id');
+        $messageFieldDefinition = DummyLogEntity::getFieldDefinition('message');
+        $this->assertFalse($idFieldDefinition->isRequired());
+        $this->assertTrue($messageFieldDefinition->isRequired());
+
         $schemaManager = $this->connection->createSchemaManager();
 
         $tables = $schemaManager->introspectTables();

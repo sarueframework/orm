@@ -6,7 +6,7 @@ use Doctrine\DBAL\Schema\ColumnEditor;
 use Sarue\Orm\Field\Type\AbstractScalarFieldType;
 use Sarue\Orm\Query\Condition\Numeric\UuidConditionInterface;
 use Sarue\Orm\Query\Parameter\NullParameter;
-use Sarue\Orm\Query\Parameter\StringParameter;
+use Sarue\Orm\Query\Parameter\TextParameter;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class UuidField extends AbstractScalarFieldType
@@ -34,7 +34,7 @@ class UuidField extends AbstractScalarFieldType
     {
         // @todo Validate if value is string or ?string & not required.
         return [
-            $this->fieldName => $fieldValue ? new StringParameter($fieldValue) : new NullParameter(),
+            $this->fieldName => $fieldValue ? new TextParameter($fieldValue) : new NullParameter(),
         ];
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Orm\Tests\Integration\ToOrganizeLater;
+namespace Sarue\Orm\Tests\Integration\ToOrganizeLater\Query;
 
 use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
@@ -9,7 +9,7 @@ use function Sarue\Orm\Query\Condition\isGreaterThan;
 use function Sarue\Orm\Query\Condition\isLessThanOrEqualTo;
 use function Sarue\Orm\Query\Sort\asc;
 
-class EntityQueryTest extends IntegrationTestCase
+class NumericQueryTest extends IntegrationTestCase
 {
     public function testAllNumericConditions()
     {

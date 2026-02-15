@@ -1,8 +1,8 @@
 <?php
 
-namespace Sarue\Orm\Query\Condition\Numeric;
+namespace Sarue\Orm\Query\Condition\Operator;
 
-enum SimpleNumericConditionOperator
+enum ComparisonOperator
 {
     case GreaterThan;
     case GreaterThanOrEqualTo;

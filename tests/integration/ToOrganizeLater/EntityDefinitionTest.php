@@ -35,6 +35,8 @@ class EntityDefinitionTest extends IntegrationTestCase
         $messageFieldDefinition = DummyLogEntity::getFieldDefinition('message');
         $this->assertFalse($idFieldDefinition->isRequired());
         $this->assertTrue($messageFieldDefinition->isRequired());
+        $this->assertEquals('string', $idFieldDefinition->getPropertyType());
+        $this->assertEquals('string', $messageFieldDefinition->getPropertyType());
 
         $schemaManager = $this->connection->createSchemaManager();
 

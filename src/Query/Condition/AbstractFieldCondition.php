@@ -2,7 +2,7 @@
 
 namespace Sarue\Orm\Query\Condition;
 
-abstract class AbstractFieldCondition implements ConditionInterface
+abstract class AbstractFieldCondition implements ConditionInterface, FieldConditionInterface
 {
     protected readonly string $fieldName;
 

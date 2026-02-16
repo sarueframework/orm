@@ -59,7 +59,7 @@ abstract class AbstractConditionGroup implements ConditionInterface
                 } elseif (!is_subclass_of($condition, $fields[$fieldName]->getConditionType())) {
                     throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, static::ENTITY_CLASS, $fields[$fieldName]->getConditionType()));
                 } elseif (!($condition instanceof FieldConditionInterface)) {
-                    throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, FieldConditionInterface::class));
+                    throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, static::ENTITY_CLASS, FieldConditionInterface::class));
                 }
 
                 $condition->setFieldName($fieldName);

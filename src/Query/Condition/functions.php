@@ -6,7 +6,9 @@ use BcMath\Number;
 use Sarue\Orm\Query\Condition\Numeric\NumericConditionInterface;
 use Sarue\Orm\Query\Condition\Numeric\SimpleNumericCondition;
 use Sarue\Orm\Query\Condition\Operator\ComparisonOperator;
+use Sarue\Orm\Query\Condition\Text\PatternMatchingCondition;
 use Sarue\Orm\Query\Condition\Text\TextConditionInterface;
+use Sarue\Orm\Query\Condition\Text\UnescapedText;
 
 // Numeric functions.
 function isGreaterThan(int|Number $number): NumericConditionInterface
@@ -40,37 +42,44 @@ function isNotEqualTo(int|Number $number): NumericConditionInterface
 }
 
 // Text conditions.
-function startsWith(string $text): TextConditionInterface
+function startsWith(string $text, bool $caseInsensitive = false): TextConditionInterface
 {
+    return PatternMatchingCondition::startsWith($text, $caseInsensitive);
 }
 
-function endsWith(string $text): TextConditionInterface
+function doesNotStartWith(string $text, bool $caseInsensitive = false): TextConditionInterface
 {
+    return PatternMatchingCondition::doesNotStartWith($text, $caseInsensitive);
 }
 
-function contains(string $text): TextConditionInterface
+function endsWith(string $text, bool $caseInsensitive = false): TextConditionInterface
 {
-
+    return PatternMatchingCondition::endsWith($text, $caseInsensitive);
 }
 
-function like(string $text): TextConditionInterface
+function doesNotEndWith(string $text, bool $caseInsensitive = false): TextConditionInterface
 {
-
+    return PatternMatchingCondition::doesNotEndWith($text, $caseInsensitive);
 }
 
-function notLike(string $text): TextConditionInterface
+function contains(string $text, bool $caseInsensitive = false): TextConditionInterface
 {
-
+    return PatternMatchingCondition::contains($text, $caseInsensitive);
 }
 
-function likeWithWildcards(string $textWithWildcards): TextConditionInterface
+function doesNotContain(string $text, bool $caseInsensitive = false): TextConditionInterface
 {
-
+    return PatternMatchingCondition::doesNotContain($text, $caseInsensitive);
 }
 
-function notLikeWithWildcards(string $textWithWildcards): TextConditionInterface
+function like(string|UnescapedText $text, bool $caseInsensitive = false): TextConditionInterface
 {
+    return PatternMatchingCondition::like($text, $caseInsensitive);
+}
 
+function notLike(string|UnescapedText $text, bool $caseInsensitive = false): TextConditionInterface
+{
+    return PatternMatchingCondition::notLike($text, $caseInsensitive);
 }
 
 function textIsExactly(string $text): TextConditionInterface
@@ -79,17 +88,14 @@ function textIsExactly(string $text): TextConditionInterface
 
 function textIsDifferentFrom(string $text): TextConditionInterface
 {
-
 }
 
 function isAlphabeticallyBefore(string $text): TextConditionInterface
 {
-
 }
 
 function isAlphabeticallyBeforeOrEqualTo(string $text): TextConditionInterface
 {
-
 }
 
 function isAlphabeticallyAfter(string $text): TextConditionInterface

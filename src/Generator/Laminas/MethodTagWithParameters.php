@@ -7,8 +7,14 @@ use Laminas\Code\Generator\ParameterGenerator;
 
 class MethodTagWithParameters extends MethodTag
 {
+    /**
+     * @var ParameterGenerator[]
+     */
     protected array $parameters;
 
+    /**
+     * @param ParameterGenerator[] $parameters
+     */
     public function setParameters(array $parameters): static
     {
         $this->parameters = $parameters;

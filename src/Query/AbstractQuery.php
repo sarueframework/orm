@@ -2,7 +2,7 @@
 
 namespace Sarue\Orm\Query;
 
-use Sarue\Orm\Query\Condition\FieldConditionInterface;
+use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Query\Condition\Group\AbstractConditionGroup;
 use Sarue\Orm\Query\Sort\FieldSortExpressionInterface;
 use Sarue\Orm\Query\Sort\SortExpressionInterface;
@@ -37,26 +37,36 @@ abstract class AbstractQuery extends AbstractConditionGroup implements QueryInte
         return $this->sortExpressions;
     }
 
-    protected function doLoadById(string $id)
+    protected function doLoadById(string $id): EntityInterface
     {
         return $this->ormManager->loadById($this, $id);
     }
 
-    protected function doLoadAll()
+    /**
+     * @return EntityInterface[]
+     */
+    protected function doLoadAll(): array
     {
         return $this->ormManager->loadAll($this);
     }
 
+    /**
+     * @param mixed[] $sortExpressions
+     */
     protected function addSortExpressions(array $sortExpressions): void
     {
         $fields = $this->ormManager->getFieldDefinitions(static::ENTITY_CLASS);
 
         foreach (array_filter($sortExpressions) as $fieldName => $sortExpression) {
+            if (!($sortExpression instanceof SortExpressionInterface)) {
+                throw new \BadMethodCallException(sprintf('Sort expression for field "%s" in entity "%s" must implement interface %s.', $fieldName, static::ENTITY_CLASS, SortExpressionInterface::class));
+            }
+
             if ('_sort' !== $fieldName) {
                 if (empty($fields[$fieldName])) {
                     throw new \BadMethodCallException(sprintf('"%s" is not a valid field name for entity "%s".', $fieldName, static::ENTITY_CLASS));
                 } elseif (!($sortExpression instanceof FieldSortExpressionInterface)) {
-                    throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, FieldConditionInterface::class));
+                    throw new \BadMethodCallException(sprintf('Sort expression for field "%s" in entity "%s" must implement interface %s.', $fieldName, static::ENTITY_CLASS, FieldSortExpressionInterface::class));
                 }
 
                 $sortExpression->setFieldName($fieldName);

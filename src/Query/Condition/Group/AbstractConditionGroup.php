@@ -24,6 +24,10 @@ abstract class AbstractConditionGroup implements ConditionInterface
     ) {
     }
 
+    /**
+     * @param string  $name      the name of the method
+     * @param mixed[] $arguments the arguments of the method
+     */
     public function __call(string $name, array $arguments): static
     {
         if (in_array($name, static::QUERY_METHODS)) {
@@ -48,11 +52,18 @@ abstract class AbstractConditionGroup implements ConditionInterface
         return $sql;
     }
 
+    /**
+     * @param mixed[] $conditions the conditions passed to the where/or/and method
+     */
     protected function addConditions(array $conditions): void
     {
         $fields = $this->ormManager->getFieldDefinitions(static::ENTITY_CLASS);
 
         foreach (array_filter($conditions) as $fieldName => $condition) {
+            if (!($condition instanceof ConditionInterface)) {
+                throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, static::ENTITY_CLASS, ConditionInterface::class));
+            }
+
             if ('_condition' !== $fieldName) {
                 if (empty($fields[$fieldName])) {
                     throw new \BadMethodCallException(sprintf('"%s" is not a valid field name for entity "%s".', $fieldName, static::ENTITY_CLASS));

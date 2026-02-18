@@ -56,6 +56,11 @@ abstract class AbstractBaseEntity implements EntityInterface
         return $entity;
     }
 
+    public function id(): string
+    {
+        return $this->id;
+    }
+
     public function toDatabaseValues(): array
     {
         $databaseValues = [];

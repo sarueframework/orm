@@ -162,6 +162,11 @@ class ClassGenerator
         ]);
     }
 
+    /**
+     * @param class-string         $classBase
+     * @param ParameterGenerator[] $methodParameters
+     * @param string[]             $methodsToGenerate
+     */
     protected function generateSingleClassForEntity(EntityType $entityTypeDefinition, string $classNameSuffix, string $classBase, array $methodParameters, array $methodsToGenerate): string
     {
         $namespace = static::GENERATED_CLASS_NAMESPACE.'Entity\\Query';
@@ -238,6 +243,9 @@ class ClassGenerator
         return $namespace.'\\'.$generatedClassName;
     }
 
+    /**
+     * @param class-string[] $queryClasses
+     */
     protected function generateQueryFactory(array $queryClasses): void
     {
         $methods = [];
@@ -302,7 +310,7 @@ class ClassGenerator
         return substr($fullClassName, strrpos($fullClassName, '\\') + 1);
     }
 
-    protected function dump($classPath, LaminasClassGenerator $classGenerator): void
+    protected function dump(string $classPath, LaminasClassGenerator $classGenerator): void
     {
         file_put_contents($this->generatedBaseDirectory.$classPath, new FileGenerator([
             'classes' => [$classGenerator],

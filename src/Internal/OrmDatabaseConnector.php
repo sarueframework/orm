@@ -18,6 +18,9 @@ class OrmDatabaseConnector
     ) {
     }
 
+    /**
+     * @param EntityType[] $entityTypeDefinitions
+     */
     public function createTables(array $entityTypeDefinitions): void
     {
         $tables = [];
@@ -43,6 +46,9 @@ class OrmDatabaseConnector
         return reset($entities);
     }
 
+    /**
+     * @return EntityInterface[]
+     */
     public function loadAll(QueryInterface $query, EntityType $entityTypeDefinition): array
     {
         $queryBuilder = $this->createLoadQueryBuilder($query, $entityTypeDefinition->getTableName());
@@ -100,7 +106,9 @@ class OrmDatabaseConnector
         $sql = $queryBuilder->getSQL();
         $sql .= ' RETURNING id';
         $result = $this->connection->executeQuery($sql, $queryBuilder->getParameters(), $queryBuilder->getParameterTypes());
-        $entity->initializeId($result->fetchOne());
+        /** @var string */
+        $createdId = $result->fetchOne();
+        $entity->initializeId($createdId);
     }
 
     protected function saveUpdate(EntityInterface $entity, EntityType $entityTypeDefinition): void
@@ -150,9 +158,12 @@ class OrmDatabaseConnector
         }
 
         return $queryBuilder
-            ->where('id='.$queryBuilder->createPositionalParameter($entity->id, ParameterType::STRING));
+            ->where('id='.$queryBuilder->createPositionalParameter($entity->id(), ParameterType::STRING));
     }
 
+    /**
+     * @return EntityInterface[]
+     */
     protected function doLoadEntities(QueryInterface $query, QueryBuilder $queryBuilder): array
     {
         $results = $queryBuilder->executeQuery()->fetchAllAssociative();

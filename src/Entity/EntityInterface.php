@@ -15,6 +15,8 @@ interface EntityInterface
 
     public static function fromDatabaseValues(array $values): static;
 
+    public function id(): string;
+
     /**
      * @return array<string,\Sarue\Orm\Query\Parameter\ParameterInterface>
      */

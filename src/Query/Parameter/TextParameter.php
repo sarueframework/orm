@@ -11,6 +11,6 @@ class TextParameter extends AbstractParameter
 
     public function __construct(string $value)
     {
-        $this->value = $value;
+        parent::__construct($value);
     }
 }

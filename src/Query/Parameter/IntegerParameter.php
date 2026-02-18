@@ -11,6 +11,6 @@ class IntegerParameter extends AbstractParameter
 
     public function __construct(int $value)
     {
-        $this->value = $value;
+        parent::__construct($value);
     }
 }

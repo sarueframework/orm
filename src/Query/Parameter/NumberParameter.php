@@ -12,6 +12,6 @@ class NumberParameter extends AbstractParameter
 
     public function __construct(Number $value)
     {
-        $this->value = $value;
+        parent::__construct($value);
     }
 }

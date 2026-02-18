@@ -4,8 +4,6 @@ namespace Sarue\Orm\Query\Sort;
 
 class ScalarSortExpression extends AbstractFieldSortExpression
 {
-    protected $fieldName;
-
     public function __construct(
         protected SortOrder $sortOrder,
     ) {

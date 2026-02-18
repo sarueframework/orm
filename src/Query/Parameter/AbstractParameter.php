@@ -12,6 +12,11 @@ abstract class AbstractParameter implements ParameterInterface
 
     public readonly mixed $value;
 
+    public function __construct(mixed $value)
+    {
+        $this->value = $value;
+    }
+
     public function toStringInQuery(QueryBuilder $queryBuilder): string
     {
         return $queryBuilder->createPositionalParameter($this->value, static::PARAMETER_TYPE);

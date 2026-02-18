@@ -82,26 +82,26 @@ function notLike(string|UnescapedText $text, bool $caseInsensitive = false): Tex
     return PatternMatchingCondition::notLike($text, $caseInsensitive);
 }
 
-function textIsExactly(string $text): TextConditionInterface
-{
-}
+// function textIsExactly(string $text): TextConditionInterface
+// {
+// }
 
-function textIsDifferentFrom(string $text): TextConditionInterface
-{
-}
+// function textIsDifferentFrom(string $text): TextConditionInterface
+// {
+// }
 
-function isAlphabeticallyBefore(string $text): TextConditionInterface
-{
-}
+// function isAlphabeticallyBefore(string $text): TextConditionInterface
+// {
+// }
 
-function isAlphabeticallyBeforeOrEqualTo(string $text): TextConditionInterface
-{
-}
+// function isAlphabeticallyBeforeOrEqualTo(string $text): TextConditionInterface
+// {
+// }
 
-function isAlphabeticallyAfter(string $text): TextConditionInterface
-{
-}
+// function isAlphabeticallyAfter(string $text): TextConditionInterface
+// {
+// }
 
-function isAlphabeticallyAfterOrEqualTo(string $text): TextConditionInterface
-{
-}
+// function isAlphabeticallyAfterOrEqualTo(string $text): TextConditionInterface
+// {
+// }

@@ -2,6 +2,7 @@
 
 namespace Sarue\Orm\Generator\Wrapper;
 
+use Sarue\Orm\Entity\EntityInterface;
 use Sarue\Orm\Entity\Type\EntityType;
 
 /**
@@ -10,6 +11,7 @@ use Sarue\Orm\Entity\Type\EntityType;
 class EntityTypeDefinitionWrapper
 {
     /**
+     * @param \ReflectionClass<EntityInterface>     $reflectionClass
      * @param array<string, FieldDefinitionWrapper> $fieldDefinitionWrappers
      */
     public function __construct(

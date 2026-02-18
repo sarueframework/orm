@@ -36,7 +36,7 @@ class OrmManager
     public function __construct(
         Connection $connection,
     ) {
-        $this->connector = new OrmDatabaseConnector($connection, $this);
+        $this->connector = new OrmDatabaseConnector($connection);
         static::setInstance($this);
     }
 
@@ -64,6 +64,9 @@ class OrmManager
     // Methods that relay to EntityTypeDefinitionRepository.
     // -----------------------------------------------------
 
+    /**
+     * @return array<string,EntityType>
+     */
     public function getEntityTypeDefinitions(): array
     {
         return $this->getEntityTypeDefinitionRepository()->getEntityTypeDefinitions();
@@ -102,6 +105,9 @@ class OrmManager
         return $this->connector->loadById($query, $entityTypeDefinition, $id);
     }
 
+    /**
+     * @return EntityInterface[]
+     */
     public function loadAll(QueryInterface $query): array
     {
         $entityTypeDefinition = $this->getEntityTypeDefinition($query::ENTITY_CLASS);

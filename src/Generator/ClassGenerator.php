@@ -67,15 +67,15 @@ class ClassGenerator
                 continue;
             }
 
+            if (!is_subclass_of($className, AbstractBaseEntity::class)) {
+                throw new BadInheritanceException('Class '.$className.' has attribute #[EntityType] but it not a descendant of Sarue\Orm\Entity\AbstractBaseEntity.');
+            }
+
             $classReflection = new \ReflectionClass($className);
             $entityAttributes = $classReflection->getAttributes(EntityType::class);
 
             if (empty($entityAttributes)) {
                 continue;
-            }
-
-            if (!is_subclass_of($className, AbstractBaseEntity::class)) {
-                throw new BadInheritanceException('Class '.$className.' has attribute #[EntityType] but it not a descendant of Sarue\Orm\Entity\AbstractBaseEntity.');
             }
 
             if ($classReflection->isAbstract()) {
@@ -100,6 +100,8 @@ class ClassGenerator
     }
 
     /**
+     * @param \ReflectionClass<AbstractBaseEntity> $classReflection
+     *
      * @return FieldDefinitionWrapper[]
      */
     protected function discoverFieldDefinitions(\ReflectionClass $classReflection): array
@@ -131,7 +133,7 @@ class ClassGenerator
 
             $fieldDefinitionWrappers[$fieldDefinition->getFieldName()] = new FieldDefinitionWrapper(
                 $fieldDefinition,
-                $property->getType()?->__toString(),
+                (string) $fieldType,
                 $fieldAttribute->getArguments(),
             );
         }
@@ -139,6 +141,9 @@ class ClassGenerator
         return $fieldDefinitionWrappers;
     }
 
+    /**
+     * @return class-string
+     */
     protected function generateClassesForEntity(EntityType $entityTypeDefinition): string
     {
         $methodParameters = [];
@@ -167,6 +172,8 @@ class ClassGenerator
      * @param class-string         $classBase
      * @param ParameterGenerator[] $methodParameters
      * @param string[]             $methodsToGenerate
+     *
+     * @return class-string
      */
     protected function generateSingleClassForEntity(EntityType $entityTypeDefinition, string $classNameSuffix, string $classBase, array $methodParameters, array $methodsToGenerate): string
     {
@@ -238,11 +245,12 @@ class ClassGenerator
         );
         $this->dump('/Entity/Query/'.$generatedClassName.'.php', $classGenerator);
 
+        /* @var class-string */
         return $namespace.'\\'.$generatedClassName;
     }
 
     /**
-     * @param class-string[] $queryClasses
+     * @param list<class-string> $queryClasses
      */
     protected function generateQueryFactory(array $queryClasses): void
     {

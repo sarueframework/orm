@@ -9,13 +9,19 @@ interface EntityInterface
 {
     public static function getTypeDefinition(): EntityType;
 
+    /**
+     * @return FieldTypeInterface[]
+     */
     public static function getFieldDefinitions(): array;
 
     public static function getFieldDefinition(string $fieldName): FieldTypeInterface;
 
+    /**
+     * @param array<string, int|float|string|bool|null> $values
+     */
     public static function fromDatabaseValues(array $values): static;
 
-    public function id(): string;
+    public function id(): ?string;
 
     /**
      * @return array<string,\Sarue\Orm\Query\Parameter\ParameterInterface>

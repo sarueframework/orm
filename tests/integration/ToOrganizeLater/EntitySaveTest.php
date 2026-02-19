@@ -19,8 +19,8 @@ class EntitySaveTest extends IntegrationTestCase
         $entity2->message = 'Qui SitAmet';
         $this->ormManager->save($entity2);
 
-        $loadedEntity1 = $this->ormManager->getQueryFactory()->getDummyLogEntityQuery()->loadById($entity1->id);
-        $loadedEntity2 = $this->ormManager->getQueryFactory()->getDummyLogEntityQuery()->loadById($entity2->id);
+        $loadedEntity1 = $this->ormManager->getQueryFactory()->getDummyLogEntityQuery()->loadById($entity1->id());
+        $loadedEntity2 = $this->ormManager->getQueryFactory()->getDummyLogEntityQuery()->loadById($entity2->id());
 
         $this->assertEquals('Lorem Ipsum', $loadedEntity1->message);
         $this->assertEquals('Qui SitAmet', $loadedEntity2->message);
@@ -40,12 +40,12 @@ class EntitySaveTest extends IntegrationTestCase
         $entity2->name = 'Fanny Mendelssohn';
         $this->ormManager->save($entity2);
 
-        $loadedEntity1 = $this->ormManager->getQueryFactory()->getDummyEntityQuery()->loadById($entity1->id);
-        $loadedEntity2 = $this->ormManager->getQueryFactory()->getDummyEntityQuery()->loadById($entity2->id);
+        $loadedEntity1 = $this->ormManager->getQueryFactory()->getDummyEntityQuery()->loadById($entity1->id());
+        $loadedEntity2 = $this->ormManager->getQueryFactory()->getDummyEntityQuery()->loadById($entity2->id());
 
-        $this->assertEquals($entity1->id, $loadedEntity1->id);
+        $this->assertEquals($entity1->id(), $loadedEntity1->id());
         $this->assertEquals('Johann Sebastian Bach', $loadedEntity1->name);
-        $this->assertEquals($entity2->id, $loadedEntity2->id);
+        $this->assertEquals($entity2->id(), $loadedEntity2->id());
         $this->assertEquals('Fanny Mendelssohn', $loadedEntity2->name);
     }
 

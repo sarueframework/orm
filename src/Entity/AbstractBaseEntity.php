@@ -15,7 +15,7 @@ abstract class AbstractBaseEntity implements EntityInterface
     #[UuidField(
         generateIdByDefault: true,
     )]
-    final public readonly ?string $id;
+    protected ?string $id;
 
     public static function getTypeDefinition(): EntityType
     {
@@ -34,6 +34,7 @@ abstract class AbstractBaseEntity implements EntityInterface
 
     public static function fromDatabaseValues(array $values): static
     {
+        /** @var mixed[] */
         $valuesGroupedByField = [];
         foreach ($values as $column => $value) {
             if (str_contains($column, '__')) {
@@ -56,7 +57,11 @@ abstract class AbstractBaseEntity implements EntityInterface
         return $entity;
     }
 
-    public function id(): string
+    final public function __construct()
+    {
+    }
+
+    public function id(): ?string
     {
         return $this->id;
     }

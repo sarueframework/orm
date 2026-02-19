@@ -67,15 +67,15 @@ class ClassGenerator
                 continue;
             }
 
-            if (!is_subclass_of($className, AbstractBaseEntity::class)) {
-                throw new BadInheritanceException('Class '.$className.' has attribute #[EntityType] but it not a descendant of Sarue\Orm\Entity\AbstractBaseEntity.');
-            }
-
             $classReflection = new \ReflectionClass($className);
             $entityAttributes = $classReflection->getAttributes(EntityType::class);
 
             if (empty($entityAttributes)) {
                 continue;
+            }
+
+            if (!$classReflection->isSubclassOf(AbstractBaseEntity::class)) {
+                throw new BadInheritanceException('Class '.$className.' has attribute #[EntityType] but it not a descendant of Sarue\Orm\Entity\AbstractBaseEntity.');
             }
 
             if ($classReflection->isAbstract()) {

@@ -8,6 +8,9 @@ interface FieldTypeInterface
 {
     public function initializeDefinition(string $fieldName, string $propertyType): static;
 
+    /**
+     * @return non-empty-string
+     */
     public function getFieldName(): string;
 
     public function getPropertyType(): string;

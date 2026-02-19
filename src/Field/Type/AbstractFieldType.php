@@ -6,14 +6,28 @@ abstract class AbstractFieldType implements FieldTypeInterface
 {
     public const array ALLOWED_PROPERTY_TYPES = [];
 
-    final protected readonly string $fieldName;
+    /**
+     * @var non-empty-string
+     */
+    final protected string $fieldName;
 
-    final protected readonly string $propertyType;
+    /**
+     * @var non-empty-string
+     */
+    final protected string $propertyType;
 
-    final protected readonly bool $required;
+    final protected bool $required;
 
     final public function initializeDefinition(string $fieldName, string $propertyType): static
     {
+        if (isset($this->fieldName) || isset($this->propertyType)) {
+            throw new \Exception('Cannot override fieldName or propertyType.');
+        }
+
+        if (empty($fieldName) || empty($propertyType)) {
+            throw new \Exception('Parameters $fieldName and $propertyType must not be empty.');
+        }
+
         $this->setFieldName($fieldName);
         $this->setPropertyType($propertyType);
 
@@ -35,7 +49,7 @@ abstract class AbstractFieldType implements FieldTypeInterface
         return $this->required;
     }
 
-    private function setFieldName($fieldName): void
+    private function setFieldName(string $fieldName): void
     {
         $this->fieldName = $fieldName;
     }

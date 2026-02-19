@@ -40,12 +40,8 @@ abstract class AbstractFieldType implements FieldTypeInterface
         $this->fieldName = $fieldName;
     }
 
-    private function setPropertyType($propertyType): void
+    private function setPropertyType(string $propertyType): void
     {
-        if (empty($propertyType)) {
-            throw new \Exception('The type of a field property must be set.');
-        }
-
         if (str_starts_with($propertyType, '?')) {
             $propertyType = substr($propertyType, 1);
             $this->required = false;

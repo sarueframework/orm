@@ -121,7 +121,11 @@ class ClassGenerator
 
             /** @var FieldTypeInterface */
             $fieldDefinition = $fieldAttribute->newInstance();
-            $fieldDefinition->initializeDefinition($property->getName(), $property->getType()?->__toString());
+            $fieldType = $property->getType();
+            if (empty($fieldType)) {
+                throw new \Exception('The type of a field property must be set.');
+            }
+            $fieldDefinition->initializeDefinition($property->getName(), (string) $fieldType);
 
             $fieldDefinition->validateDefinition();
 

@@ -11,9 +11,6 @@ abstract class AbstractFieldType implements FieldTypeInterface
      */
     final protected string $fieldName;
 
-    /**
-     * @var non-empty-string
-     */
     final protected string $propertyType;
 
     final protected bool $required;
@@ -22,10 +19,6 @@ abstract class AbstractFieldType implements FieldTypeInterface
     {
         if (isset($this->fieldName) || isset($this->propertyType)) {
             throw new \Exception('Cannot override fieldName or propertyType.');
-        }
-
-        if (empty($fieldName) || empty($propertyType)) {
-            throw new \Exception('Parameters $fieldName and $propertyType must not be empty.');
         }
 
         $this->setFieldName($fieldName);
@@ -51,11 +44,19 @@ abstract class AbstractFieldType implements FieldTypeInterface
 
     private function setFieldName(string $fieldName): void
     {
+        if (empty($fieldName)) {
+            throw new \Exception('Field name must not be empty.');
+        }
+
         $this->fieldName = $fieldName;
     }
 
     private function setPropertyType(string $propertyType): void
     {
+        if (empty($propertyType)) {
+            throw new \Exception('Property type must not be empty.');
+        }
+
         if (str_starts_with($propertyType, '?')) {
             $propertyType = substr($propertyType, 1);
             $this->required = false;

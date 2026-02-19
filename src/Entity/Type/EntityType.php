@@ -5,25 +5,34 @@ namespace Sarue\Orm\Entity\Type;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 use Sarue\Orm\Entity\RevisionableEntityInterface;
+use Sarue\Orm\Field\Type\FieldTypeInterface;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class EntityType
 {
-    public readonly string $name;
+    /**
+     * @var non-empty-string
+     */
+    protected string $name;
 
     /**
-     * @param class-string
+     * @var class-string
      */
-    public readonly string $className;
+    protected string $className;
 
     /**
-     * @var \Sarue\Orm\Field\Type\FieldTypeInterface[]
+     * @var array<string, FieldTypeInterface>
      */
-    public readonly array $fields;
+    protected array $fields;
 
-    public static function fromValues(string $name, string $className, array $fields)
+    /**
+     * @param non-empty-string     $name
+     * @param class-string         $className
+     * @param FieldTypeInterface[] $fields
+     */
+    public static function fromValues(string $name, string $className, array $fields): self
     {
-        $entityType = new static();
+        $entityType = new self();
         $entityType->name = $name;
         $entityType->className = $className;
         $entityType->fields = $fields;
@@ -31,16 +40,43 @@ class EntityType
         return $entityType;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getClassName(): string
+    {
+        return $this->className;
+    }
+
+    /**
+     * @return array<string, FieldTypeInterface>
+     */
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @return non-empty-string
+     */
     public function getTableName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getRevisionTableName(): string
     {
         return $this->name.'__revision';
     }
 
+    /**
+     * @return Table[]
+     */
     public function createTableSchemas(): array
     {
         $tableEditor = Table::editor()

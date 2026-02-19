@@ -148,7 +148,7 @@ class ClassGenerator
     {
         $methodParameters = [];
 
-        foreach ($entityTypeDefinition->fields as $fieldDefinition) {
+        foreach ($entityTypeDefinition->getFields() as $fieldDefinition) {
             $conditionType = $fieldDefinition->getConditionType();
             $methodParameters[] = new ParameterGenerator($fieldDefinition->getFieldName(), '?'.$conditionType, new ValueGenerator(type: ValueGenerator::TYPE_NULL));
         }
@@ -178,13 +178,13 @@ class ClassGenerator
     protected function generateSingleClassForEntity(EntityType $entityTypeDefinition, string $classNameSuffix, string $classBase, array $methodParameters, array $methodsToGenerate): string
     {
         $namespace = static::GENERATED_CLASS_NAMESPACE.'Entity\\Query';
-        $shortEntityClassName = $this->getShortClassName($entityTypeDefinition->className);
+        $shortEntityClassName = $this->getShortClassName($entityTypeDefinition->getClassName());
         $generatedClassName = $shortEntityClassName.$classNameSuffix;
         $methods = [];
 
         $methods[] = new MethodGenerator(
             name: 'getEntityClass',
-            body: "return \\{$entityTypeDefinition->className}::class;",
+            body: "return \\{$entityTypeDefinition->getClassName()}::class;",
         )->setReturnType('string');
 
         if ('Query' === $classNameSuffix) {
@@ -204,7 +204,7 @@ class ClassGenerator
                     new ParameterGenerator('id', 'string'),
                 ],
                 body: 'return $this->doLoadById($id);',
-            )->setReturnType($entityTypeDefinition->className);
+            )->setReturnType($entityTypeDefinition->getClassName());
 
             $methods[] = new MethodGenerator(
                 name: 'loadAll',
@@ -212,7 +212,7 @@ class ClassGenerator
             )
                 ->setDocBlock(new DocBlockGenerator()
                     ->setTag(new ReturnTag([
-                        'datatype' => '\\'.$entityTypeDefinition->className.'[]',
+                        'datatype' => '\\'.$entityTypeDefinition->getClassName().'[]',
                     ])),
                 )
                 ->setReturnType('array');
@@ -281,9 +281,9 @@ class ClassGenerator
         $generatedCode = "return [\n";
         foreach ($entityTypeDefinitionWrappers as $entityTypeDefinitionWrapper) {
             $entityTypeDefinition = $entityTypeDefinitionWrapper->entityTypeDefinition;
-            $generatedCode .= '    '.var_export($entityTypeDefinition->className, true).' => \\'.EntityType::class."::fromValues(\n";
-            $generatedCode .= '        '.var_export($entityTypeDefinition->name, true).",\n";
-            $generatedCode .= '        '.var_export($entityTypeDefinition->className, true).",\n";
+            $generatedCode .= '    '.var_export($entityTypeDefinition->getClassName(), true).' => \\'.EntityType::class."::fromValues(\n";
+            $generatedCode .= '        '.var_export($entityTypeDefinition->getName(), true).",\n";
+            $generatedCode .= '        '.var_export($entityTypeDefinition->getClassName(), true).",\n";
             $generatedCode .= "        [\n";
             foreach ($entityTypeDefinitionWrapper->fieldDefinitionWrappers as $fieldDefinitionWrapper) {
                 $fieldDefinition = $fieldDefinitionWrapper->fieldDefinition;
@@ -313,9 +313,15 @@ class ClassGenerator
         ));
     }
 
+    /**
+     * @return non-empty-string
+     */
     protected function getShortClassName(string $fullClassName): string
     {
-        return substr($fullClassName, strrpos($fullClassName, '\\') + 1);
+        /** @var non-empty-string */
+        $shortClassName = substr($fullClassName, strrpos($fullClassName, '\\') + 1);
+
+        return $shortClassName;
     }
 
     protected function dump(string $classPath, LaminasClassGenerator $classGenerator): void

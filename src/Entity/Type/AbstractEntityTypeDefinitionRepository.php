@@ -13,11 +13,11 @@ abstract class AbstractEntityTypeDefinitionRepository implements EntityTypeDefin
 
     public function getFieldDefinitions(string $entityClass): array
     {
-        return $this->getEntityTypeDefinition($entityClass)->fields;
+        return $this->getEntityTypeDefinition($entityClass)->getFields();
     }
 
     public function getFieldDefinition(string $entityClass, string $fieldName): FieldTypeInterface
     {
-        return $this->getEntityTypeDefinition($entityClass)->fields[$fieldName] ?? throw new \Exception("Field {$fieldName} not found in entity {$entityClass}.");
+        return $this->getEntityTypeDefinition($entityClass)->getFields()[$fieldName] ?? throw new \Exception("Field {$fieldName} not found in entity {$entityClass}.");
     }
 }

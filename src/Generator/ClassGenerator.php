@@ -245,8 +245,10 @@ class ClassGenerator
         );
         $this->dump('/Entity/Query/'.$generatedClassName.'.php', $classGenerator);
 
-        /* @var class-string */
-        return $namespace.'\\'.$generatedClassName;
+        /** @var class-string */
+        $fullGeneratedClassName = $namespace.'\\'.$generatedClassName;
+
+        return $fullGeneratedClassName;
     }
 
     /**

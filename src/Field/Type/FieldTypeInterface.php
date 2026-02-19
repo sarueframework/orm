@@ -2,6 +2,8 @@
 
 namespace Sarue\Orm\Field\Type;
 
+use Sarue\Orm\Query\Parameter\ParameterInterface;
+
 interface FieldTypeInterface
 {
     public function initializeDefinition(string $fieldName, string $propertyType): static;
@@ -14,6 +16,9 @@ interface FieldTypeInterface
 
     public function fromDatabaseValue(mixed $databaseValue): mixed;
 
+    /**
+     * @return array<string,ParameterInterface>
+     */
     public function toDatabaseValues(mixed $fieldValue): array;
 
     public function getConditionType(): string;

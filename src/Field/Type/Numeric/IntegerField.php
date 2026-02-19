@@ -26,9 +26,18 @@ class IntegerField extends AbstractNumericField
 
     public function toDatabaseValues(mixed $fieldValue): array
     {
-        // @todo Validate if value is string or ?string & not required.
-        return [
-            $this->fieldName => $fieldValue ? new IntegerParameter($fieldValue) : new NullParameter(),
-        ];
+        if (is_null($fieldValue)) {
+            if ($this->isRequired()) {
+                throw new \Exception(sprintf('Field %s must not be empty.', $this->fieldName));
+            }
+
+            $parameter = new NullParameter();
+        } elseif (is_int($fieldValue)) {
+            $parameter = new IntegerParameter($fieldValue);
+        } else {
+            throw new \Exception(sprintf('Field %s must be a string.', $this->fieldName));
+        }
+
+        return [$this->fieldName => $parameter];
     }
 }

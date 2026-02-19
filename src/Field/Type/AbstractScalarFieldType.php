@@ -17,8 +17,8 @@ abstract class AbstractScalarFieldType extends AbstractFieldType
     protected function getColumnEditor(): ColumnEditor
     {
         return Column::editor()
-            ->setUnquotedName($this->fieldName)
+            ->setUnquotedName($this->getFieldName())
             ->setTypeName(static::COLUMN_TYPE)
-            ->setNotNull($this->required);
+            ->setNotNull($this->isRequired());
     }
 }

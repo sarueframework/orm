@@ -35,7 +35,7 @@ class IntegerField extends AbstractNumericField
         } elseif (is_int($fieldValue)) {
             $parameter = new IntegerParameter($fieldValue);
         } else {
-            throw new \Exception(sprintf('Field %s must be a string.', $this->fieldName));
+            throw new \Exception(sprintf('Field %s must be an int.', $this->fieldName));
         }
 
         return [$this->fieldName => $parameter];

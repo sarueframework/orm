@@ -8,7 +8,7 @@ use Doctrine\DBAL\ParameterType;
 
 class NumberParameter extends AbstractParameter
 {
-    protected const ParameterType|ArrayParameterType PARAMETER_TYPE = ParameterType::INTEGER;
+    protected const ParameterType|ArrayParameterType PARAMETER_TYPE = ParameterType::STRING;
 
     public function __construct(Number $value)
     {

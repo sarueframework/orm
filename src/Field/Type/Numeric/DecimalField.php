@@ -4,6 +4,8 @@ namespace Sarue\Orm\Field\Type\Numeric;
 
 use BcMath\Number;
 use Doctrine\DBAL\Schema\ColumnEditor;
+use Sarue\Orm\Query\Parameter\NullParameter;
+use Sarue\Orm\Query\Parameter\NumberParameter;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class DecimalField extends AbstractNumericField
@@ -19,12 +21,37 @@ class DecimalField extends AbstractNumericField
         int|Number|null $minimum = null,
         int|Number|null $maximum = null,
     ) {
-        return parent::__construct($minimum, $maximum);
+        parent::__construct($minimum, $maximum);
     }
 
     public function fromDatabaseValue(mixed $databaseValue): Number
     {
+        if (!is_numeric($databaseValue)) {
+            throw new \Exception(sprintf('Value for %s must be numeric.', $this->fieldName));
+        }
+
+        if (is_float($databaseValue)) {
+            throw new \Exception(sprintf('Value for %s must not be a float.', $this->fieldName));
+        }
+
         return new Number($databaseValue);
+    }
+
+    public function toDatabaseValues(mixed $fieldValue): array
+    {
+        if (is_null($fieldValue)) {
+            if ($this->isRequired()) {
+                throw new \Exception(sprintf('Field %s must not be empty.', $this->fieldName));
+            }
+
+            $parameter = new NullParameter();
+        } elseif ($fieldValue instanceof Number) {
+            $parameter = new NumberParameter($fieldValue);
+        } else {
+            throw new \Exception(sprintf('Field %s must be a \\BcMath\\Number.', $this->fieldName));
+        }
+
+        return [$this->fieldName => $parameter];
     }
 
     protected function getColumnEditor(): ColumnEditor

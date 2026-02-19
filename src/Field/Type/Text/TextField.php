@@ -11,7 +11,6 @@ use Sarue\Orm\Query\Parameter\TextParameter;
 class TextField extends AbstractScalarFieldType
 {
     public const array ALLOWED_PROPERTY_TYPES = ['string'];
-    public const string COLUMN_TYPE = 'string';
 
     public function fromDatabaseValue(mixed $databaseValue): string
     {
@@ -46,5 +45,10 @@ class TextField extends AbstractScalarFieldType
 
     public function validateDefinition(): void
     {
+    }
+
+    protected function getColumnType(): string
+    {
+        return 'string';
     }
 }

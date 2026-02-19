@@ -13,7 +13,6 @@ class DecimalField extends AbstractNumericField
     public const int DEFAULT_PRECISION = 30;
     public const int DEFAULT_SCALE = 10;
     public const array ALLOWED_PROPERTY_TYPES = [Number::class];
-    public const string COLUMN_TYPE = 'number';
 
     public function __construct(
         public readonly int $precision = self::DEFAULT_PRECISION,
@@ -52,6 +51,11 @@ class DecimalField extends AbstractNumericField
         }
 
         return [$this->fieldName => $parameter];
+    }
+
+    protected function getColumnType(): string
+    {
+        return 'number';
     }
 
     protected function getColumnEditor(): ColumnEditor

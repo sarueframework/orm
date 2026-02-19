@@ -9,7 +9,6 @@ use Sarue\Orm\Query\Parameter\NullParameter;
 class IntegerField extends AbstractNumericField
 {
     public const array ALLOWED_PROPERTY_TYPES = ['int'];
-    public const string COLUMN_TYPE = 'integer';
 
     public function fromDatabaseValue(mixed $databaseValue): ?int
     {
@@ -39,5 +38,10 @@ class IntegerField extends AbstractNumericField
         }
 
         return [$this->fieldName => $parameter];
+    }
+
+    protected function getColumnType(): string
+    {
+        return 'integer';
     }
 }

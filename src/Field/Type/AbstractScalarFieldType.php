@@ -7,7 +7,7 @@ use Doctrine\DBAL\Schema\ColumnEditor;
 
 abstract class AbstractScalarFieldType extends AbstractFieldType
 {
-    public const string COLUMN_TYPE = '';
+    abstract protected function getColumnType(): string;
 
     public function createSchema(): array
     {
@@ -18,7 +18,7 @@ abstract class AbstractScalarFieldType extends AbstractFieldType
     {
         return Column::editor()
             ->setUnquotedName($this->getFieldName())
-            ->setTypeName(static::COLUMN_TYPE)
+            ->setTypeName($this->getColumnType())
             ->setNotNull($this->isRequired());
     }
 }

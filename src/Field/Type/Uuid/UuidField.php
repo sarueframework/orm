@@ -11,8 +11,6 @@ use Sarue\Orm\Query\Parameter\TextParameter;
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class UuidField extends AbstractScalarFieldType
 {
-    public const string COLUMN_TYPE = 'guid';
-
     public const array ALLOWED_PROPERTY_TYPES = ['string'];
 
     public function __construct(
@@ -49,6 +47,11 @@ class UuidField extends AbstractScalarFieldType
 
     public function validateDefinition(): void
     {
+    }
+
+    protected function getColumnType(): string
+    {
+        return 'guid';
     }
 
     protected function getColumnEditor(): ColumnEditor

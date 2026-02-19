@@ -5,11 +5,10 @@ namespace Sarue\Orm\Query\Condition\Group;
 use Sarue\Orm\OrmManager;
 use Sarue\Orm\Query\Condition\ConditionInterface;
 use Sarue\Orm\Query\Condition\FieldConditionInterface;
+use Sarue\Orm\Query\ConditionGroupInterface;
 
-abstract class AbstractConditionGroup implements ConditionInterface
+abstract class AbstractConditionGroup implements ConditionGroupInterface
 {
-    public const string ENTITY_CLASS = '';
-
     protected const string CONJUNCTION = ' AND ';
 
     protected const array QUERY_METHODS = [];
@@ -57,20 +56,20 @@ abstract class AbstractConditionGroup implements ConditionInterface
      */
     protected function addConditions(array $conditions): void
     {
-        $fields = $this->ormManager->getFieldDefinitions(static::ENTITY_CLASS);
+        $fields = $this->ormManager->getFieldDefinitions($this->getEntityClass());
 
         foreach (array_filter($conditions) as $fieldName => $condition) {
             if (!($condition instanceof ConditionInterface)) {
-                throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, static::ENTITY_CLASS, ConditionInterface::class));
+                throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, $this->getEntityClass(), ConditionInterface::class));
             }
 
             if ('_condition' !== $fieldName) {
                 if (empty($fields[$fieldName])) {
-                    throw new \BadMethodCallException(sprintf('"%s" is not a valid field name for entity "%s".', $fieldName, static::ENTITY_CLASS));
+                    throw new \BadMethodCallException(sprintf('"%s" is not a valid field name for entity "%s".', $fieldName, $this->getEntityClass()));
                 } elseif (!is_subclass_of($condition, $fields[$fieldName]->getConditionType())) {
-                    throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, static::ENTITY_CLASS, $fields[$fieldName]->getConditionType()));
+                    throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, $this->getEntityClass(), $fields[$fieldName]->getConditionType()));
                 } elseif (!($condition instanceof FieldConditionInterface)) {
-                    throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, static::ENTITY_CLASS, FieldConditionInterface::class));
+                    throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, $this->getEntityClass(), FieldConditionInterface::class));
                 }
 
                 $condition->setFieldName($fieldName);

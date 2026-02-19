@@ -100,7 +100,7 @@ class OrmManager
 
     public function loadById(QueryInterface $query, string $id): EntityInterface
     {
-        $entityTypeDefinition = $this->getEntityTypeDefinition($query::ENTITY_CLASS);
+        $entityTypeDefinition = $this->getEntityTypeDefinition($query->getEntityClass());
 
         return $this->connector->loadById($query, $entityTypeDefinition, $id);
     }
@@ -110,7 +110,7 @@ class OrmManager
      */
     public function loadAll(QueryInterface $query): array
     {
-        $entityTypeDefinition = $this->getEntityTypeDefinition($query::ENTITY_CLASS);
+        $entityTypeDefinition = $this->getEntityTypeDefinition($query->getEntityClass());
 
         return $this->connector->loadAll($query, $entityTypeDefinition);
     }

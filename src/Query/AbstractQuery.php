@@ -55,18 +55,18 @@ abstract class AbstractQuery extends AbstractConditionGroup implements QueryInte
      */
     protected function addSortExpressions(array $sortExpressions): void
     {
-        $fields = $this->ormManager->getFieldDefinitions(static::ENTITY_CLASS);
+        $fields = $this->ormManager->getFieldDefinitions($this->getEntityClass());
 
         foreach (array_filter($sortExpressions) as $fieldName => $sortExpression) {
             if (!($sortExpression instanceof SortExpressionInterface)) {
-                throw new \BadMethodCallException(sprintf('Sort expression for field "%s" in entity "%s" must implement interface %s.', $fieldName, static::ENTITY_CLASS, SortExpressionInterface::class));
+                throw new \BadMethodCallException(sprintf('Sort expression for field "%s" in entity "%s" must implement interface %s.', $fieldName, $this->getEntityClass(), SortExpressionInterface::class));
             }
 
             if ('_sort' !== $fieldName) {
                 if (empty($fields[$fieldName])) {
-                    throw new \BadMethodCallException(sprintf('"%s" is not a valid field name for entity "%s".', $fieldName, static::ENTITY_CLASS));
+                    throw new \BadMethodCallException(sprintf('"%s" is not a valid field name for entity "%s".', $fieldName, $this->getEntityClass()));
                 } elseif (!($sortExpression instanceof FieldSortExpressionInterface)) {
-                    throw new \BadMethodCallException(sprintf('Sort expression for field "%s" in entity "%s" must implement interface %s.', $fieldName, static::ENTITY_CLASS, FieldSortExpressionInterface::class));
+                    throw new \BadMethodCallException(sprintf('Sort expression for field "%s" in entity "%s" must implement interface %s.', $fieldName, $this->getEntityClass(), FieldSortExpressionInterface::class));
                 }
 
                 $sortExpression->setFieldName($fieldName);

@@ -170,7 +170,7 @@ class OrmDatabaseConnector
         $entities = [];
 
         foreach ($results as $result) {
-            $entityClass = $query::ENTITY_CLASS;
+            $entityClass = $query->getEntityClass();
             $entities[] = $entityClass::fromDatabaseValues($result);
         }
 

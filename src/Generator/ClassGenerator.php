@@ -9,8 +9,6 @@ use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
-use Laminas\Code\Generator\PropertyGenerator;
-use Laminas\Code\Generator\TypeGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 use Sarue\Orm\Entity\AbstractBaseEntity;
 use Sarue\Orm\Entity\Type\AbstractEntityTypeDefinitionRepository;
@@ -20,7 +18,6 @@ use Sarue\Orm\Exception\EntityDefinition\BadInheritanceException;
 use Sarue\Orm\Exception\EntityDefinition\MultipleAttributesInPropertyException;
 use Sarue\Orm\Field\Type\FieldTypeInterface;
 use Sarue\Orm\Generator\Laminas\MethodTagWithParameters;
-use Sarue\Orm\Generator\Laminas\PropertyGeneratorWithTypedConstant;
 use Sarue\Orm\Generator\Wrapper\EntityTypeDefinitionWrapper;
 use Sarue\Orm\Generator\Wrapper\FieldDefinitionWrapper;
 use Sarue\Orm\Query\AbstractQuery;
@@ -174,6 +171,11 @@ class ClassGenerator
         $generatedClassName = $shortEntityClassName.$classNameSuffix;
         $methods = [];
 
+        $methods[] = new MethodGenerator(
+            name: 'getEntityClass',
+            body: "return \\{$entityTypeDefinition->className}::class;",
+        )->setReturnType('string');
+
         if ('Query' === $classNameSuffix) {
             $methods[] = new MethodGenerator(
                 name: 'orGroup',
@@ -229,15 +231,7 @@ class ClassGenerator
             extends: $classBase,
             methods: $methods,
             docBlock: $classDocBlock,
-        )
-            ->addConstantFromGenerator(
-                new PropertyGeneratorWithTypedConstant(
-                    'ENTITY_CLASS',
-                    $entityTypeDefinition->className,
-                    PropertyGenerator::FLAG_CONSTANT,
-                    TypeGenerator::fromTypeString('string'),
-                )
-            );
+        );
         $this->dump('/Entity/Query/'.$generatedClassName.'.php', $classGenerator);
 
         return $namespace.'\\'.$generatedClassName;

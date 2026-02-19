@@ -3,10 +3,9 @@
 namespace Sarue\Orm\Query;
 
 use Sarue\Orm\Entity\EntityInterface;
-use Sarue\Orm\Query\Condition\ConditionInterface;
 use Sarue\Orm\Query\Sort\SortExpressionInterface;
 
-interface QueryInterface extends ConditionInterface
+interface QueryInterface extends ConditionGroupInterface
 {
     public function hasWhere(): bool;
 

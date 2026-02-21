@@ -2,18 +2,26 @@
 
 namespace Sarue\Orm\Tests\Integration\ToOrganizeLater\Query;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Sarue\Orm\OrmManager;
+use Sarue\Orm\Query\Condition\Numeric\NumericConditionInterface;
 use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
+use function Sarue\Orm\Query\Condition\isEqualTo;
 use function Sarue\Orm\Query\Condition\isGreaterThan;
+use function Sarue\Orm\Query\Condition\isGreaterThanOrEqualTo;
+use function Sarue\Orm\Query\Condition\isLessThan;
 use function Sarue\Orm\Query\Condition\isLessThanOrEqualTo;
+use function Sarue\Orm\Query\Condition\isNotEqualTo;
 use function Sarue\Orm\Query\Sort\asc;
 
 class NumericQueryTest extends IntegrationTestCase
 {
-    public function testAllNumericConditions()
+    public static function setUpBeforeClass(): void
     {
+        parent::setUpBeforeClass();
+
         $years = [
             1900,
             1901,
@@ -27,111 +35,75 @@ class NumericQueryTest extends IntegrationTestCase
             $entity->yearOfBirth = $year;
             $entity->save();
         }
-
-        // Not using DataProvider so that the test runs more quickly with just
-        // one batch of insertions.
-        $testCases = [
-            ['isGreaterThan', [1903, 1904]],
-            ['isGreaterThanOrEqualTo', [1902, 1903, 1904]],
-            ['isLessThan', [1900, 1901]],
-            ['isLessThanOrEqualTo', [1900, 1901, 1902]],
-            ['isEqualTo', [1902]],
-            ['isNotEqualTo', [1900, 1901, 1903, 1904]],
-        ];
-
-        foreach ($testCases as $testCase) {
-            [$function, $expected] = $testCase;
-
-            $entities = OrmManager::getInstance()
-                ->getQueryFactory()
-                ->getDummyEntityQuery()
-                ->where(
-                    yearOfBirth: ('Sarue\\Orm\\Query\\Condition\\'.$function)(1902),
-                )
-                ->orderBy(yearOfBirth: asc())
-                ->loadAll()
-            ;
-            $this->assertEquals(
-                $expected,
-                array_map(
-                    fn (DummyEntity $entity) => $entity->yearOfBirth,
-                    $entities,
-                ),
-            );
-        }
     }
 
-    public function testCombinedNumericConditions(): void
+    public static function dataProviderForTestNumericConditions(): array
     {
-        $entity1 = new DummyEntity();
-        $entity1->name = 'Ludwig van Beethoven';
-        $entity1->yearOfBirth = 1770;
-        $entity1->save();
+        return [
+            [isGreaterThan(1902), [1903, 1904]],
+            [isGreaterThanOrEqualTo(1902), [1902, 1903, 1904]],
+            [isLessThan(1902), [1900, 1901]],
+            [isLessThanOrEqualTo(1902), [1900, 1901, 1902]],
+            [isEqualTo(1902), [1902]],
+            [isNotEqualTo(1902), [1900, 1901, 1903, 1904]],
+        ];
+    }
 
-        $entity2 = new DummyEntity();
-        $entity2->name = 'Johann Sebastian Bach';
-        $entity2->yearOfBirth = 1685;
-        $entity2->save();
-
-        $entity3 = new DummyEntity();
-        $entity3->name = 'Gustav Mahler';
-        $entity3->yearOfBirth = 1860;
-        $entity3->save();
-
-        $entity4 = new DummyEntity();
-        $entity4->name = 'Felix Mendelssohn';
-        $entity4->yearOfBirth = 1809;
-        $entity4->save();
-
-        $entity5 = new DummyEntity();
-        $entity5->name = 'Dmitri Shostakovich';
-        $entity5->yearOfBirth = 1906;
-        $entity5->save();
-
-        $composers20thCentury = OrmManager::getInstance()
+    #[DataProvider('dataProviderForTestNumericConditions')]
+    public function testNumericConditions(NumericConditionInterface $condition, array $expected): void
+    {
+        $entities = OrmManager::getInstance()
             ->getQueryFactory()
             ->getDummyEntityQuery()
             ->where(
-                yearOfBirth: isGreaterThan(1900),
+                yearOfBirth: $condition,
             )
+            ->orderBy(yearOfBirth: asc())
             ->loadAll()
         ;
+        $this->assertEquals(
+            $expected,
+            array_map(
+                fn (DummyEntity $entity) => $entity->yearOfBirth,
+                $entities,
+            ),
+        );
+    }
 
-        $composers19thCentury = OrmManager::getInstance()
+    public static function dataProviderForTestCombinedAndNumericConditions(): array
+    {
+        return [
+            [isGreaterThan(1900), isGreaterThan(1902), [1903, 1904]],
+            [isGreaterThan(1900), isLessThanOrEqualTo(1902), [1901, 1902]],
+            [isEqualTo(1902), isEqualTo(1903), []],
+            [isEqualTo(1902), isNotEqualTo(1902), []],
+            [isEqualTo(1902), isNotEqualTo(1903), [1902]],
+            [isGreaterThan(1903), isLessThanOrEqualTo(1902), []],
+            [isGreaterThanOrEqualTo(1903), isLessThanOrEqualTo(1905), [1903, 1904]],
+        ];
+    }
+
+    #[DataProvider('dataProviderForTestCombinedAndNumericConditions')]
+    public function testCombinedAndNumericConditions(NumericConditionInterface $condition1, NumericConditionInterface $condition2, $expected): void
+    {
+        $entities = OrmManager::getInstance()
             ->getQueryFactory()
             ->getDummyEntityQuery()
             ->where(
-                yearOfBirth: isGreaterThan(1800),
+                yearOfBirth: $condition1,
             )
             ->and(
-                yearOfBirth: isLessThanOrEqualTo(1900),
+                yearOfBirth: $condition2,
             )
-            ->orderBy(
-                name: asc(),
-            )
+            ->orderBy(yearOfBirth: asc())
             ->loadAll()
         ;
-
-        $composers20thCentury = OrmManager::getInstance()
-            ->getQueryFactory()
-            ->getDummyEntityQuery()
-            ->where(
-                yearOfBirth: isGreaterThan(1900),
-            )
-            ->loadAll()
-        ;
-
-        $this->assertCount(2, $composers19thCentury);
-        $mendelssohn = reset($composers19thCentury);
-        $mahler = next($composers19thCentury);
-        $this->assertEquals('Felix Mendelssohn', $mendelssohn->name);
-        $this->assertEquals(1809, $mendelssohn->yearOfBirth);
-        $this->assertEquals('Gustav Mahler', $mahler->name);
-        $this->assertEquals(1860, $mahler->yearOfBirth);
-
-        $this->assertCount(1, $composers20thCentury);
-        $shostakovich = reset($composers20thCentury);
-        $this->assertEquals('Dmitri Shostakovich', $shostakovich->name);
-        $this->assertEquals(1906, $shostakovich->yearOfBirth);
+        $this->assertEquals(
+            $expected,
+            array_map(
+                fn (DummyEntity $entity) => $entity->yearOfBirth,
+                $entities,
+            ),
+        );
     }
 }

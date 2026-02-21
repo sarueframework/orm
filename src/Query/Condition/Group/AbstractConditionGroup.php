@@ -60,7 +60,7 @@ abstract class AbstractConditionGroup implements ConditionGroupInterface
 
         foreach (array_filter($conditions) as $fieldName => $condition) {
             if (!($condition instanceof ConditionInterface)) {
-                throw new \BadMethodCallException(sprintf('Condition in query for entity "%s" must implement interface %s.', $fieldName, $this->getEntityClass(), ConditionInterface::class));
+                throw new \BadMethodCallException(sprintf('Condition in query for entity "%s" must implement interface %s.', $this->getEntityClass(), ConditionInterface::class));
             }
 
             // If a condition is passed without a named variable, it is a
@@ -78,7 +78,7 @@ abstract class AbstractConditionGroup implements ConditionGroupInterface
                 $condition->setFieldName($fieldName);
             // Only one generic condition may be passed, so we ned to check for that.
             } elseif (is_int($fieldName) && (0 !== $fieldName || array_key_exists('_condition', $conditions))) {
-                throw new \BadMethodCallException(sprintf('Only one generic condition may be passed on a single function call in query for entity "%s".', $fieldName, $this->getEntityClass(), ConditionInterface::class));
+                throw new \BadMethodCallException(sprintf('Only one generic condition may be passed on a single function call in query for entity "%s".', $this->getEntityClass()));
             }
 
             $this->conditions[] = $condition;

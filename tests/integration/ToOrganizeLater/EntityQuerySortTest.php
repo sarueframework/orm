@@ -2,7 +2,7 @@
 
 namespace Sarue\Orm\Tests\Integration\ToOrganizeLater;
 
-use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
+use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 use function Sarue\Orm\Query\Sort\asc;
@@ -31,7 +31,7 @@ class EntityQuerySortTest extends IntegrationTestCase
         $entity4->yearOfBirth = 2020;
         $entity4->save();
 
-        $entities = $this->ormManager
+        $entities = OrmManager::getInstance()
             ->getQueryFactory()
             ->getDummyEntityQuery()
             ->orderBy(
@@ -49,7 +49,7 @@ class EntityQuerySortTest extends IntegrationTestCase
         $this->assertEquals(2000, $entities[2]->yearOfBirth);
         $this->assertEquals(2020, $entities[3]->yearOfBirth);
 
-        $entities = $this->ormManager
+        $entities = OrmManager::getInstance()
             ->getQueryFactory()
             ->getDummyEntityQuery()
             ->orderBy(

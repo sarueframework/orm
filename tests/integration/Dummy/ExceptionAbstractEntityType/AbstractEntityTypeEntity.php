@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Orm\Tests\Integration\Dummy\ExceptionEntity\AbstractEntityType;
+namespace Sarue\Orm\Tests\Integration\Dummy\ExceptionAbstractEntityType;
 
 use Sarue\Orm\Entity\AbstractLogEntity;
 use Sarue\Orm\Entity\Type\EntityType;

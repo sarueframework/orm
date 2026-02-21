@@ -2,6 +2,7 @@
 
 namespace Sarue\Orm\Tests\Integration\ToOrganizeLater\Query;
 
+use Sarue\Orm\OrmManager;
 use Sarue\Orm\Query\Condition\Text\UnescapedText;
 use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyLogEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
@@ -324,7 +325,7 @@ class TextQueryTest extends IntegrationTestCase
         foreach ($testCases as $testCase) {
             [$condition, $expected] = $testCase;
 
-            $entities = $this->ormManager
+            $entities = OrmManager::getInstance()
                 ->getQueryFactory()
                 ->getDummyLogEntityQuery()
                 ->where(

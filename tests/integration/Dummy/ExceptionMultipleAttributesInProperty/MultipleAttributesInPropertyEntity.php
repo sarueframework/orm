@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Orm\Tests\Integration\Dummy\ExceptionEntity\MultipleAttributesInProperty;
+namespace Sarue\Orm\Tests\Integration\Dummy\ExceptionMultipleAttributesInProperty;
 
 use Sarue\Orm\Entity\AbstractLogEntity;
 use Sarue\Orm\Entity\Type\EntityType;

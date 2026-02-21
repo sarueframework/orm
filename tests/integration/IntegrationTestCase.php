@@ -10,23 +10,57 @@ use Sarue\Orm\OrmManager;
 
 class IntegrationTestCase extends TestCase
 {
-    protected Connection $connection;
-    protected OrmManager $ormManager;
+    protected const bool HAS_DATABASE = true;
 
-    public function setUp(): void
+    protected const bool CREATE_DEFINITIONS = true;
+
+    protected const bool CREATE_TABLES = true;
+
+    protected const string ENTITY_SET = 'SimpleEntity';
+
+    final protected const GENERATED_FOLDER = __DIR__.'/var/sarue-generated';
+
+    final protected const BASE_ENTITY_NAMESPACE = 'Sarue\\Orm\\Tests\\Integration\\Dummy\\';
+
+    static protected ?Connection $connection;
+
+    /**
+     * {@inheritdoc}
+     *
+     * Using setUpBeforeClass() is not recommended by PHPUnit documentation.
+     * However, we are using PHPUnit to run *integration* tests in this suite,
+     * instead of proper unitary tests. Therefore, it makes sense to use a more
+     * global set up so that we save some time on database creation/deletion.
+     */
+    public static function setUpBeforeClass(): void
+    {
+        if (static::HAS_DATABASE) {
+            static::createDatabase();
+        }
+
+        if (static::CREATE_DEFINITIONS) {
+            static::createDefinitions(static::ENTITY_SET);
+        }
+
+        if (static::HAS_DATABASE && static::CREATE_DEFINITIONS && static::CREATE_TABLES) {
+            static::createTables();
+        }
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        if (isset(static::$connection)) {
+            static::$connection->close();
+        }
+    }
+
+    protected static function createDatabase(): void
     {
         $databaseCreationconnection = pg_connect('host=localhost port=5432 user=postgres password=sarue');
         pg_exec($databaseCreationconnection, 'DROP DATABASE IF EXISTS sarue_integration_test_db');
         pg_exec($databaseCreationconnection, 'CREATE DATABASE sarue_integration_test_db');
 
-        $classGenerator = new ClassGenerator(
-            __DIR__.'/Dummy/Entity',
-            __DIR__.'/var/sarue-generated',
-            'Sarue\\Orm\\Tests\\Integration\\Dummy\\Entity\\',
-        );
-        $classGenerator->generateClasses();
-
-        $this->connection = DriverManager::getConnection([
+        static::$connection = DriverManager::getConnection([
             'dbname' => 'sarue_integration_test_db',
             'user' => 'postgres',
             'password' => 'sarue',
@@ -35,13 +69,21 @@ class IntegrationTestCase extends TestCase
             'port' => 5432,
         ]);
 
-        $this->ormManager = new OrmManager($this->connection);
-
-        $this->ormManager->createTables();
+        new OrmManager(static::$connection);
     }
 
-    protected function tearDown(): void
+    protected static function createDefinitions(string $entitySet): void
     {
-        $this->connection->close();
+        $classGenerator = new ClassGenerator(
+            __DIR__.'/Dummy/'.$entitySet,
+            static::GENERATED_FOLDER,
+            static::BASE_ENTITY_NAMESPACE.$entitySet.'\\',
+        );
+        $classGenerator->generateClasses();
+    }
+
+    protected static function createTables(): void
+    {
+        OrmManager::getInstance()->createTables();
     }
 }

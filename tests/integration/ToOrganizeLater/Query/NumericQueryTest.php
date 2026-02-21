@@ -2,7 +2,8 @@
 
 namespace Sarue\Orm\Tests\Integration\ToOrganizeLater\Query;
 
-use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
+use Sarue\Orm\OrmManager;
+use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 use function Sarue\Orm\Query\Condition\isGreaterThan;
@@ -41,7 +42,7 @@ class NumericQueryTest extends IntegrationTestCase
         foreach ($testCases as $testCase) {
             [$function, $expected] = $testCase;
 
-            $entities = $this->ormManager
+            $entities = OrmManager::getInstance()
                 ->getQueryFactory()
                 ->getDummyEntityQuery()
                 ->where(
@@ -87,7 +88,7 @@ class NumericQueryTest extends IntegrationTestCase
         $entity5->yearOfBirth = 1906;
         $entity5->save();
 
-        $composers20thCentury = $this->ormManager
+        $composers20thCentury = OrmManager::getInstance()
             ->getQueryFactory()
             ->getDummyEntityQuery()
             ->where(
@@ -96,7 +97,7 @@ class NumericQueryTest extends IntegrationTestCase
             ->loadAll()
         ;
 
-        $composers19thCentury = $this->ormManager
+        $composers19thCentury = OrmManager::getInstance()
             ->getQueryFactory()
             ->getDummyEntityQuery()
             ->where(
@@ -111,7 +112,7 @@ class NumericQueryTest extends IntegrationTestCase
             ->loadAll()
         ;
 
-        $composers20thCentury = $this->ormManager
+        $composers20thCentury = OrmManager::getInstance()
             ->getQueryFactory()
             ->getDummyEntityQuery()
             ->where(

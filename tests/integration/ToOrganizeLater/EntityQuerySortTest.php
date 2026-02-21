@@ -2,6 +2,7 @@
 
 namespace Sarue\Orm\Tests\Integration\ToOrganizeLater;
 
+use Sarue\Orm\OrmManager;
 use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 

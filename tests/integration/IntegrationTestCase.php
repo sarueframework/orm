@@ -22,7 +22,7 @@ class IntegrationTestCase extends TestCase
 
     final protected const BASE_ENTITY_NAMESPACE = 'Sarue\\Orm\\Tests\\Integration\\Dummy\\';
 
-    static protected ?Connection $connection;
+    protected static ?Connection $connection;
 
     /**
      * {@inheritdoc}

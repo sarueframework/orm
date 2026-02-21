@@ -3,6 +3,7 @@
 namespace Sarue\Orm\Tests\Integration\ToOrganizeLater;
 
 use Sarue\Orm\Exception\MayNotUpdateException;
+use Sarue\Orm\OrmManager;
 use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyEntity;
 use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyLogEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;

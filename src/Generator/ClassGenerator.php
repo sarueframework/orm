@@ -36,6 +36,9 @@ class ClassGenerator
         protected string $generatedBaseDirectory,
         protected string $entityNamespace = 'App\\Entity\\',
     ) {
+        if (!str_ends_with($this->entityNamespace, '\\')) {
+            throw new \Exception('Parameter $entityNamespace must end with a trailing slash (\\).');
+        }
     }
 
     public function generateClasses(): void

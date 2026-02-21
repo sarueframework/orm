@@ -193,12 +193,12 @@ class ClassGenerator
         if ('Query' === $classNameSuffix) {
             $methods[] = new MethodGenerator(
                 name: 'orGroup',
-                body: "return new {$shortEntityClassName}OrConditionGroup();",
+                body: "return new {$shortEntityClassName}OrConditionGroup(\$this->ormManager);",
             )->setReturnType($namespace.'\\'.$shortEntityClassName.'OrConditionGroup');
 
             $methods[] = new MethodGenerator(
                 name: 'andGroup',
-                body: "return new {$shortEntityClassName}AndConditionGroup();",
+                body: "return new {$shortEntityClassName}AndConditionGroup(\$this->ormManager);",
             )->setReturnType($namespace.'\\'.$shortEntityClassName.'AndConditionGroup');
 
             $methods[] = new MethodGenerator(

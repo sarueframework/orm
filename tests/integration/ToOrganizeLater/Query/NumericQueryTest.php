@@ -106,4 +106,39 @@ class NumericQueryTest extends IntegrationTestCase
             ),
         );
     }
+
+    public static function dataProviderForTestCombinedOrNumericConditions(): array
+    {
+        return [
+            [isGreaterThan(1900), isGreaterThan(1902), [1901, 1902, 1903, 1904]],
+            [isGreaterThan(1903), isLessThanOrEqualTo(1902), [1900, 1901, 1902, 1904]],
+            [isEqualTo(1902), isEqualTo(1903), [1902, 1903]],
+            [isEqualTo(1902), isNotEqualTo(1902), [1900, 1901, 1902, 1903, 1904]],
+            [isEqualTo(1902), isNotEqualTo(1903), [1900, 1901, 1902, 1904]],
+            [isGreaterThan(1903), isLessThanOrEqualTo(1902), [1900, 1901, 1902, 1904]],
+        ];
+    }
+
+    #[DataProvider('dataProviderForTestCombinedOrNumericConditions')]
+    public function testCombinedOrNumericConditions(NumericConditionInterface $condition1, NumericConditionInterface $condition2, $expected): void
+    {
+        $query = OrmManager::getInstance()
+            ->getQueryFactory()
+            ->getDummyEntityQuery();
+
+        $entities = $query->where($query->orGroup()
+            ->or(yearOfBirth: $condition1)
+            ->or(yearOfBirth: $condition2)
+        )
+            ->orderBy(yearOfBirth: asc())
+            ->loadAll()
+        ;
+        $this->assertEquals(
+            $expected,
+            array_map(
+                fn (DummyEntity $entity) => $entity->yearOfBirth,
+                $entities,
+            ),
+        );
+    }
 }

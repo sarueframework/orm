@@ -60,10 +60,13 @@ abstract class AbstractConditionGroup implements ConditionGroupInterface
 
         foreach (array_filter($conditions) as $fieldName => $condition) {
             if (!($condition instanceof ConditionInterface)) {
-                throw new \BadMethodCallException(sprintf('Condition for field "%s" in entity "%s" must implement interface %s.', $fieldName, $this->getEntityClass(), ConditionInterface::class));
+                throw new \BadMethodCallException(sprintf('Condition in query for entity "%s" must implement interface %s.', $fieldName, $this->getEntityClass(), ConditionInterface::class));
             }
 
-            if ('_condition' !== $fieldName) {
+            // If a condition is passed without a named variable, it is a
+            // generic condition. If it is passed as a named parameter, then
+            // the field name must be checked and set. The
+            if (is_string($fieldName) && '_condition' !== $fieldName) {
                 if (empty($fields[$fieldName])) {
                     throw new \BadMethodCallException(sprintf('"%s" is not a valid field name for entity "%s".', $fieldName, $this->getEntityClass()));
                 } elseif (!is_subclass_of($condition, $fields[$fieldName]->getConditionType())) {
@@ -73,7 +76,11 @@ abstract class AbstractConditionGroup implements ConditionGroupInterface
                 }
 
                 $condition->setFieldName($fieldName);
+            // Only one generic condition may be passed, so we ned to check for that.
+            } elseif (is_int($fieldName) && (0 !== $fieldName || array_key_exists('_condition', $conditions))) {
+                throw new \BadMethodCallException(sprintf('Only one generic condition may be passed on a single function call in query for entity "%s".', $fieldName, $this->getEntityClass(), ConditionInterface::class));
             }
+
             $this->conditions[] = $condition;
         }
     }

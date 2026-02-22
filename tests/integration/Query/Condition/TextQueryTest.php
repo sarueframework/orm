@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Orm\Tests\Integration\ToOrganizeLater\Query;
+namespace Sarue\Orm\Tests\Integration\Query\Condition;
 
 use Sarue\Orm\OrmManager;
 use Sarue\Orm\Query\Condition\Text\UnescapedText;

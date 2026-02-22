@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Orm\Tests\Integration\ToOrganizeLater;
+namespace Sarue\Orm\Tests\Integration\Query\Sort;
 
 use Sarue\Orm\OrmManager;
 use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyEntity;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Orm\Tests\Integration\ToOrganizeLater;
+namespace Sarue\Orm\Tests\Integration\Save;
 
 use Sarue\Orm\Exception\MayNotUpdateException;
 use Sarue\Orm\OrmManager;

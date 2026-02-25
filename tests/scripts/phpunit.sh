@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+set -e
+
 TEST_TYPE=$1
 if [[ "unit" != $TEST_TYPE && "integration" != $TEST_TYPE ]]; then
     echo 'Error: first parameter of phpunit.sh must be either "unit" or "integration"'

@@ -4,8 +4,8 @@ namespace Sarue\Orm\Tests\Integration\Save;
 
 use Sarue\Orm\Exception\MayNotUpdateException;
 use Sarue\Orm\OrmManager;
-use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyEntity;
-use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyLogEntity;
+use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
+use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyLogEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 class EntitySaveTest extends IntegrationTestCase

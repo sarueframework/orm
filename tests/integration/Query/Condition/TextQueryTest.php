@@ -4,7 +4,7 @@ namespace Sarue\Orm\Tests\Integration\Query\Condition;
 
 use Sarue\Orm\OrmManager;
 use Sarue\Orm\Query\Condition\Text\UnescapedText;
-use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyLogEntity;
+use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyLogEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 use function Sarue\Orm\Query\Condition\contains;

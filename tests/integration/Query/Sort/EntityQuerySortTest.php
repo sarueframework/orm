@@ -3,7 +3,7 @@
 namespace Sarue\Orm\Tests\Integration\Query\Sort;
 
 use Sarue\Orm\OrmManager;
-use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyEntity;
+use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 use function Sarue\Orm\Query\Sort\asc;

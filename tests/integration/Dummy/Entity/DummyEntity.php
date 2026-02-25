@@ -1,6 +1,6 @@
 <?php
 
-namespace Sarue\Orm\Tests\Integration\Dummy\SimpleEntity;
+namespace Sarue\Orm\Tests\Integration\Dummy\Entity;
 
 use Sarue\Orm\Entity\AbstractEntity;
 use Sarue\Orm\Entity\Type\EntityType;

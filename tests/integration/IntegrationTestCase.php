@@ -12,11 +12,9 @@ class IntegrationTestCase extends TestCase
 {
     protected const bool HAS_DATABASE = true;
 
-    protected const bool CREATE_DEFINITIONS = true;
-
     protected const bool CREATE_TABLES = true;
 
-    protected const string ENTITY_SET = 'SimpleEntity';
+    final protected const string ENTITY_SET = 'Entity';
 
     final protected const GENERATED_FOLDER = __DIR__.'/var/sarue-generated';
 
@@ -34,23 +32,25 @@ class IntegrationTestCase extends TestCase
      */
     public static function setUpBeforeClass(): void
     {
+        // Tests if the Orm Manager is initialized, i.e., if this is the first
+        // test run. If not, create the definitions and initialize ORM.
+        try {
+            OrmManager::getInstance();
+        }
+        catch (\Exception $exception) {
+            static::createDefinitions(static::ENTITY_SET);
+        }
+
+        if (isset(static::$connection)) {
+            static::$connection->close();
+        }
+
         if (static::HAS_DATABASE) {
             static::createDatabase();
         }
 
-        if (static::CREATE_DEFINITIONS) {
-            static::createDefinitions(static::ENTITY_SET);
-        }
-
-        if (static::HAS_DATABASE && static::CREATE_DEFINITIONS && static::CREATE_TABLES) {
+        if (static::HAS_DATABASE && static::CREATE_TABLES) {
             static::createTables();
-        }
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        if (isset(static::$connection)) {
-            static::$connection->close();
         }
     }
 

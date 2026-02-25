@@ -14,7 +14,6 @@ use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 class EntityDefinitionExceptionsTest extends IntegrationTestCase
 {
     protected const bool HAS_DATABASE = false;
-    protected const bool CREATE_DEFINITIONS = false;
 
     public static function dataProviderForTestEntityException(): array
     {

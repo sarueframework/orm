@@ -5,7 +5,7 @@ namespace Sarue\Orm\Tests\Integration\Query\Condition;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Sarue\Orm\OrmManager;
 use Sarue\Orm\Query\Condition\Numeric\NumericConditionInterface;
-use Sarue\Orm\Tests\Integration\Dummy\SimpleEntity\DummyEntity;
+use Sarue\Orm\Tests\Integration\Dummy\Entity\DummyEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
 use function Sarue\Orm\Query\Condition\isEqualTo;

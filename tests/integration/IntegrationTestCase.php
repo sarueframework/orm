@@ -36,8 +36,7 @@ class IntegrationTestCase extends TestCase
         // test run. If not, create the definitions and initialize ORM.
         try {
             OrmManager::getInstance();
-        }
-        catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             static::createDefinitions(static::ENTITY_SET);
         }
 

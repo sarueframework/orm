@@ -3,6 +3,8 @@
 namespace Sarue\Orm\Query\Condition;
 
 use BcMath\Number;
+use Sarue\Orm\Query\Condition\DateTime\DateTimeConditionInterface;
+use Sarue\Orm\Query\Condition\DateTime\SimpleDateTimeCondition;
 use Sarue\Orm\Query\Condition\Numeric\NumericConditionInterface;
 use Sarue\Orm\Query\Condition\Numeric\SimpleNumericCondition;
 use Sarue\Orm\Query\Condition\Operator\ComparisonOperator;
@@ -40,6 +42,8 @@ function isNotEqualTo(int|Number $number): NumericConditionInterface
 {
     return new SimpleNumericCondition($number, ComparisonOperator::NotEqualTo);
 }
+
+// function numberIsOneOf
 
 // Text conditions.
 function startsWith(string $text, bool $caseInsensitive = false): TextConditionInterface
@@ -82,6 +86,8 @@ function notLike(string|UnescapedText $text, bool $caseInsensitive = false): Tex
     return PatternMatchingCondition::notLike($text, $caseInsensitive);
 }
 
+// function textIsOneOf(): TextConditionInterface
+
 // function textIsExactly(string $text): TextConditionInterface
 // {
 // }
@@ -105,3 +111,38 @@ function notLike(string|UnescapedText $text, bool $caseInsensitive = false): Tex
 // function isAlphabeticallyAfterOrEqualTo(string $text): TextConditionInterface
 // {
 // }
+
+// Date and time conditions
+function isBefore(\DateTime $dateTime): DateTimeConditionInterface
+{
+    return SimpleDateTimeCondition::isBefore($dateTime);
+}
+
+function isBeforeOrExactly(\DateTime $dateTime): DateTimeConditionInterface
+{
+    return SimpleDateTimeCondition::isBeforeOrExactly($dateTime);
+}
+
+// function isExactyDateTime(): DateTimeConditionInterface
+// {}
+
+// function isAfter(): DateTimeConditionInterface
+// {}
+
+// function isAfterOrExactly(): DateTimeConditionInterface
+// {}
+
+// function isBeforeDate(): DateTimeConditionInterface
+// {}
+
+// function isBeforeOrOnDate(): DateTimeConditionInterface
+// {}
+
+// function isOnDate(): DateTimeConditionInterface
+// {}
+
+// function isAfterDate(): DateTimeConditionInterface
+// {}
+
+// function isAfterOrOnDate(): DateTimeConditionInterface
+// {}

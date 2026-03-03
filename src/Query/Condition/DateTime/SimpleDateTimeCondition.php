@@ -18,6 +18,26 @@ class SimpleDateTimeCondition extends AbstractFieldCondition implements DateTime
         return new self($dateTime, ComparisonOperator::LessThanOrEqualTo);
     }
 
+    public static function isExactly(\DateTime $dateTime): self
+    {
+        return new self($dateTime, ComparisonOperator::EqualTo);
+    }
+
+    public static function isNot(\DateTime $dateTime): self
+    {
+        return new self($dateTime, ComparisonOperator::NotEqualTo);
+    }
+
+    public static function isAfter(\DateTime $dateTime): self
+    {
+        return new self($dateTime, ComparisonOperator::GreaterThan);
+    }
+
+    public static function isAfterOrExactly(\DateTime $dateTime): self
+    {
+        return new self($dateTime, ComparisonOperator::GreaterThanOrEqualTo);
+    }
+
     public function __construct(
         public readonly \DateTime $dateTime,
         public readonly ComparisonOperator $operator,
@@ -29,7 +49,7 @@ class SimpleDateTimeCondition extends AbstractFieldCondition implements DateTime
         return [
             $this->fieldName,
             $this->operator->value,
-            new TextParameter($this->dateTime->format('Y-m-d')),
+            new TextParameter($this->dateTime->format('Y-m-d H:i:s')),
         ];
     }
 }

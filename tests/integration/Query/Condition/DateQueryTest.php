@@ -8,8 +8,12 @@ use Sarue\Orm\Query\Condition\DateTime\DateTimeConditionInterface;
 use Sarue\Orm\Tests\Integration\Dummy\Entity\DateTimeDummyEntity;
 use Sarue\Orm\Tests\Integration\IntegrationTestCase;
 
+use function Sarue\Orm\Query\Condition\isAfter;
+use function Sarue\Orm\Query\Condition\isAfterOrExactly;
 use function Sarue\Orm\Query\Condition\isBefore;
 use function Sarue\Orm\Query\Condition\isBeforeOrExactly;
+use function Sarue\Orm\Query\Condition\isExactyDateTime;
+use function Sarue\Orm\Query\Condition\isNotDateTime;
 use function Sarue\Orm\Query\Sort\asc;
 
 class DateQueryTest extends IntegrationTestCase
@@ -33,9 +37,22 @@ class DateQueryTest extends IntegrationTestCase
 
     public static function dataProviderForTestDateConditions(): array
     {
+        $date = new \DateTime('2020-02-01T00:00:00');
+        $midday = new \DateTime('2020-02-01T12:00:00');
+
         return [
-            [isBefore(new \DateTime('2020-02-01T00:00:00')), ['2020-01-01', '2020-01-05']],
-            [isBeforeOrExactly(new \DateTime('2020-02-01T00:00:00')), ['2020-01-01', '2020-01-05', '2020-02-01']],
+            [isBefore($date), ['2020-01-01', '2020-01-05']],
+            [isBefore($midday), ['2020-01-01', '2020-01-05']],
+            [isBeforeOrExactly($date), ['2020-01-01', '2020-01-05', '2020-02-01']],
+            [isBeforeOrExactly($midday), ['2020-01-01', '2020-01-05', '2020-02-01']],
+            [isExactyDateTime($date), ['2020-02-01']],
+            [isExactyDateTime($midday), ['2020-02-01']],
+            [isNotDateTime($date), ['2020-01-01', '2020-01-05', '2020-02-02']],
+            [isNotDateTime($midday), ['2020-01-01', '2020-01-05', '2020-02-02']],
+            [isAfter($date), ['2020-02-02']],
+            [isAfter($midday), ['2020-02-02']],
+            [isAfterOrExactly($date), ['2020-02-01', '2020-02-02']],
+            [isAfterOrExactly($midday), ['2020-02-01', '2020-02-02']],
         ];
     }
 

@@ -123,26 +123,22 @@ function isBeforeOrExactly(\DateTime $dateTime): DateTimeConditionInterface
     return SimpleDateTimeCondition::isBeforeOrExactly($dateTime);
 }
 
-// function isExactyDateTime(): DateTimeConditionInterface
-// {}
+function isExactyDateTime(\DateTime $dateTime): DateTimeConditionInterface
+{
+    return SimpleDateTimeCondition::isExactly($dateTime);
+}
 
-// function isAfter(): DateTimeConditionInterface
-// {}
+function isNotDateTime(\DateTime $dateTime): DateTimeConditionInterface
+{
+    return SimpleDateTimeCondition::isNot($dateTime);
+}
 
-// function isAfterOrExactly(): DateTimeConditionInterface
-// {}
+function isAfter(\DateTime $dateTime): DateTimeConditionInterface
+{
+    return SimpleDateTimeCondition::isAfter($dateTime);
+}
 
-// function isBeforeDate(): DateTimeConditionInterface
-// {}
-
-// function isBeforeOrOnDate(): DateTimeConditionInterface
-// {}
-
-// function isOnDate(): DateTimeConditionInterface
-// {}
-
-// function isAfterDate(): DateTimeConditionInterface
-// {}
-
-// function isAfterOrOnDate(): DateTimeConditionInterface
-// {}
+function isAfterOrExactly(\DateTime $dateTime): DateTimeConditionInterface
+{
+    return SimpleDateTimeCondition::isAfterOrExactly($dateTime);
+}
